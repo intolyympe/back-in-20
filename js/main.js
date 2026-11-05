@@ -63,9 +63,10 @@ function inspect(id, object, button) {
     const view = object.opens ? VIEWS[object.opens]() : createCloseUp(button);
     overlay.open(withThought(view, object.text), button, { pickUp: object.pickUp });
   }
-  if (object.clue && addClue(state, object.clue)) {
+  const found = (object.clues ?? []).filter(clue => addClue(state, clue));
+  if (found.length) {
     notebook.render(state.clues);
-    showToast('Noté dans le carnet.');
+    showToast(found.length > 1 ? `${found.length} indices notés dans le carnet.` : 'Noté dans le carnet.');
   }
 }
 

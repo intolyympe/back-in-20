@@ -1,7 +1,7 @@
 // The desk scene. For each object:
 //   verb    handwritten word shown on hover ("Regarder", "Prendre"...)
 //   text    what the player thinks when looking at it
-//   clue    added to the notebook, if any
+//   clues   what gets written in the notebook when the object is looked at
 //   pickUp  the object leaves the desk while seen up close
 //   opens   a dedicated view instead of the zoomed copy (phone, calendar...)
 //   toggle  a class switched on the desk (the lamp), with [off, on] verbs
@@ -14,13 +14,17 @@ export const DESK_OBJECTS = {
     verb: 'Lire',
     pickUp: true,
     text: '« De retour dans 20 minutes. — C. » Camille vient de partir.',
-    clue: { id: 'back-in-20', text: 'Camille revient dans 20 minutes.' },
+    clues: [{ id: 'back-in-20', text: 'Camille revient dans 20 min.' }],
   },
   calendar: {
     verb: 'Regarder',
     pickUp: true,
     opens: 'calendar',
     text: 'Les jours passés sont barrés. Le 14 est entouré en rouge.',
+    clues: [
+      { id: 'birthday', text: 'Son anniv : le 14 novembre (entouré en rouge).' },
+      { id: 'dog-name', text: 'Son chien s’appelle Rex (véto le 6/11).' },
+    ],
   },
   window: {
     verb: 'Regarder',
@@ -29,6 +33,7 @@ export const DESK_OBJECTS = {
   monitor: {
     verb: 'Regarder',
     text: 'L’ordinateur est verrouillé.',
+    clues: [{ id: 'pc-locked', text: 'PC : session « Camille », mot de passe demandé.' }],
   },
   plant: {
     verb: 'Regarder',
@@ -38,6 +43,7 @@ export const DESK_OBJECTS = {
     verb: 'Prendre',
     pickUp: true,
     text: 'Une photo de vacances : Camille sur une plage, au coucher du soleil.',
+    clues: [{ id: 'beach', text: 'Photo de vacances à la plage.' }],
   },
   pens: {
     verb: 'Fouiller',
@@ -48,6 +54,7 @@ export const DESK_OBJECTS = {
     pickUp: true,
     opens: 'notepad',
     text: 'Ses notes de la réunion de mardi.',
+    clues: [{ id: 'same-password', text: 'Mdp messagerie : elle remet « le même qu’avant » ?' }],
   },
   mug: {
     verb: 'Regarder',
@@ -61,6 +68,7 @@ export const DESK_OBJECTS = {
     verb: 'Prendre',
     pickUp: true,
     opens: 'phone', // no thought: the phone needs the whole height
+    clues: [{ id: 'dog-wallpaper', text: 'Fond d’écran du téléphone : un chiot noir.' }],
   },
 };
 

@@ -349,27 +349,31 @@
   opacity: 1;
 }
 
-/* Short description shown when an object is inspected */
+/* "Noté dans le carnet" message, next to the notebook it points at. */
 .toast {
   position: absolute;
   z-index: 7; /* above an object seen up close */
-  left: 50%;
-  bottom: 40px;
-  max-width: 760px;
+  right: 24px;
+  bottom: 28px;
+  max-width: 420px;
   margin: 0;
-  padding: 14px 22px;
+  padding: 12px 20px;
   border-radius: 10px;
   background: rgb(20 18 16 / 0.88);
   color: #fff;
   font-size: 20px;
   line-height: 1.4;
-  transform: translate(-50%, 12px);
+  transform: translateX(16px);
   opacity: 0;
   pointer-events: none;
   transition: opacity 200ms, transform 200ms;
 }
 
+.toast::after {
+  content: " →";
+}
+
 .toast.visible {
   opacity: 1;
-  transform: translate(-50%, 0);
+  transform: none;
 }
