@@ -186,6 +186,12 @@
 }
 
 /* The post-it that gives the game its name */
+/* Stuck on the screen: it must stay above it, even while the screen is
+   hovered and grows, or it can no longer be reached. */
+.hotspot.postit {
+  z-index: 4;
+}
+
 .postit {
   left: 770px;
   top: 172px;
