@@ -104,6 +104,7 @@
 
 .calendar-month {
   padding: 10px 0;
+  text-align: center;
   background: var(--accent);
   color: #fff;
   font-weight: 700;
@@ -361,6 +362,7 @@
 /* Short description shown when an object is inspected */
 .toast {
   position: absolute;
+  z-index: 7; /* above an object seen up close */
   left: 50%;
   bottom: 40px;
   max-width: 760px;

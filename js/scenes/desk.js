@@ -2,6 +2,7 @@
 //   verb    handwritten word shown on hover ("Regarder", "Prendre"...)
 //   text    what the player thinks when looking at it
 //   clue    added to the notebook, if any
+//   pickUp  the object leaves the desk while seen up close
 //   opens   a dedicated view (the phone) instead of the close-up
 //   toggle  a class switched on the desk (the lamp), with [off, on] verbs
 // Chapter content (the circled date, the phone lock screen...) comes later.
@@ -9,6 +10,7 @@
 export const DESK_OBJECTS = {
   postit: {
     verb: 'Lire',
+    pickUp: true,
     text: '« De retour dans 20 minutes. — C. » Camille vient de partir.',
     clue: { id: 'back-in-20', text: 'Camille revient dans 20 minutes.' },
   },
@@ -30,6 +32,7 @@ export const DESK_OBJECTS = {
   },
   photo: {
     verb: 'Prendre',
+    pickUp: true,
     text: 'Une photo de vacances : Camille sur une plage, au coucher du soleil.',
   },
   pens: {
@@ -38,6 +41,7 @@ export const DESK_OBJECTS = {
   },
   notepad: {
     verb: 'Lire',
+    pickUp: true,
     text: 'Des notes de réunion griffonnées. Rien d’utile… pour l’instant.',
   },
   mug: {

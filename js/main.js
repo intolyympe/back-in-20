@@ -2,6 +2,7 @@ import { createState, addClue, ROUND_MINUTES } from './state.js';
 import { createTimer, formatClock } from './timer.js';
 import { createNotebook } from './notebook.js';
 import { createOverlay } from './overlay.js';
+import { createCloseUp } from './closeup.js';
 import { setupDesk, verbFor } from './scenes/desk.js';
 import { createPhoneView } from './scenes/phone.js';
 
@@ -49,11 +50,14 @@ function inspect(id, object, button) {
     button.setAttribute('aria-pressed', on);
     button.dataset.verb = verbFor(object, on);
   } else if (object.opens) {
-    overlay.open(VIEWS[object.opens](), button);
+    overlay.open(VIEWS[object.opens](), button, { pickUp: true });
   } else {
-    showToast(object.text);
+    overlay.open(createCloseUp(button, object.text), button, { pickUp: object.pickUp });
   }
-  if (object.clue && addClue(state, object.clue)) notebook.render(state.clues);
+  if (object.clue && addClue(state, object.clue)) {
+    notebook.render(state.clues);
+    showToast('Noté dans le carnet.');
+  }
 }
 
 function tick() {

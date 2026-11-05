@@ -1,8 +1,9 @@
-// Shows one object in the foreground (the phone, later the laptop...).
-// Escape or a click on the backdrop puts it back down. While it is open, the
-// rest of the desk is inert, so Tab cannot reach the objects behind it.
+// Shows one object in the foreground: the phone, or any desk object up close.
+// Escape or a click on the backdrop puts it back. While it is open, the rest
+// of the desk is inert, so Tab cannot reach the objects behind it.
 
 export function createOverlay(overlayEl, contentEl) {
+  const hint = overlayEl.querySelector('.overlay-hint-action');
   let opener = null;
   const behind = () => [...overlayEl.parentElement.children].filter(el => el !== overlayEl);
 
@@ -24,10 +25,14 @@ export function createOverlay(overlayEl, contentEl) {
   return {
     isOpen: () => !overlayEl.hidden,
     close,
-    /** `from` is the desk object picked up: hidden while held, focused again after. */
-    open(view, from) {
+    /**
+     * `from` is the desk object it came from, focused again on close. With
+     * `pickUp`, that object leaves the desk while it is held.
+     */
+    open(view, from, { pickUp = false } = {}) {
       opener = from ?? null;
-      opener?.classList.add('picked-up');
+      if (pickUp) opener?.classList.add('picked-up');
+      hint.textContent = pickUp ? 'pour reposer' : 'pour revenir';
       contentEl.replaceChildren(view);
       behind().forEach(el => { el.inert = true; });
       overlayEl.hidden = false;
