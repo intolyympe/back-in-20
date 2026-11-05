@@ -1,5 +1,6 @@
 import {
-  createState, addClue, markDone, applyDeductions, leftoverTraces, hasCracked, ROUND_MINUTES,
+  createState, addClue, markDone, applyDeductions, leftoverTraces, hasCracked, openBulleResetLink,
+  ROUND_MINUTES,
 } from './state.js';
 import { createTimer, formatClock } from './timer.js';
 import { createNotebook } from './notebook.js';
@@ -69,7 +70,7 @@ const PHONE_NOTES = {
   unlocked: { id: 'phone-unlocked', text: 'Téléphone déverrouillé avec 1411.' },
   caught: { id: 'phone-caught', text: 'Le téléphone m’a pris en photo ! Et il a prévenu Camille par mail…' },
   erasePhoto: { id: 'erase-photo', task: true, text: 'Effacer ma photo : galerie, puis « Supprimés récemment ».' },
-  eraseAlert: { id: 'erase-alert', task: true, text: 'Effacer le mail d’alerte : sa boîte mail, puis la corbeille.' },
+  eraseAlert: { id: 'erase-alert', task: true, text: 'Effacer les mails d’alerte : sa boîte mail, puis la corbeille.' },
 };
 
 function onPhoneEvent(type, data) {
@@ -139,7 +140,7 @@ const MAIL_NOTES = {
 function checkAlertsErased() {
   if (leftoverTraces(state).alerts === 0 && markDone(state, PHONE_NOTES.eraseAlert.id)) {
     notebook.render(state.clues);
-    showToast('Mail d’alerte effacé pour de bon.');
+    showToast('Mails d’alerte effacés pour de bon.');
   }
 }
 
@@ -155,12 +156,40 @@ function onMailEvent(type, data) {
     note([data.email.clue]);
   } else if (type === 'trash-emptied') {
     checkAlertsErased();
+  } else if (type === 'reset-link') {
+    openBulleResetLink(state);
+  }
+}
+
+const BULLE_NOTES = {
+  resetSent: { id: 'bulle-reset-sent', text: 'Bulle : lien de réinitialisation envoyé… dans sa boîte mail.' },
+  taken: { id: 'bulle-taken', text: 'Compte Bulle repris avec un nouveau mot de passe. Elle ne pourra plus s’y connecter…' },
+};
+
+/** A new e-mail from Bulle is one more alert to erase. */
+function alertToErase() {
+  note([PHONE_NOTES.eraseAlert]);
+  if (markDone(state, PHONE_NOTES.eraseAlert.id, false)) notebook.render(state.clues);
+}
+
+function onBulleEvent(type, data) {
+  if (type === 'reset-sent') {
+    note([BULLE_NOTES.resetSent]);
+    alertToErase();
+  } else if (type === 'unlock') {
+    note([BULLE_NOTES.taken]);
+    alertToErase();
+    showChapterBanner(4, 'Le réseau social · terminé');
+  } else if (type === 'post-viewed' && data.post.clue) {
+    note([data.post.clue]);
+  } else if (type === 'chat-viewed' && data.chat.clue) {
+    note([data.chat.clue]);
   }
 }
 
 const VIEWS = {
-  phone: () => createPhoneView({ state, now: elapsed, storyTime, onEvent: onPhoneEvent, onMailEvent }),
-  pc: () => createPcView({ state, now: elapsed, storyTime, onEvent: onPcEvent, onMailEvent }),
+  phone: () => createPhoneView({ state, now: elapsed, storyTime, onEvent: onPhoneEvent, onMailEvent, onBulleEvent }),
+  pc: () => createPcView({ state, now: elapsed, storyTime, onEvent: onPcEvent, onMailEvent, onBulleEvent }),
   calendar: () => createCalendarView({
     onPage: month => { if (CALENDAR_CLUES[month]) note([CALENDAR_CLUES[month]]); },
   }),
@@ -207,6 +236,7 @@ function endSummary() {
   if (traces.alerts > 1) lines.push(`${traces.alerts} mails d’alerte l’attendent dans sa boîte.`);
   if (traces.missingEmails) lines.push('Elle remarque qu’il lui manque des mails.');
   if (traces.openPc) lines.push('Elle retrouve sa session ouverte sur son PC.');
+  if (traces.bullePasswordChanged) lines.push('Son mot de passe Bulle ne marche plus : elle s’en rendra compte.');
   if (!Object.values(traces).some(Boolean)) lines.push('Elle ne remarque rien.');
   lines.push(hasCracked(state, 'phone')
     ? 'Tu as déverrouillé son téléphone.'
@@ -217,6 +247,7 @@ function endSummary() {
       : 'Tu n’as pas trouvé le mot de passe de son PC.');
   }
   if (hasCracked(state, 'mail')) lines.push('Tu es entré dans sa messagerie.');
+  if (hasCracked(state, 'bulle')) lines.push('Tu as pris son compte Bulle.');
   return lines;
 }
 
