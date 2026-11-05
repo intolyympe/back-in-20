@@ -1,5 +1,5 @@
 // Shows one object in the foreground: the phone, or any desk object up close.
-// Escape or a click on the backdrop puts it back. While it is open, the rest
+// Space, Escape or a click on the backdrop puts it back. While it is open, the rest
 // of the desk is inert, so Tab cannot reach the objects behind it.
 
 export function createOverlay(overlayEl, contentEl) {

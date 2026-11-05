@@ -46,3 +46,14 @@
   color: var(--accent);
   font-weight: 700;
 }
+
+/* Something the player has to do, ticked off once done. */
+.notebook-list li.task {
+  color: #b2321c;
+}
+
+.notebook-list li.task.done {
+  color: var(--ink-soft);
+  text-decoration: line-through;
+  text-decoration-thickness: 2px;
+}

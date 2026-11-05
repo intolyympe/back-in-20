@@ -1,21 +1,27 @@
-// Draws the notebook from the game state. Clues are only ever added, so we
-// append the new ones instead of redrawing the whole list.
+// Draws the notebook from the game state. New entries are appended; entries
+// already there are only updated (a task gets crossed out once done).
 
 export function createNotebook(listEl, emptyEl) {
-  let shown = 0;
+  const items = new Map(); // clue id -> <li>
 
   return {
     render(clues) {
       emptyEl.hidden = clues.length > 0;
-      for (const clue of clues.slice(shown)) {
-        const item = document.createElement('li');
-        item.textContent = clue.text;
-        item.className = clue.deduction ? 'new deduction' : 'new';
-        item.addEventListener('animationend', () => item.classList.remove('new'), { once: true });
-        listEl.append(item);
-        item.scrollIntoView({ block: 'nearest' });
+      for (const clue of clues) {
+        let item = items.get(clue.id);
+        if (!item) {
+          item = document.createElement('li');
+          item.textContent = clue.text;
+          item.classList.add('new');
+          if (clue.deduction) item.classList.add('deduction');
+          if (clue.task) item.classList.add('task');
+          item.addEventListener('animationend', () => item.classList.remove('new'), { once: true });
+          items.set(clue.id, item);
+          listEl.append(item);
+          item.scrollIntoView({ block: 'nearest' });
+        }
+        item.classList.toggle('done', Boolean(clue.done));
       }
-      shown = clues.length;
     },
   };
 }

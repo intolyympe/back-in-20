@@ -84,3 +84,43 @@
 .screen-button:hover {
   filter: brightness(1.1);
 }
+
+#end-summary p {
+  margin: 4px 0;
+}
+
+/* "Chapitre 1 · Le téléphone · terminé", shown for a few seconds. */
+.chapter-banner {
+  position: absolute;
+  left: 40px; /* left of a phone held in the foreground */
+  top: 360px;
+  z-index: 8;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 14px 40px 16px;
+  border-radius: 12px;
+  background: rgb(15 15 18 / 0.9);
+  color: #fff;
+  animation: banner-in 400ms ease-out;
+  pointer-events: none;
+}
+
+.chapter-banner[hidden] {
+  display: none;
+}
+
+.chapter-number {
+  color: #fff59a;
+  font-family: var(--font-hand);
+  font-size: 28px;
+}
+
+.chapter-title {
+  font-size: 26px;
+  font-weight: 700;
+}
+
+@keyframes banner-in {
+  from { opacity: 0; translate: 0 -12px; }
+}
