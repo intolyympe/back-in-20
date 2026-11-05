@@ -10,7 +10,7 @@ export function createNotebook(listEl, emptyEl) {
       for (const clue of clues.slice(shown)) {
         const item = document.createElement('li');
         item.textContent = clue.text;
-        item.className = 'new';
+        item.className = clue.deduction ? 'new deduction' : 'new';
         item.addEventListener('animationend', () => item.classList.remove('new'), { once: true });
         listEl.append(item);
         item.scrollIntoView({ block: 'nearest' });

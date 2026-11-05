@@ -40,3 +40,9 @@
   from { background: rgb(255 230 90 / 0.8); }
   to { background: transparent; }
 }
+
+/* A conclusion the player reached by putting clues together. */
+.notebook-list li.deduction {
+  color: var(--accent);
+  font-weight: 700;
+}
