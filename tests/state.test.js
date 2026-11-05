@@ -4,6 +4,7 @@ import {
   createState, addClue, markDone, applyDeductions, recordFailedAttempt, lockRemaining,
   unlock, relock, isUnlocked, hasCracked, takeIntruderPhoto, deletePhoto, emptyTrash, leftoverTraces,
   sendAlert, deleteEmail, emptyMailTrash, requestBulleReset, openBulleResetLink, changeBullePassword,
+  answerSecretQuestion, sendBankCode, verifyBankCode, deleteBankTexts,
   MAX_ATTEMPTS, LOCKOUT_MS,
 } from '../js/state.js';
 
@@ -106,7 +107,7 @@ test('an intruder photo lands first in the gallery and sends an alert', () => {
 test('a deleted photo waits in "Supprimés récemment" until it is emptied', () => {
   const state = createState({ photos: [{ id: 'rex' }] });
   const { id } = takeIntruderPhoto(state, 0);
-  const traces = { intruderPhotos: 1, alerts: 1, missingEmails: 0, openPc: false, bullePasswordChanged: false };
+  const traces = { intruderPhotos: 1, alerts: 1, missingEmails: 0, openPc: false, bullePasswordChanged: false, bankTexts: 0 };
   assert.deepEqual(leftoverTraces(state), traces);
 
   assert.equal(deletePhoto(state, id), true);
@@ -160,4 +161,26 @@ test('her Bulle account is taken over through her mailbox, and it shows', () => 
   const traces = leftoverTraces(state);
   assert.equal(traces.alerts, 2);
   assert.equal(traces.bullePasswordChanged, true);
+});
+
+test('her bank: the secret question, then the code texted to her phone', () => {
+  const state = createState();
+  assert.equal(sendBankCode(state, 0, '123456'), null, 'not before the question');
+  assert.equal(answerSecretQuestion(state, 'Lyon', 'Annecy'), false);
+  assert.equal(answerSecretQuestion(state, '  annecy ', 'Annecy'), true, 'case and spaces do not matter');
+  const text = sendBankCode(state, 1000, '482913');
+  assert.equal(text.code, '482913');
+  assert.equal(verifyBankCode(state, '000000', 2000), false);
+  assert.equal(isUnlocked(state, 'bank'), false);
+  assert.equal(verifyBankCode(state, '482913', 2000), true);
+  assert.equal(isUnlocked(state, 'bank'), true);
+  assert.deepEqual(state.inbox.map(e => e.alert), ['bank-login']);
+  assert.equal(leftoverTraces(state).bankTexts, 1);
+  deleteBankTexts(state);
+  assert.equal(leftoverTraces(state).bankTexts, 0);
+});
+
+test('accents do not matter in the secret answer', () => {
+  const state = createState();
+  assert.equal(answerSecretQuestion(state, 'ANNÉCY', 'Annecy'), true);
 });
