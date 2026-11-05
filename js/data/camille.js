@@ -95,23 +95,23 @@ export const BIRTHDAY_CARD = {
 export const PHONE = {
   pin: '1411',
   photos: [
-    { id: 'coffee', src: 'assets/photos/coffee.jpg', date: [2026, 7, 6], caption: 'Pause café avec Léa ☕' },
-    { id: 'rex-walk', src: 'assets/photos/rex-walk.jpg', date: [2026, 6, 27], caption: 'Balade du soir avec Rex 🌙' },
-    { id: 'salad', src: 'assets/photos/salad.jpg', date: [2026, 6, 21], caption: 'Mode healthy activé 🥗' },
+    { id: 'coffee', src: 'assets/photos/coffee.jpg', date: [2026, 7, 6], caption: 'Pause café avec Léa' },
+    { id: 'rex-walk', src: 'assets/photos/rex-walk.jpg', date: [2026, 6, 27], caption: 'Balade du soir avec Rex' },
+    { id: 'salad', src: 'assets/photos/salad.jpg', date: [2026, 6, 21], caption: 'Mode healthy activé' },
     {
       id: 'moka',
       src: 'assets/photos/moka.jpg',
       date: [2026, 5, 30],
-      caption: 'Moka en week-end à la maison 😻',
+      caption: 'Moka en week-end à la maison',
       clue: { id: 'moka-photo', text: 'Photo : « Moka en week-end à la maison », un chat (mai 2026).' },
     },
-    { id: 'norway-falls', src: 'assets/photos/norway-falls.jpg', date: [2025, 8, 18], caption: 'Cascade + arc-en-ciel 🌈' },
+    { id: 'norway-falls', src: 'assets/photos/norway-falls.jpg', date: [2025, 8, 18], caption: 'Cascade et arc-en-ciel' },
     { id: 'norway-canoe', src: 'assets/photos/norway-canoe.jpg', date: [2025, 8, 16], caption: 'Canoë au lever du soleil' },
     {
       id: 'fjord',
       src: 'assets/wallpapers/pc-fjord.jpg',
       date: [2025, 8, 14],
-      caption: 'Norvège ❤',
+      caption: 'Norvège, enfin !',
       clue: { id: 'norway-2025', text: 'Photos : voyage en Norvège, août 2025.' },
     },
     // Rex is 7 now: the puppy pictures all date from the week he arrived.
@@ -129,7 +129,7 @@ export const PHONE = {
   notes: [
     {
       id: 'cadeaux',
-      title: 'Cadeaux 🎁',
+      title: 'Cadeaux',
       date: '05/07/2026',
       lines: ['Julie : cagnotte + un petit mot', 'Papa : le livre sur le Tour de France', 'Léa (21/03) : raté cette année… l’an prochain !'],
     },
@@ -156,20 +156,20 @@ export const PHONE = {
   ],
   // Plans app: saved places, placed on a drawn map (x, y in %).
   places: [
-    { id: 'home', name: 'Domicile', detail: 'Croix-Rousse, Lyon', x: 36, y: 26, icon: '⌂' },
-    { id: 'park', name: 'Parc (balades de Rex)', detail: 'Presque tous les soirs', x: 66, y: 16, icon: '❀' },
-    { id: 'work', name: 'Bureau', detail: 'Part-Dieu, Lyon', x: 64, y: 54, icon: '▣' },
-    { id: 'vet', name: 'Clinique vétérinaire', detail: 'Dernière visite : 3 juillet', x: 26, y: 62, icon: '✚' },
-    { id: 'mum', name: 'Chez Maman', detail: 'Villeurbanne · le dimanche', x: 86, y: 40, icon: '♥' },
+    { id: 'home', name: 'Domicile', detail: 'Croix-Rousse, Lyon', x: 36, y: 26 },
+    { id: 'park', name: 'Parc (balades de Rex)', detail: 'Presque tous les soirs', x: 66, y: 16 },
+    { id: 'work', name: 'Bureau', detail: 'Part-Dieu, Lyon', x: 64, y: 54 },
+    { id: 'vet', name: 'Clinique vétérinaire', detail: 'Dernière visite : 3 juillet', x: 26, y: 62 },
+    { id: 'mum', name: 'Chez Maman', detail: 'Villeurbanne · le dimanche', x: 86, y: 40 },
   ],
   // Musique app.
   music: {
     playing: { title: 'Lumière du Nord', artist: 'Les Aurores' },
     playlists: [
-      { name: 'Balade avec Rex 🐶', count: 42 },
+      { name: 'Balade avec Rex', count: 42 },
       { name: 'Road trip Norvège', count: 67 },
       { name: 'Concentration bureau', count: 120 },
-      { name: 'Mariage Julie 💃', count: 18 },
+      { name: 'Mariage Julie', count: 18 },
     ],
   },
   // Messages app, most recent first. `me: true` is Camille writing, `day`
@@ -181,14 +181,14 @@ export const PHONE = {
       time: '13:40',
       messages: [
         { day: 'Lundi' },
-        { text: 'Resto le 24, toujours ok ? 🍝' },
+        { text: 'Resto le 24, toujours ok ?' },
         { text: 'Oui ! 20h comme d’hab', me: true },
-        { text: 'Et tu ramènes enfin les photos de Norvège 😍' },
-        { text: 'Promis 🙈', me: true },
+        { text: 'Et tu ramènes enfin les photos de Norvège !!' },
+        { text: 'Promis, promis', me: true },
         { day: 'Aujourd’hui' },
-        { text: 'Tu pourrais reprendre Moka samedi ? Je pars chez mes parents 🙏' },
-        { text: 'Bien sûr ! Rex va être ravi 🙄', me: true },
-        { text: 'Ils s’adorent, arrête 😂' },
+        { text: 'Tu pourrais reprendre Moka samedi ? Je pars chez mes parents' },
+        { text: 'Bien sûr ! Rex va être ravi… (non)', me: true },
+        { text: 'Ils s’adorent, arrête haha' },
       ],
       clue: { id: 'moka-lea', text: 'SMS de Léa : « Tu pourrais reprendre Moka samedi ? »' },
     },
@@ -198,13 +198,13 @@ export const PHONE = {
       time: '13:12',
       messages: [
         { day: 'Mardi' },
-        { text: 'Plan de table fini !! T’es à côté de Hugo 😏' },
+        { text: 'Plan de table fini !! T’es à côté de Hugo ;)' },
         { text: 'JULIE.', me: true },
-        { text: '😇' },
+        { text: 'Je ne regrette rien' },
         { day: 'Aujourd’hui' },
-        { text: 'J-9 avant le mariage !!! 💍' },
-        { text: 'Trop hâte 🥹 J’ai enfin trouvé la robe', me: true },
-        { text: 'Samedi 18, 15h à la mairie. Sois pas en retard 😘' },
+        { text: 'J-9 avant le mariage !!!' },
+        { text: 'Trop hâte ! J’ai enfin trouvé la robe', me: true },
+        { text: 'Samedi 18, 15h à la mairie. Sois pas en retard, bisous' },
       ],
     },
     {
@@ -212,9 +212,9 @@ export const PHONE = {
       name: 'Hugo (boulot)',
       time: '11:48',
       messages: [
-        { text: 'Hugo, il me manque toujours tes factures du T2 🙏', me: true },
+        { text: 'Hugo, il me manque toujours tes factures du T2 stp', me: true },
         { text: 'Oui oui, je te les envoie avant vendredi, promis' },
-        { text: 'Tu dis ça depuis lundi 🙃', me: true },
+        { text: 'Tu dis ça depuis lundi…', me: true },
       ],
     },
     {
@@ -235,8 +235,8 @@ export const PHONE = {
         { text: 'Tu passes dimanche avec Rex ?' },
         { text: 'Oui ! Vers midi', me: true },
         { text: 'Déjà 7 ans que tu as ce chien, le temps passe vite…' },
-        { text: 'Ne m’en parle pas 😭', me: true },
-        { text: 'Et mets de la crème, ils annoncent 33° 🙃' },
+        { text: 'Ne m’en parle pas…', me: true },
+        { text: 'Et mets de la crème, ils annoncent 33°' },
       ],
       clue: { id: 'rex-7-years', text: 'SMS de sa mère : « Tu passes dimanche avec Rex ? […] Déjà 7 ans que tu as ce chien ».' },
     },
@@ -246,11 +246,11 @@ export const PHONE = {
       time: 'Dim.',
       messages: [
         { day: '14 novembre 2025' },
-        { text: 'Joyeux anniversaire ma grande ! 🎂 Déjà 29 ans…' },
-        { text: 'Merci papa ❤', me: true },
+        { text: 'Joyeux anniversaire ma grande ! Déjà 29 ans…' },
+        { text: 'Merci papa, bisous', me: true },
         { day: 'Dimanche' },
         { text: 'Tu as vu le match ?' },
-        { text: 'Non 😅', me: true },
+        { text: 'Non, pas vu', me: true },
       ],
     },
   ],
@@ -260,7 +260,7 @@ export const PHONE = {
 // on real systems (one more mistake of hers).
 export const PC = {
   password: 'Rex2019!',
-  hint: 'mon bébé ❤',
+  hint: 'mon bébé',
   // Notes app, newest first. Opening a note with a `clue` writes it down.
   notes: [
     {
@@ -271,9 +271,9 @@ export const PC = {
     },
     {
       id: 'julie',
-      title: 'Mariage Julie 💍',
+      title: 'Mariage Julie',
       date: '01/07/2026',
-      lines: ['Samedi 18/07, 15h à la mairie', 'Cagnotte : 50 €', 'Robe ✓  Chaussures ✗', 'Discours : Léa s’en charge 🙏'],
+      lines: ['Samedi 18/07, 15h à la mairie', 'Cagnotte : 50 €', 'Robe : trouvée. Chaussures : pas encore', 'Discours : Léa s’en charge'],
     },
     {
       id: 'bretagne',
@@ -283,7 +283,7 @@ export const PC = {
     },
     {
       id: 'codes',
-      title: 'Codes 🤫',
+      title: 'Codes (chut)',
       date: '12/05/2026',
       lines: ['Digicode immeuble : 4580B', 'Wifi maison : au dos de la box', 'Mail perso : même mdp que le PC (flemme…)', 'Banque : NE PAS NOTER ICI !!'],
       clue: { id: 'mail-same-as-pc', text: 'Note « Codes » sur le PC : « Mail perso : même mdp que le PC ».' },
@@ -321,7 +321,7 @@ export const MAIL = {
       time: 'Hier',
       body: [
         'Bonjour Camille,',
-        'Léa, Julie et 1 autre personne ont aimé votre photo « Balade du soir avec Rex 🌙 ».',
+        'Léa, Julie et 1 autre personne ont aimé votre photo « Balade du soir avec Rex ».',
         'Cet e-mail a été envoyé à l’adresse liée à votre compte Bulle @cam.et.rex.',
         'Mot de passe oublié ? Recevez un lien de réinitialisation à cette adresse.',
       ],
@@ -333,12 +333,12 @@ export const MAIL = {
     {
       id: 'julie-wedding',
       from: 'Julie',
-      subject: 'Infos mariage 💍',
+      subject: 'Infos mariage',
       time: 'Mar.',
       body: [
         'Coucou les filles !',
         'Rendez-vous samedi 18 à 15h à la mairie, puis vin d’honneur au domaine.',
-        'Dress code : couleurs d’été ☀',
+        'Dress code : couleurs d’été',
         'Bisous, J.',
       ],
     },
@@ -433,30 +433,30 @@ export const MAIL = {
 export const BULLE = {
   handle: '@cam.et.rex',
   name: 'Camille',
-  bio: 'Lyon · ☕ · 🐶 Rex · 🏔',
+  bio: 'Lyon · café · Rex · montagne',
   followers: 214,
   // Newest first. `src` is a photo, else the post is text only.
   posts: [
-    { id: 'post-walk', src: 'assets/photos/rex-walk.jpg', date: '8 juil.', text: 'Balade du soir avec Rex 🌙', likes: 3 },
-    { id: 'post-coffee', src: 'assets/photos/coffee.jpg', date: '6 juil.', text: 'Pause café avec Léa ☕', likes: 12 },
+    { id: 'post-walk', src: 'assets/photos/rex-walk.jpg', date: '8 juil.', text: 'Balade du soir avec Rex', likes: 3 },
+    { id: 'post-coffee', src: 'assets/photos/coffee.jpg', date: '6 juil.', text: 'Pause café avec Léa', likes: 12 },
     {
       id: 'post-birthday',
       date: '14 nov. 2025',
-      text: '29 ans aujourd’hui, fêtés dans la ville où tout a commencé 💛',
+      text: '29 ans aujourd’hui, fêtés dans la ville où tout a commencé',
       place: 'Annecy',
       likes: 31,
-      clue: { id: 'born-annecy', text: 'Bulle, 14/11/2025 : « 29 ans, fêtés dans la ville où tout a commencé », 📍 Annecy.' },
+      clue: { id: 'born-annecy', text: 'Bulle, 14/11/2025 : « 29 ans, fêtés dans la ville où tout a commencé », à Annecy.' },
     },
-    { id: 'post-norway', src: 'assets/photos/norway-falls.jpg', date: '20 août 2025', text: 'Norvège, on y retourne quand ? 🌈', likes: 27 },
-    { id: 'post-rex', src: 'assets/photos/rex-arrival.jpg', date: '12 mars 2019', text: 'Bienvenue à la maison, Rex ! 🐶', likes: 58 },
+    { id: 'post-norway', src: 'assets/photos/norway-falls.jpg', date: '20 août 2025', text: 'Norvège, on y retourne quand ?', likes: 27 },
+    { id: 'post-rex', src: 'assets/photos/rex-arrival.jpg', date: '12 mars 2019', text: 'Bienvenue à la maison, Rex !', likes: 58 },
   ],
   // Private messages on Bulle.
   chat: {
     name: 'Léa',
     messages: [
       { text: 'Alors, t’as pu payer le ferry ?' },
-      { text: 'Oui ! J’avais encore oublié mon code Nébula 🙈', me: true },
-      { text: 'Encore ?? 😂' },
+      { text: 'Oui ! J’avais encore oublié mon code Nébula', me: true },
+      { text: 'Encore ?? haha' },
       { text: 'Heureusement il y a la question secrète : la ville où je suis née. Trop facile', me: true },
     ],
     clue: { id: 'bank-question', text: 'Bulle, à Léa : code de banque oublié → « la question secrète : la ville où je suis née ».' },
