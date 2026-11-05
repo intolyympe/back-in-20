@@ -171,6 +171,25 @@ document.addEventListener('visibilitychange', () => {
   else timer.start();
 });
 
+// Space puts the object back (Escape too), unless the player is typing in a
+// field. The key is swallowed so it does not also press the button that gets
+// the focus back on the desk.
+let swallowSpaceUp = false;
+document.addEventListener('keydown', event => {
+  const typing = event.target.closest?.('input, textarea, [contenteditable]');
+  if (event.key === ' ' && overlay.isOpen() && !typing) {
+    event.preventDefault();
+    swallowSpaceUp = true;
+    overlay.close();
+  }
+}, { capture: true });
+document.addEventListener('keyup', event => {
+  if (event.key === ' ' && swallowSpaceUp) {
+    event.preventDefault();
+    swallowSpaceUp = false;
+  }
+}, { capture: true });
+
 document.addEventListener('keydown', event => {
   if (event.key === 'Escape') overlay.close();
 });
