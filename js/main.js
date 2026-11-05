@@ -2,9 +2,10 @@ import { createState, addClue, ROUND_MINUTES } from './state.js';
 import { createTimer, formatClock } from './timer.js';
 import { createNotebook } from './notebook.js';
 import { createOverlay } from './overlay.js';
-import { createCloseUp } from './closeup.js';
+import { createCloseUp, withThought } from './closeup.js';
 import { setupDesk, verbFor } from './scenes/desk.js';
 import { createPhoneView } from './scenes/phone.js';
+import { createCalendarView } from './scenes/calendar.js';
 
 const STAGE_W = 1600;
 const STAGE_H = 900;
@@ -41,6 +42,7 @@ function showToast(text) {
 
 const VIEWS = {
   phone: createPhoneView,
+  calendar: createCalendarView,
 };
 
 function inspect(id, object, button) {
@@ -49,10 +51,9 @@ function inspect(id, object, button) {
     const on = button.closest('.desk').classList.toggle(object.toggle);
     button.setAttribute('aria-pressed', on);
     button.dataset.verb = verbFor(object, on);
-  } else if (object.opens) {
-    overlay.open(VIEWS[object.opens](), button, { pickUp: true });
   } else {
-    overlay.open(createCloseUp(button, object.text), button, { pickUp: object.pickUp });
+    const view = object.opens ? VIEWS[object.opens]() : createCloseUp(button);
+    overlay.open(withThought(view, object.text), button, { pickUp: object.pickUp });
   }
   if (object.clue && addClue(state, object.clue)) {
     notebook.render(state.clues);

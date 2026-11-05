@@ -3,9 +3,11 @@
 //   text    what the player thinks when looking at it
 //   clue    added to the notebook, if any
 //   pickUp  the object leaves the desk while seen up close
-//   opens   a dedicated view (the phone) instead of the close-up
+//   opens   a dedicated view instead of the zoomed copy (phone, calendar...)
 //   toggle  a class switched on the desk (the lamp), with [off, on] verbs
-// Chapter content (the circled date, the phone lock screen...) comes later.
+// What is written on Camille's things lives in js/data/camille.js.
+
+import { fillDeskCalendar } from './calendar.js';
 
 export const DESK_OBJECTS = {
   postit: {
@@ -16,7 +18,9 @@ export const DESK_OBJECTS = {
   },
   calendar: {
     verb: 'Regarder',
-    text: 'Le calendrier de Camille, ouvert sur novembre.',
+    pickUp: true,
+    opens: 'calendar',
+    text: 'Les jours passés sont barrés. Le 14 est entouré en rouge.',
   },
   window: {
     verb: 'Regarder',
@@ -54,8 +58,8 @@ export const DESK_OBJECTS = {
   },
   phone: {
     verb: 'Prendre',
-    text: 'Le téléphone de Camille. Elle l’a oublié sur le bureau.',
-    opens: 'phone',
+    pickUp: true,
+    opens: 'phone', // no thought: the phone needs the whole height
   },
 };
 
@@ -69,6 +73,7 @@ export function verbFor(object, on = false) {
  * and gives it its hover verb.
  */
 export function setupDesk(root, onInspect) {
+  fillDeskCalendar(root.querySelector('[data-hotspot=calendar]'));
   for (const button of root.querySelectorAll('[data-hotspot]')) {
     const id = button.dataset.hotspot;
     const object = DESK_OBJECTS[id];
