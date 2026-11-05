@@ -6,9 +6,10 @@
 // The view only draws and reacts; the game state (attempts, lockout, photos)
 // lives in js/state.js, and main.js turns events into notebook entries.
 
-import { PHONE } from '../data/camille.js';
+import { PHONE, MAIL } from '../data/camille.js';
 import { createMailbox } from './mailbox.js';
 import { MORE_APPS, moreAppScreens } from './phone-apps.js';
+import { createBulle } from './bulle.js';
 import {
   recordFailedAttempt, lockRemaining, unlock, isUnlocked,
   takeIntruderPhoto, deletePhoto, emptyTrash, leftoverTraces,
@@ -99,8 +100,12 @@ const GRID = [
  *   'note-viewed' {note}, 'photo-deleted', 'trash-emptied'
  * @param {(type: string, data?: object) => void} options.onMailEvent
  *   events of the Mail app (see mailbox.js)
+ * @param {(type: string, data?: object) => void} options.onBulleEvent
+ *   events of the Bulle app (see bulle.js)
  */
-export function createPhoneView({ state, now, storyTime, onEvent = () => {}, onMailEvent = () => {} }) {
+export function createPhoneView({
+  state, now, storyTime, onEvent = () => {}, onMailEvent = () => {}, onBulleEvent = () => {},
+}) {
   const handset = el('div', 'handset');
   const screen = el('div', 'handset-screen');
   handset.append(screen);
@@ -191,13 +196,12 @@ export function createPhoneView({ state, now, storyTime, onEvent = () => {}, onM
 
   function homeScreen() {
     const parts = [statusBar()];
-    // Mail notification while an alert e-mail sits in her inbox.
-    if (state.inbox.some(email => email.alert)) {
+    // Mail notification while an alert e-mail sits in her inbox: the latest.
+    const alert = state.inbox.find(email => email.alert);
+    if (alert) {
+      const { from, subject } = MAIL.alerts[alert.alert];
       const mail = el('div', 'phone-notification');
-      mail.append(
-        el('strong', '', 'Mail · Alerte de sécurité'),
-        el('span', '', 'Quelqu’un a tenté de déverrouiller votre téléphone. Photo jointe.'),
-      );
+      mail.append(el('strong', '', `Mail · ${from}`), el('span', '', subject));
       parts.push(mail);
     }
     const appButton = app => {
@@ -258,7 +262,16 @@ export function createPhoneView({ state, now, storyTime, onEvent = () => {}, onM
   }
 
   function mailScreen() {
-    return [header('Mail', 'home'), createMailbox({ state, now, storyTime, variant: 'phone', onEvent: onMailEvent })];
+    // The reset link in Bulle's e-mail opens the Bulle app.
+    const onMail = (type, data) => {
+      onMailEvent(type, data);
+      if (type === 'reset-link') go('bulle');
+    };
+    return [header('Mail', 'home'), createMailbox({ state, now, storyTime, variant: 'phone', onEvent: onMail })];
+  }
+
+  function bulleScreen() {
+    return [header('Bulle', 'home'), createBulle({ state, now, variant: 'phone', onEvent: onBulleEvent })];
   }
 
   function cameraScreen() {
@@ -405,6 +418,7 @@ export function createPhoneView({ state, now, storyTime, onEvent = () => {}, onM
     messages: messagesScreen, thread: threadScreen, mail: mailScreen,
     camera: cameraScreen, weather: weatherScreen, settings: settingsScreen, setting: settingScreen,
     ...moreAppScreens({ go, header, think, thoughtLine: notNowLine, onEvent }),
+    bulle: bulleScreen,
   };
 
   function render() {
