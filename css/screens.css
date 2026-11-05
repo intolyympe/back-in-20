@@ -322,3 +322,12 @@
     animation: none;
   }
 }
+
+.debrief-actions {
+  display: flex;
+  gap: 16px;
+}
+
+.screen-button.secondary {
+  background: rgb(255 255 255 / 0.14);
+}

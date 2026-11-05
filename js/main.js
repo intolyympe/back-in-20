@@ -16,6 +16,7 @@ import { STORY_START, DEDUCTIONS, PHONE, PC, MAIL, BANK } from './data/camille.j
 import { renderDebrief } from './debrief.js';
 import { rankFor } from './rank.js';
 import { ding } from './sound.js';
+import { createDefence } from './scenes/defend.js';
 
 const STAGE_W = 1600;
 const STAGE_H = 900;
@@ -299,7 +300,7 @@ function endGame() {
   const traces = leftoverTraces(state);
   renderDebrief(state, { traces, caught, rank: rankFor(traces, caught) });
   $('end-screen').hidden = false;
-  $('restart-button').focus();
+  $('defend-button').focus();
 }
 
 // The clock stops while the tab is hidden, so leaving the game is not a penalty.
@@ -339,4 +340,9 @@ clock.textContent = formatClock(roundMs);
 setupDesk(stage, inspect);
 $('start-button').addEventListener('click', startGame);
 $('restart-button').addEventListener('click', () => location.reload());
+$('defend-button').addEventListener('click', () => {
+  $('end-screen').hidden = true;
+  $('defend-screen').hidden = false;
+  createDefence($('defend-screen'));
+});
 $('start-button').focus();

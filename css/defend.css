@@ -1,0 +1,217 @@
+/* "Défendre Camille": her doors on the left, the ghost on the right. */
+
+.defend {
+  justify-content: flex-start;
+  gap: 10px;
+  padding: 30px 50px 24px;
+  background: rgb(14 14 18 / 0.98);
+}
+
+#defend-screen .screen-title {
+  font-size: 50px;
+}
+
+.defend-intro {
+  margin: 0 0 6px;
+  font-family: var(--font-hand);
+  font-size: 30px;
+  color: #fff59a;
+}
+
+.defend-body {
+  display: grid;
+  grid-template-columns: 1fr 440px;
+  gap: 30px;
+  width: 100%;
+  min-height: 0;
+  text-align: left;
+}
+
+.defend-doors {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+  align-content: start;
+}
+
+.defend-card {
+  padding: 12px 16px 14px;
+  border-radius: 12px;
+  background: rgb(255 255 255 / 0.07);
+}
+
+/* The bank card has two questions: give it the whole row. */
+.defend-card:last-child {
+  grid-column: 1 / -1;
+}
+
+.defend-door {
+  margin: 0 0 6px;
+  font-size: 17px;
+}
+
+.defend-question {
+  margin: 6px 0 6px;
+  color: #bbb;
+  font-size: 14px;
+}
+
+.defend-row {
+  display: flex;
+  gap: 8px;
+}
+
+.defend-field {
+  flex: 1;
+  min-width: 0;
+  padding: 9px 12px;
+  border: 1px solid #3a3d46;
+  border-radius: 8px;
+  background: #0f1116;
+  color: #fff;
+  font: inherit;
+  font-size: 16px;
+}
+
+.defend-field:focus {
+  outline: 2px solid #fff59a;
+  outline-offset: 1px;
+}
+
+.defend-random,
+.defend-choice,
+.defend-restart {
+  padding: 8px 12px;
+  border: 1px solid #4a4f5b;
+  border-radius: 8px;
+  background: none;
+  color: #ddd;
+  font: inherit;
+  font-size: 14px;
+  cursor: pointer;
+}
+
+.defend-random:hover,
+.defend-choice:hover,
+.defend-restart:hover {
+  border-color: #fff59a;
+}
+
+.defend-verdict {
+  min-height: 36px;
+  margin: 6px 0 0;
+  color: #ffb3a5;
+  font-size: 13px;
+  line-height: 1.35;
+}
+
+.defend-verdict.ok {
+  color: #a9ecb8;
+}
+
+.defend-choices {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.defend-choice[aria-checked="true"] {
+  border-color: #fff59a;
+  background: rgb(255 245 154 / 0.14);
+  color: #fff;
+}
+
+/* ---- The ghost ---- */
+
+.ghost {
+  padding: 4px 0 0;
+}
+
+.ghost-intro {
+  margin: 0 0 12px;
+  color: #bbb;
+  font-size: 15px;
+}
+
+.ghost-launch {
+  padding: 12px 30px;
+  font-size: 20px;
+}
+
+.ghost-launch:disabled {
+  opacity: 0.5;
+  cursor: default;
+}
+
+.ghost-log {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin: 16px 0 10px;
+  padding: 0;
+  list-style: none;
+}
+
+.ghost-step {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  padding: 8px 12px;
+  border-left: 4px solid #4a4f5b;
+  border-radius: 6px;
+  background: rgb(255 255 255 / 0.05);
+  font-size: 13px;
+  color: #ccc;
+}
+
+.ghost-step strong {
+  color: #fff;
+  font-size: 14px;
+}
+
+.ghost-try {
+  font-style: italic;
+}
+
+.ghost-step.open {
+  border-left-color: #d9482b;
+  animation: ghost-in 300ms ease-out;
+}
+
+.ghost-step.open strong::after {
+  content: " · ouverte";
+  color: #ff9a85;
+}
+
+.ghost-step.held {
+  border-left-color: #57c27a;
+  background: rgb(87 194 122 / 0.12);
+  animation: ghost-in 300ms ease-out;
+}
+
+.ghost-step.held strong::after {
+  content: " · tient bon";
+  color: #a9ecb8;
+}
+
+.ghost-step.unreached {
+  opacity: 0.4;
+}
+
+@keyframes ghost-in {
+  from { opacity: 0; translate: -8px 0; }
+}
+
+.ghost-verdict {
+  margin: 0;
+  font-size: 17px;
+  color: #ffb3a5;
+}
+
+.ghost-verdict.good {
+  color: #a9ecb8;
+}
+
+.defend-restart {
+  margin-top: 4px;
+}
