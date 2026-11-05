@@ -1,6 +1,6 @@
 // More apps on Camille's phone: Notes, Plans, Musique, Calendrier, and the
-// accounts of the chapters to come (Bulle, Nébula, Coffre), shown locked for
-// now. Each app can be looked at; anything that would leave a trace is
+// accounts of the chapters to come (Nébula, Coffre), shown locked for now.
+// Bulle has its own module (bulle.js). Each app can be looked at; anything that would leave a trace is
 // refused with a thought.
 
 import { PHONE, CALENDAR } from '../data/camille.js';
@@ -20,8 +20,6 @@ const THOUGHTS = {
   trace: 'Surtout pas : elle le verrait.',
   search: 'Surtout pas : la recherche resterait dans son historique.',
   play: 'Surtout pas : la musique partirait à fond dans le bureau !',
-  bulle: 'Pas le bon mot de passe… La suite au chapitre 4 (bientôt).',
-  bulleReset: 'Le lien arriverait dans sa boîte mail… La suite au chapitre 4 (bientôt).',
   bank: 'Sa banque… La suite au chapitre 5 (bientôt).',
   vault: 'Une phrase de passe ET une clé physique… Celui-là va résister.',
 };
@@ -144,18 +142,6 @@ export function moreAppScreens({ go, header, think, thoughtLine, onEvent }) {
     return form;
   }
 
-  function bulle() {
-    return [
-      header('', 'home'),
-      login({
-        title: 'Bulle', logo: '◍', color: '#ff7a59', account: 'Compte : @cam.et.rex',
-        fieldLabel: 'Mot de passe', link: 'Mot de passe oublié ?',
-        onTry: think(THOUGHTS.bulle), onLink: think(THOUGHTS.bulleReset),
-      }),
-      thoughtLine(),
-    ];
-  }
-
   function bank() {
     return [
       header('', 'home'),
@@ -178,5 +164,5 @@ export function moreAppScreens({ go, header, think, thoughtLine, onEvent }) {
     ];
   }
 
-  return { notes, note, maps, music, calendar, bulle, bank, vault };
+  return { notes, note, maps, music, calendar, bank, vault };
 }

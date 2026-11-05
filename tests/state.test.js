@@ -3,7 +3,7 @@ import assert from 'node:assert/strict';
 import {
   createState, addClue, markDone, applyDeductions, recordFailedAttempt, lockRemaining,
   unlock, relock, isUnlocked, hasCracked, takeIntruderPhoto, deletePhoto, emptyTrash, leftoverTraces,
-  sendAlert, deleteEmail, emptyMailTrash,
+  sendAlert, deleteEmail, emptyMailTrash, requestBulleReset, openBulleResetLink, changeBullePassword,
   MAX_ATTEMPTS, LOCKOUT_MS,
 } from '../js/state.js';
 
@@ -106,7 +106,7 @@ test('an intruder photo lands first in the gallery and sends an alert', () => {
 test('a deleted photo waits in "Supprimés récemment" until it is emptied', () => {
   const state = createState({ photos: [{ id: 'rex' }] });
   const { id } = takeIntruderPhoto(state, 0);
-  const traces = { intruderPhotos: 1, alerts: 1, missingEmails: 0, openPc: false };
+  const traces = { intruderPhotos: 1, alerts: 1, missingEmails: 0, openPc: false, bullePasswordChanged: false };
   assert.deepEqual(leftoverTraces(state), traces);
 
   assert.equal(deletePhoto(state, id), true);
@@ -146,4 +146,18 @@ test('the photos the phone starts with are not shared between games', () => {
   const state = createState({ photos });
   deletePhoto(state, 'rex');
   assert.deepEqual(photos.map(p => p.id), ['rex']);
+});
+
+test('her Bulle account is taken over through her mailbox, and it shows', () => {
+  const state = createState();
+  assert.equal(changeBullePassword(state, 0), false, 'not without the reset link');
+  requestBulleReset(state, 1000);
+  assert.deepEqual(state.inbox.map(e => e.alert), ['bulle-reset']);
+  openBulleResetLink(state);
+  assert.equal(changeBullePassword(state, 2000), true);
+  assert.equal(isUnlocked(state, 'bulle'), true);
+  assert.deepEqual(state.inbox.map(e => e.alert), ['bulle-changed', 'bulle-reset']);
+  const traces = leftoverTraces(state);
+  assert.equal(traces.alerts, 2);
+  assert.equal(traces.bullePasswordChanged, true);
 });

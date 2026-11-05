@@ -6,6 +6,7 @@
 
 import { PC } from '../data/camille.js';
 import { createMailbox } from './mailbox.js';
+import { createBulle } from './bulle.js';
 import { recordFailedAttempt, lockRemaining, unlock, relock, isUnlocked } from '../state.js';
 import { el, button, hhmm, mss } from '../dom.js';
 
@@ -19,6 +20,7 @@ const THOUGHTS = {
 const APPS = [
   { id: 'notes', name: 'Notes', glyph: '✎', color: '#e0a830' },
   { id: 'mail', name: 'Mail', glyph: '✉', color: '#2b5fa8' },
+  { id: 'bulle', name: 'Bulle', glyph: '◍', color: '#ff7a59' },
   { id: 'files', name: 'Documents', glyph: '▤', color: '#4f7aa8' },
   { id: 'trash', name: 'Corbeille', glyph: '♲', color: '#6b7079' },
 ];
@@ -35,8 +37,12 @@ const loose = text => text.toLowerCase().replace(/[^a-z0-9]/g, '');
  *   'unlock', 'lock', 'note-viewed' {note}
  * @param {(type: string, data?: object) => void} options.onMailEvent
  *   events of the Mail window (see mailbox.js)
+ * @param {(type: string, data?: object) => void} options.onBulleEvent
+ *   events of the Bulle window (see bulle.js)
  */
-export function createPcView({ state, now, storyTime, onEvent = () => {}, onMailEvent = () => {} }) {
+export function createPcView({
+  state, now, storyTime, onEvent = () => {}, onMailEvent = () => {}, onBulleEvent = () => {},
+}) {
   const monitor = el('div', 'pc-monitor');
   const screen = el('div', 'pc-screen');
   monitor.append(screen);
@@ -150,7 +156,16 @@ export function createPcView({ state, now, storyTime, onEvent = () => {}, onMail
   }
 
   function mailWindow() {
-    return windowFrame('Mail', createMailbox({ state, now, storyTime, variant: 'pc', onEvent: onMailEvent }));
+    // The reset link in Bulle's e-mail opens Bulle in the browser.
+    const onMail = (type, data) => {
+      onMailEvent(type, data);
+      if (type === 'reset-link') openApp('bulle');
+    };
+    return windowFrame('Mail', createMailbox({ state, now, storyTime, variant: 'pc', onEvent: onMail }));
+  }
+
+  function bulleWindow() {
+    return windowFrame('Bulle', createBulle({ state, now, variant: 'pc', onEvent: onBulleEvent }));
   }
 
   function filesWindow() {
@@ -163,7 +178,7 @@ export function createPcView({ state, now, storyTime, onEvent = () => {}, onMail
     return windowFrame('Corbeille', el('p', 'pc-empty', 'La corbeille est vide.'));
   }
 
-  const WINDOWS = { notes: notesWindow, mail: mailWindow, files: filesWindow, trash: trashWindow };
+  const WINDOWS = { notes: notesWindow, mail: mailWindow, bulle: bulleWindow, files: filesWindow, trash: trashWindow };
 
   function desktopScreen() {
     const icons = el('div', 'pc-icons');

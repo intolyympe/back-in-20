@@ -28,6 +28,8 @@ export function createState({ photos = [], emails = [] } = {}) {
     mailTrash: [],       // the mailbox's "Corbeille"
     erasedEmails: [],    // her own e-mails gone for good (she may miss them)
     alertCount: 0,
+    // Her Bulle account, taken over through her mailbox.
+    bulle: { linkOpened: false, passwordChanged: false },
   };
 }
 
@@ -116,13 +118,37 @@ export function takeIntruderPhoto(state, now) {
 
 /**
  * A security e-mail lands in Camille's inbox: 'phone' (too many wrong PIN
- * codes) or 'login' (too many wrong mailbox passwords). Returns it.
+ * codes), 'login' (too many wrong mailbox passwords), 'bulle-reset' (a
+ * password reset link) or 'bulle-changed' (her Bulle password was changed).
+ * Returns it.
  */
 export function sendAlert(state, kind, now) {
   state.alertCount += 1;
   const email = { id: `alert-${state.alertCount}`, alert: kind, sentAt: now };
   state.inbox.unshift(email);
   return email;
+}
+
+/** "Mot de passe oublié ?" on Bulle: the reset link goes to her mailbox. */
+export function requestBulleReset(state, now) {
+  return sendAlert(state, 'bulle-reset', now);
+}
+
+/** The reset link was opened: Bulle now asks for a new password. */
+export function openBulleResetLink(state) {
+  state.bulle.linkOpened = true;
+}
+
+/**
+ * The player sets a new Bulle password and is logged in. Bulle tells Camille
+ * by e-mail, and her old password no longer works: she will notice.
+ */
+export function changeBullePassword(state, now) {
+  if (!state.bulle.linkOpened) return false;
+  state.bulle.passwordChanged = true;
+  unlock(state, 'bulle');
+  sendAlert(state, 'bulle-changed', now);
+  return true;
 }
 
 /** Moves an e-mail from the inbox to the mailbox's "Corbeille". */
@@ -160,5 +186,7 @@ export function leftoverTraces(state) {
     // Her own e-mails deleted: missing from her inbox.
     missingEmails: state.mailTrash.filter(e => !e.alert).length + state.erasedEmails.length,
     openPc: state.unlocked.has('pc'), // she would find her session open
+    // Her old Bulle password no longer works: nothing can hide that.
+    bullePasswordChanged: state.bulle.passwordChanged,
   };
 }

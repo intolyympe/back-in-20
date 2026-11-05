@@ -25,7 +25,7 @@ const THOUGHTS = {
  * @param {'phone'|'pc'} options.variant  where it is shown
  * @param {(type: string, data?: object) => void} options.onEvent
  *   'unlock', 'lockout', 'email-viewed' {email}, 'email-deleted' {email},
- *   'trash-emptied'
+ *   'trash-emptied', and the event of an e-mail's button ('reset-link')
  */
 export function createMailbox({ state, now, storyTime, variant, onEvent = () => {} }) {
   const root = el('div', `mailbox mailbox--${variant}`);
@@ -138,7 +138,7 @@ export function createMailbox({ state, now, storyTime, variant, onEvent = () => 
 
   function emailView() {
     const email = open;
-    const { from, subject, time, body } = content(email);
+    const { from, subject, time, body, action } = content(email);
     const bar = el('div', 'mail-bar');
     bar.append(button('mail-back', '‹ Boîte de réception', () => go('inbox')));
 
@@ -152,6 +152,7 @@ export function createMailbox({ state, now, storyTime, variant, onEvent = () => 
       page.insertBefore(img, page.lastChild);
     }
     if (email.scam) page.append(button('mail-scam-link', email.scam, () => think(THOUGHTS.scam)));
+    if (action) page.append(button('mail-action', action.label, () => onEvent(action.event, { email })));
 
     const actions = el('div', 'mail-actions');
     actions.append(
