@@ -1,22 +1,319 @@
-// Camille's phone in the foreground. For now only the lock screen; the PIN
-// pad comes with chapter 1.
+// Camille's phone, held in the foreground: lock screen, PIN pad, home screen,
+// photos and "Supprimés récemment". Fictional OS.
+//
+// The view only draws and reacts; the game state (attempts, lockout, photos)
+// lives in js/state.js, and main.js turns events into notebook entries.
+
+import { PHONE } from '../data/camille.js';
+import {
+  recordFailedAttempt, lockRemaining, unlock, isUnlocked,
+  takeIntruderPhoto, deletePhoto, emptyTrash,
+} from '../state.js';
 
 const DATE_FORMAT = new Intl.DateTimeFormat('fr-FR', { weekday: 'long', day: 'numeric', month: 'long' });
+const PHOTO_DATE = new Intl.DateTimeFormat('fr-FR', { day: 'numeric', month: 'long', year: 'numeric' });
+const INTRUDER_SRC = 'assets/photos/intruder.svg';
+const PIN_LENGTH = PHONE.pin.length;
 
-/** @param {Date} now the time shown on the lock screen (story time) */
-export function createPhoneView(now) {
-  const handset = document.createElement('div');
-  handset.className = 'handset';
-  handset.innerHTML = `
-    <div class="handset-screen">
-      <div class="lock-time"></div>
-      <div class="lock-date"></div>
-      <div class="lock-status">Verrouillé</div>
-    </div>`;
+const APPS = [
+  { id: 'photos', name: 'Photos', glyph: '✿', color: '#f2a65a' },
+  { id: 'messages', name: 'Messages', glyph: '…', color: '#4d8a52' },
+  { id: 'mail', name: 'Mail', glyph: '✉', color: '#2b5fa8' },
+  { id: 'camera', name: 'Caméra', glyph: '◉', color: '#555b66' },
+  { id: 'weather', name: 'Météo', glyph: '☀', color: '#e0a830' },
+  { id: 'settings', name: 'Réglages', glyph: '⚙', color: '#6b7079' },
+];
 
-  const hours = String(now.getHours()).padStart(2, '0');
-  const minutes = String(now.getMinutes()).padStart(2, '0');
-  handset.querySelector('.lock-time').textContent = `${hours}:${minutes}`;
-  handset.querySelector('.lock-date').textContent = DATE_FORMAT.format(now);
+function el(tag, className, text) {
+  const node = document.createElement(tag);
+  if (className) node.className = className;
+  if (text !== undefined) node.textContent = text;
+  return node;
+}
+
+function button(className, text, onClick) {
+  const b = el('button', className, text);
+  b.type = 'button';
+  b.addEventListener('click', onClick);
+  return b;
+}
+
+const hhmm = date => `${String(date.getHours()).padStart(2, '0')}:${String(date.getMinutes()).padStart(2, '0')}`;
+const mss = ms => {
+  const s = Math.ceil(ms / 1000);
+  return `${Math.floor(s / 60)}:${String(s % 60).padStart(2, '0')}`;
+};
+
+/**
+ * @param {object} options
+ * @param {object} options.state       game state
+ * @param {() => number} options.now   ms since the round started
+ * @param {(ms: number) => Date} options.storyTime  story clock at that time
+ * @param {(type: string, data?: object) => void} options.onEvent
+ *   'unlock', 'lockout', 'photo-viewed' {photo}, 'photo-deleted', 'trash-emptied'
+ */
+export function createPhoneView({ state, now, storyTime, onEvent = () => {} }) {
+  const handset = el('div', 'handset');
+  const screen = el('div', 'handset-screen');
+  handset.append(screen);
+
+  let view = isUnlocked(state, 'phone') ? 'home' : 'lock';
+  let entered = '';
+  let message = '';
+  let openPhoto = null;
+  let confirmEmpty = false;
+
+  const go = (next, extra = {}) => {
+    view = next;
+    if ('openPhoto' in extra) openPhoto = extra.openPhoto;
+    message = extra.message ?? '';
+    confirmEmpty = false;
+    render();
+  };
+
+  const photoSrc = photo => (photo.intruder ? INTRUDER_SRC : photo.src);
+  const photoDate = photo => (photo.intruder
+    ? `Aujourd’hui, ${hhmm(storyTime(photo.takenAt))}`
+    : PHOTO_DATE.format(new Date(photo.date[0], photo.date[1] - 1, photo.date[2])));
+
+  // ---- Screens ----
+
+  function statusBar() {
+    const bar = el('div', 'phone-status');
+    bar.append(el('span', 'phone-status-time', hhmm(storyTime(now()))), el('span', '', '●●● ▮'));
+    return bar;
+  }
+
+  function header(title, back) {
+    const bar = el('div', 'phone-header');
+    bar.append(button('phone-back', '‹', () => go(back)), el('span', 'phone-title', title));
+    return bar;
+  }
+
+  function alertNotification() {
+    const note = el('div', 'phone-notification');
+    note.append(
+      el('strong', '', 'Sécurité'),
+      el('span', '', 'Photo de l’intrus enregistrée. Alerte envoyée par e-mail à Camille.'),
+    );
+    return note;
+  }
+
+  function lockScreen() {
+    const time = storyTime(now());
+    const parts = [el('div', 'lock-time', hhmm(time)), el('div', 'lock-date', DATE_FORMAT.format(time))];
+    if (state.alerts.length) parts.push(alertNotification());
+
+    const bottom = el('div', 'lock-bottom');
+    const wait = lockRemaining(state, 'phone', now());
+    if (wait > 0) {
+      bottom.append(el('p', 'lock-blocked', `Téléphone bloqué · réessayez dans ${mss(wait)}`));
+    } else {
+      bottom.append(button('lock-open', 'Déverrouiller', () => go('pin')));
+    }
+    parts.push(bottom);
+    return parts;
+  }
+
+  function pinScreen() {
+    const dots = el('div', 'pin-dots');
+    for (let i = 0; i < PIN_LENGTH; i++) dots.append(el('span', i < entered.length ? 'filled' : ''));
+
+    const pad = el('div', 'pin-pad');
+    for (const key of ['1', '2', '3', '4', '5', '6', '7', '8', '9', '', '0', '⌫']) {
+      if (!key) { pad.append(el('span')); continue; }
+      const b = button(key === '⌫' ? 'pin-key erase' : 'pin-key', key, () => press(key));
+      if (key === '⌫') b.setAttribute('aria-label', 'Effacer');
+      pad.append(b);
+    }
+
+    return [
+      el('p', 'pin-title', 'Saisissez le code'),
+      dots,
+      el('p', 'pin-message', message),
+      pad,
+      button('pin-cancel', 'Annuler', () => { entered = ''; go('lock'); }),
+    ];
+  }
+
+  function homeScreen() {
+    const parts = [statusBar()];
+    if (state.alerts.length) {
+      const mail = el('div', 'phone-notification');
+      mail.append(
+        el('strong', '', 'Mail · Alerte de sécurité'),
+        el('span', '', 'Quelqu’un a tenté de déverrouiller votre téléphone. Photo jointe.'),
+      );
+      parts.push(mail);
+    }
+    const grid = el('div', 'app-grid');
+    for (const app of APPS) {
+      const b = button(`app ${app.id === 'photos' ? '' : 'inactive'}`, '', () => {
+        if (app.id === 'photos') go('photos');
+        else go('home', { message: 'Pas le temps pour ça…' });
+      });
+      const icon = el('span', 'app-icon', app.glyph);
+      icon.style.background = app.color;
+      b.append(icon, el('span', 'app-name', app.name));
+      grid.append(b);
+    }
+    parts.push(grid, el('p', 'home-message', message));
+    return parts;
+  }
+
+  function thumbnails(photos) {
+    const grid = el('div', 'photo-grid');
+    for (const photo of photos) {
+      const b = button(`photo-thumb ${photo.intruder ? 'intruder' : ''}`, '', () => {
+        go('photo', { openPhoto: photo });
+        onEvent('photo-viewed', { photo });
+      });
+      const img = el('img');
+      img.src = photoSrc(photo);
+      img.alt = photo.intruder ? 'Photo de l’intrus' : photo.caption;
+      b.append(img);
+      grid.append(b);
+    }
+    return grid;
+  }
+
+  function photosScreen() {
+    const albums = button('album-row', '', () => go('trash'));
+    albums.append(el('span', '', 'Supprimés récemment'), el('span', 'album-count', `${state.trash.length} ›`));
+    return [header('Photos', 'home'), thumbnails(state.photos), albums];
+  }
+
+  function photoScreen() {
+    const photo = openPhoto;
+    const frame = el('div', 'photo-full');
+    const img = el('img');
+    img.src = photoSrc(photo);
+    img.alt = '';
+    frame.append(img);
+    if (photo.intruder) frame.append(el('span', 'photo-stamp', `Tentative d’accès · ${hhmm(storyTime(photo.takenAt))}`));
+
+    const info = el('div', 'photo-info');
+    info.append(
+      el('p', 'photo-caption', photo.intruder ? 'Photo de sécurité' : photo.caption),
+      el('p', 'photo-date', photoDate(photo)),
+    );
+    const remove = button('photo-delete', 'Supprimer', () => {
+      deletePhoto(state, photo.id);
+      onEvent('photo-deleted', { photo });
+      go('photos');
+    });
+    return [header('', 'photos'), frame, info, remove];
+  }
+
+  function trashScreen() {
+    // In the trash, photos are only shown, not opened.
+    const grid = el('div', 'photo-grid');
+    const parts = [
+      header('Supprimés récemment', 'photos'),
+      el('p', 'trash-note', 'Ces photos seront supprimées définitivement dans 30 jours.'),
+      grid,
+    ];
+    for (const photo of state.trash) {
+      const img = el('img', 'trash-thumb');
+      img.src = photoSrc(photo);
+      img.alt = '';
+      grid.append(img);
+    }
+    if (!state.trash.length) grid.append(el('p', 'trash-empty', 'Aucune photo.'));
+
+    if (confirmEmpty) {
+      const ask = el('div', 'trash-confirm');
+      ask.append(
+        el('p', '', `Supprimer définitivement ${state.trash.length} photo${state.trash.length > 1 ? 's' : ''} ?`),
+        button('trash-cancel', 'Annuler', () => { confirmEmpty = false; render(); }),
+        button('trash-confirm-yes', 'Supprimer', () => {
+          emptyTrash(state);
+          onEvent('trash-emptied');
+          go('trash');
+        }),
+      );
+      parts.push(ask);
+    } else {
+      const empty = button('trash-empty-all', 'Tout supprimer', () => { confirmEmpty = true; render(); });
+      empty.disabled = !state.trash.length;
+      parts.push(empty);
+    }
+    return parts;
+  }
+
+  const SCREENS = {
+    lock: lockScreen, pin: pinScreen, home: homeScreen,
+    photos: photosScreen, photo: photoScreen, trash: trashScreen,
+  };
+
+  function render() {
+    screen.className = `handset-screen screen-${view}`;
+    screen.replaceChildren(...SCREENS[view]());
+    // Keep the keyboard working: focus the first control of the new screen.
+    screen.querySelector('button:not(:disabled)')?.focus();
+  }
+
+  // ---- PIN ----
+
+  function press(key) {
+    if (view !== 'pin') return;
+    if (key === '⌫') entered = entered.slice(0, -1);
+    else if (entered.length < PIN_LENGTH) entered += key;
+    message = '';
+    if (entered.length === PIN_LENGTH) return submit();
+    render();
+  }
+
+  function submit() {
+    const code = entered;
+    entered = '';
+    if (code === PHONE.pin) {
+      unlock(state, 'phone');
+      onEvent('unlock');
+      return go('home');
+    }
+    const result = recordFailedAttempt(state, 'phone', now());
+    handset.classList.remove('shake');
+    void handset.offsetWidth; // restart the animation
+    handset.classList.add('shake');
+    if (result.lockedOut) {
+      takeIntruderPhoto(state, now());
+      handset.classList.add('flash');
+      setTimeout(() => handset.classList.remove('flash'), 600);
+      onEvent('lockout');
+      return go('lock');
+    }
+    message = result.left <= 2
+      ? `Code incorrect · ${result.left} essai${result.left > 1 ? 's' : ''} avant blocage`
+      : 'Code incorrect';
+    render();
+  }
+
+  handset.addEventListener('keydown', event => {
+    const digit = /^[0-9]$/.test(event.key);
+    if (view === 'lock' && digit && lockRemaining(state, 'phone', now()) === 0) go('pin');
+    if (view !== 'pin') return;
+    if (digit) press(event.key);
+    else if (event.key === 'Backspace') press('⌫');
+    else return;
+    event.preventDefault();
+  });
+
+  // Clocks on screen (time, lockout countdown) keep running while it is held.
+  const ticker = setInterval(() => {
+    if (!handset.isConnected) return clearInterval(ticker);
+    if (view === 'lock') {
+      const blocked = screen.querySelector('.lock-blocked');
+      const wait = lockRemaining(state, 'phone', now());
+      if (blocked && wait === 0) return render();
+      if (blocked) blocked.textContent = `Téléphone bloqué · réessayez dans ${mss(wait)}`;
+      const time = screen.querySelector('.lock-time');
+      if (time) time.textContent = hhmm(storyTime(now()));
+    }
+    const status = screen.querySelector('.phone-status-time');
+    if (status) status.textContent = hhmm(storyTime(now()));
+  }, 250);
+
+  render();
   return handset;
 }

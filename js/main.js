@@ -1,4 +1,6 @@
-import { createState, addClue, applyDeductions, ROUND_MINUTES } from './state.js';
+import {
+  createState, addClue, markDone, applyDeductions, leftoverTraces, isUnlocked, ROUND_MINUTES,
+} from './state.js';
 import { createTimer, formatClock } from './timer.js';
 import { createNotebook } from './notebook.js';
 import { createOverlay } from './overlay.js';
@@ -8,7 +10,7 @@ import { createPhoneView } from './scenes/phone.js';
 import { createCalendarView, CALENDAR_CLUES } from './scenes/calendar.js';
 import { createNotepadView } from './scenes/notepad.js';
 import { createDrawerView } from './scenes/drawer.js';
-import { STORY_START, DEDUCTIONS } from './data/camille.js';
+import { STORY_START, DEDUCTIONS, PHONE } from './data/camille.js';
 
 const STAGE_W = 1600;
 const STAGE_H = 900;
@@ -24,7 +26,7 @@ const clock = $('clock');
 const seconds = Number(new URLSearchParams(location.search).get('seconds'));
 const roundMs = seconds > 0 ? seconds * 1000 : ROUND_MINUTES * 60_000;
 
-const state = createState();
+const state = createState({ photos: PHONE.photos });
 const timer = createTimer(roundMs);
 const notebook = createNotebook($('notebook-list'), $('notebook-empty'));
 const overlay = createOverlay($('overlay'), $('overlay-content'));
@@ -43,9 +45,46 @@ function showToast(text) {
   toastTimeout = setTimeout(() => toast.classList.remove('visible'), TOAST_MS);
 }
 
+/** Milliseconds since the round started (stops when the round is paused). */
+const elapsed = () => roundMs - timer.remaining();
+
 /** Time in the story: Camille left at STORY_START, the clock runs with the round. */
-function storyTime() {
-  return new Date(STORY_START.getTime() + roundMs - timer.remaining());
+function storyTime(ms = elapsed()) {
+  return new Date(STORY_START.getTime() + ms);
+}
+
+let bannerTimeout;
+function showChapterBanner(number, title) {
+  const banner = $('chapter-banner');
+  banner.querySelector('.chapter-number').textContent = `Chapitre ${number}`;
+  banner.querySelector('.chapter-title').textContent = title;
+  banner.hidden = false;
+  clearTimeout(bannerTimeout);
+  bannerTimeout = setTimeout(() => { banner.hidden = true; }, 4000);
+}
+
+// What the phone tells the notebook.
+const PHONE_NOTES = {
+  unlocked: { id: 'phone-unlocked', text: 'Téléphone déverrouillé avec 1411.' },
+  caught: { id: 'phone-caught', text: 'Le téléphone m’a pris en photo ! Et il a prévenu Camille par mail…' },
+  erasePhoto: { id: 'erase-photo', task: true, text: 'Effacer ma photo : galerie, puis « Supprimés récemment ».' },
+  eraseAlert: { id: 'erase-alert', task: true, text: 'Effacer le mail d’alerte dans sa boîte.' },
+};
+
+function onPhoneEvent(type, data) {
+  if (type === 'unlock') {
+    note([PHONE_NOTES.unlocked]);
+    showChapterBanner(1, 'Le téléphone · terminé');
+  } else if (type === 'lockout') {
+    note([PHONE_NOTES.caught, PHONE_NOTES.erasePhoto, PHONE_NOTES.eraseAlert]);
+  } else if (type === 'photo-viewed' && data.photo.clue) {
+    note([data.photo.clue]);
+  } else if (type === 'trash-emptied' && leftoverTraces(state).intruderPhotos === 0) {
+    if (markDone(state, PHONE_NOTES.erasePhoto.id)) {
+      notebook.render(state.clues);
+      showToast('Photo effacée pour de bon.');
+    }
+  }
 }
 
 /** Writes new clues in the notebook, then any conclusion they lead to. */
@@ -59,7 +98,7 @@ function note(clues) {
 }
 
 const VIEWS = {
-  phone: () => createPhoneView(storyTime()),
+  phone: () => createPhoneView({ state, now: elapsed, storyTime, onEvent: onPhoneEvent }),
   calendar: () => createCalendarView({
     onPage: month => { if (CALENDAR_CLUES[month]) note([CALENDAR_CLUES[month]]); },
   }),
@@ -97,10 +136,28 @@ function startGame(event) {
   if (event.detail === 0) stage.querySelector('[data-hotspot]').focus();
 }
 
+/** What Camille finds when she sits back down. */
+function endSummary() {
+  const traces = leftoverTraces(state);
+  const lines = [];
+  if (traces.intruderPhotos) lines.push('Elle trouve ta photo dans son téléphone.');
+  if (traces.alerts) lines.push('Un mail l’attend : « Tentative d’accès à votre téléphone ».');
+  if (!traces.intruderPhotos && !traces.alerts) lines.push('Elle ne remarque rien.');
+  lines.push(isUnlocked(state, 'phone')
+    ? 'Tu as déverrouillé son téléphone.'
+    : 'Tu n’as pas réussi à déverrouiller son téléphone.');
+  return lines;
+}
+
 function endGame() {
   playing = false;
   timer.pause();
   overlay.close();
+  $('end-summary').replaceChildren(...endSummary().map(line => {
+    const p = document.createElement('p');
+    p.textContent = line;
+    return p;
+  }));
   $('end-screen').hidden = false;
   $('restart-button').focus();
 }

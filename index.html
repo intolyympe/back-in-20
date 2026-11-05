@@ -84,6 +84,11 @@
       <ol class="notebook-list" id="notebook-list"></ol>
     </aside>
 
+    <div class="chapter-banner" id="chapter-banner" role="status" hidden>
+      <span class="chapter-number"></span>
+      <span class="chapter-title"></span>
+    </div>
+
     <section class="screen" id="start-screen" aria-labelledby="game-title">
       <h1 class="screen-title" id="game-title">Back in 20</h1>
       <p class="screen-subtitle">De retour dans 20 minutes</p>
@@ -93,7 +98,7 @@
 
     <section class="screen" id="end-screen" aria-labelledby="end-title" hidden>
       <h2 class="screen-title" id="end-title">Camille est de retour.</h2>
-      <p class="screen-text">Le temps est écoulé.</p>
+      <div class="screen-text" id="end-summary"></div>
       <button class="screen-button" id="restart-button">Rejouer</button>
     </section>
   </main>
