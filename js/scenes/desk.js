@@ -10,6 +10,9 @@ export const DESK_OBJECTS = {
   calendar: {
     text: 'Le calendrier de Camille, ouvert sur novembre.',
   },
+  window: {
+    text: 'Dehors, la ville. Personne dans la rue ne regarde par ici.',
+  },
   monitor: {
     text: 'L’ordinateur est verrouillé.',
   },
