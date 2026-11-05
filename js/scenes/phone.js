@@ -1,6 +1,7 @@
 // Camille's phone, held in the foreground: lock screen, PIN pad, home screen,
-// photos and "Supprimés récemment", plus the other apps, which can be looked
-// at but not used ("Pas le temps pour ça…"). Fictional OS.
+// photos and "Supprimés récemment", plus the other apps. Everything can be
+// looked at (and time gets lost doing it); anything that would leave a trace
+// Camille could notice is refused with a thought. Fictional OS.
 //
 // The view only draws and reacts; the game state (attempts, lockout, photos)
 // lives in js/state.js, and main.js turns events into notebook entries.
@@ -15,14 +16,61 @@ const DATE_FORMAT = new Intl.DateTimeFormat('fr-FR', { weekday: 'long', day: 'nu
 const PHOTO_DATE = new Intl.DateTimeFormat('fr-FR', { day: 'numeric', month: 'long', year: 'numeric' });
 const INTRUDER_SRC = 'assets/photos/intruder.svg';
 const PIN_LENGTH = PHONE.pin.length;
-const NOT_NOW = 'Pas le temps pour ça…';
 
+// What the player thinks when trying to do something that would show.
+const THOUGHTS = {
+  trace: 'Surtout pas : elle le verrait.',
+  reply: 'Surtout pas : elle verrait le message.',
+  photo: 'Surtout pas : la photo resterait dans sa galerie.',
+  scam: 'Payer 1,99 € par un lien inconnu ? C’est du hameçonnage.',
+  mail: 'Il me faudrait son mot de passe…',
+};
+
+const HOURLY = [['14h', '☀', 31], ['15h', '☀', 32], ['16h', '☀', 33], ['17h', '⛅', 32], ['18h', '⛅', 30]];
 const FORECAST = [
   ['Ven.', '☀', 32], ['Sam.', '⛅', 29], ['Dim.', '☁', 26], ['Lun.', '☀', 30], ['Mar.', '☀', 31],
 ];
+
+// Settings: each row opens a page. Rows of a `readOnly` page are only
+// information; the others would change something.
 const SETTINGS = [
-  ['Wi-Fi', 'Bureau-Invités'], ['Bluetooth', 'Activé'], ['Notifications', ''],
-  ['Code de verrouillage', '4 chiffres'], ['Batterie', '62 %'], ['Général', ''],
+  {
+    name: 'Wi-Fi',
+    value: 'Bureau-Invités',
+    rows: [['Wi-Fi', 'Activé'], ['Bureau-Invités', 'Connecté ✓'], ['Bureau-Pro', '🔒'], ['Imprimante-2e', '🔒']],
+  },
+  {
+    name: 'Bluetooth',
+    value: 'Activé',
+    rows: [['Bluetooth', 'Activé'], ['Écouteurs de Camille', 'Non connecté'], ['Voiture', 'Non connecté']],
+  },
+  {
+    name: 'Notifications',
+    value: '',
+    rows: [['Messages', 'Autorisées'], ['Mail', 'Autorisées'], ['Photos', 'Désactivées'], ['Météo', 'Autorisées']],
+  },
+  {
+    name: 'Code de verrouillage',
+    value: '4 chiffres',
+    rows: [
+      ['Modifier le code', ''],
+      ['Photo de l’intrus après 5 échecs', 'Activé'],
+      ['Alerte par e-mail', 'Activé'],
+      ['Effacer les données après 10 échecs', 'Désactivé'],
+    ],
+  },
+  {
+    name: 'Batterie',
+    value: '62 %',
+    readOnly: true,
+    rows: [['Photos', '31 %'], ['Messages', '22 %'], ['Mail', '18 %'], ['Météo', '4 %']],
+  },
+  {
+    name: 'Général',
+    value: '',
+    readOnly: true,
+    rows: [['Nom', 'Téléphone de Camille'], ['Système', 'PhoneOS 7.2'], ['Stockage', '41 Go sur 64 Go']],
+  },
 ];
 
 const APPS = [
@@ -73,12 +121,14 @@ export function createPhoneView({ state, now, storyTime, onEvent = () => {} }) {
   let message = '';
   let openPhoto = null;
   let openThread = null;
+  let openSetting = null;
   let confirmEmpty = false;
 
   const go = (next, extra = {}) => {
     view = next;
     if ('openPhoto' in extra) openPhoto = extra.openPhoto;
     if ('openThread' in extra) openThread = extra.openThread;
+    if ('openSetting' in extra) openSetting = extra.openSetting;
     message = extra.message ?? '';
     confirmEmpty = false;
     render();
@@ -173,13 +223,13 @@ export function createPhoneView({ state, now, storyTime, onEvent = () => {} }) {
 
   // ---- Apps that can only be looked at ----
 
-  // A line at the bottom of the screen for "Pas le temps pour ça…". It is
+  // A line at the bottom of the screen for the player's thought. It is
   // filled in place so the focus stays on the control that was pressed.
   const notNowLine = () => el('p', 'app-message', '');
-  function notNow() {
+  const think = text => () => {
     const line = screen.querySelector('.app-message');
     if (!line) return;
-    line.textContent = NOT_NOW;
+    line.textContent = text;
     line.classList.remove('show');
     void line.offsetWidth; // restart the animation
     line.classList.add('show');
@@ -192,7 +242,7 @@ export function createPhoneView({ state, now, storyTime, onEvent = () => {} }) {
         go('thread', { openThread: thread });
         onEvent('thread-viewed', { thread });
       });
-      const last = thread.messages.at(-1);
+      const last = thread.messages.filter(m => m.text).at(-1);
       const text = el('span', 'thread-text');
       text.append(el('strong', '', thread.name), el('span', 'thread-last', last.text));
       b.append(el('span', 'thread-avatar', thread.name[0]), text, el('span', 'thread-time', thread.time));
@@ -204,8 +254,12 @@ export function createPhoneView({ state, now, storyTime, onEvent = () => {} }) {
   function threadScreen() {
     const thread = openThread;
     const bubbles = el('div', 'bubbles');
-    for (const m of thread.messages) bubbles.append(el('p', m.me ? 'bubble me' : 'bubble', m.text));
-    const reply = button('reply-field', 'Message', notNow);
+    for (const m of thread.messages) {
+      if (m.day) bubbles.append(el('p', 'bubble-day', m.day));
+      else if (m.scam) bubbles.append(button('bubble link', m.text, think(THOUGHTS.scam)));
+      else bubbles.append(el('p', m.me ? 'bubble me' : 'bubble', m.text));
+    }
+    const reply = button('reply-field', 'Message', think(THOUGHTS.reply));
     return [header(thread.name, 'messages'), bubbles, notNowLine(), reply];
   }
 
@@ -215,8 +269,8 @@ export function createPhoneView({ state, now, storyTime, onEvent = () => {} }) {
       el('span', 'mail-logo', '✉'),
       el('p', 'mail-title', 'Session expirée'),
       el('p', 'mail-text', 'Saisissez le mot de passe du compte de Camille pour voir vos e-mails.'),
-      button('mail-field', 'Mot de passe', notNow),
-      button('mail-login-button', 'Se connecter', notNow),
+      button('mail-field', 'Mot de passe', think(THOUGHTS.mail)),
+      button('mail-login-button', 'Se connecter', think(THOUGHTS.mail)),
     );
     return [header('Mail', 'home'), box, notNowLine()];
   }
@@ -228,37 +282,55 @@ export function createPhoneView({ state, now, storyTime, onEvent = () => {} }) {
     img.src = INTRUDER_SRC;
     img.alt = 'Vous, dans l’objectif de la caméra avant';
     finder.append(img);
-    const shutter = button('camera-shutter', '', notNow);
+    const shutter = button('camera-shutter', '', think(THOUGHTS.photo));
     shutter.setAttribute('aria-label', 'Prendre une photo');
     return [header('', 'home'), finder, notNowLine(), shutter];
   }
 
-  function weatherScreen() {
-    const days = el('div', 'forecast');
-    for (const [day, glyph, temp] of FORECAST) {
+  function forecastRow(entries) {
+    const row = el('div', 'forecast');
+    for (const [label, glyph, temp] of entries) {
       const cell = el('div', 'forecast-day');
-      cell.append(el('span', '', day), el('span', 'forecast-glyph', glyph), el('span', '', `${temp}°`));
-      days.append(cell);
+      cell.append(el('span', '', label), el('span', 'forecast-glyph', glyph), el('span', '', `${temp}°`));
+      row.append(cell);
     }
+    return row;
+  }
+
+  function weatherScreen() {
     return [
       header('', 'home'),
       el('p', 'weather-city', 'Lyon'),
       el('p', 'weather-temp', '31°'),
       el('p', 'weather-sky', 'Ensoleillé · max. 33° min. 19°'),
-      days,
+      forecastRow(HOURLY),
+      forecastRow(FORECAST),
       notNowLine(),
-      button('weather-add', '+ Ajouter une ville', notNow),
+      button('weather-add', '+ Ajouter une ville', think(THOUGHTS.trace)),
     ];
   }
 
   function settingsScreen() {
     const list = el('div', 'settings-list');
-    for (const [name, value] of SETTINGS) {
-      const b = button('settings-row', '', notNow);
-      b.append(el('span', '', name), el('span', 'settings-value', `${value} ›`));
+    for (const setting of SETTINGS) {
+      const b = button('settings-row', '', () => go('setting', { openSetting: setting }));
+      b.append(el('span', '', setting.name), el('span', 'settings-value', `${setting.value} ›`));
       list.append(b);
     }
     return [header('Réglages', 'home'), list, notNowLine()];
+  }
+
+  function settingScreen() {
+    const setting = openSetting;
+    const list = el('div', 'settings-list');
+    for (const [name, value] of setting.rows) {
+      const row = setting.readOnly
+        ? el('div', 'settings-row')
+        : button('settings-row', '', think(THOUGHTS.trace));
+      row.append(el('span', '', name), el('span', 'settings-value', value));
+      list.append(row);
+    }
+    return [header(setting.name, 'settings'), list, notNowLine()];
   }
 
   function thumbnails(photos) {
@@ -345,12 +417,15 @@ export function createPhoneView({ state, now, storyTime, onEvent = () => {} }) {
     lock: lockScreen, pin: pinScreen, home: homeScreen,
     photos: photosScreen, photo: photoScreen, trash: trashScreen,
     messages: messagesScreen, thread: threadScreen, mail: mailScreen,
-    camera: cameraScreen, weather: weatherScreen, settings: settingsScreen,
+    camera: cameraScreen, weather: weatherScreen, settings: settingsScreen, setting: settingScreen,
   };
 
   function render() {
     screen.className = `handset-screen screen-${view}`;
     screen.replaceChildren(...SCREENS[view]());
+    // A conversation opens on its latest messages.
+    const bubbles = screen.querySelector('.bubbles');
+    if (bubbles) bubbles.scrollTop = bubbles.scrollHeight;
     // Keep the keyboard working: focus the first control of the new screen.
     screen.querySelector('button:not(:disabled)')?.focus();
   }

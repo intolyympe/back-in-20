@@ -251,7 +251,8 @@
 .screen-messages,
 .screen-thread,
 .screen-mail,
-.screen-settings {
+.screen-settings,
+.screen-setting {
   background: #111216;
   text-shadow: none;
 }
@@ -435,8 +436,22 @@
 
 /* Messages */
 
+/* Long lists scroll inside the phone. */
+.thread-list,
+.bubbles,
+.screen-photos .photo-grid {
+  flex: 0 1 auto;
+  min-height: 0;
+  overflow-y: auto;
+  scrollbar-width: none;
+}
+
 .thread-list {
   width: 100%;
+}
+
+.screen-photos .photo-grid {
+  align-content: start;
 }
 
 .thread-row {
@@ -502,6 +517,21 @@
   background: #2a2d35;
   font-size: 14px;
   line-height: 1.35;
+}
+
+.bubble-day {
+  align-self: center;
+  margin: 4px 0 0;
+  color: #7d828c;
+  font-size: 12px;
+}
+
+.bubble.link {
+  background: #2a2d35 !important;
+  color: #8db8ff !important;
+  text-decoration: underline;
+  text-align: left;
+  font-size: 14px !important;
 }
 
 .bubble.me {
@@ -617,12 +647,13 @@
 }
 
 .weather-sky {
-  margin: 0 0 24px;
+  margin: 0 0 18px;
   font-size: 15px;
 }
 
 .forecast {
   display: flex;
+  margin-bottom: 10px;
   justify-content: space-between;
   width: calc(100% - 28px);
   padding: 12px 10px;
@@ -659,10 +690,17 @@
 .settings-row {
   display: flex;
   justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+  text-align: left;
   width: 100%;
   padding: 12px 14px !important;
   border-bottom: 1px solid #2c2f37 !important;
   font-size: 15px !important;
+}
+
+div.settings-row {
+  cursor: default;
 }
 
 .settings-row:last-child {
@@ -670,6 +708,7 @@
 }
 
 .settings-value {
+  flex: none;
   color: #9aa0ab;
 }
 
