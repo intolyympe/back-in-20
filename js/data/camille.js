@@ -194,16 +194,29 @@ export const PHONE = {
 };
 
 // When the player has found every clue in `from`, the notebook writes the
-// conclusion.
+// conclusion. Several entries can share an id: they are different ways to
+// reach the same conclusion, and only the first one reached is written.
 export const DEDUCTIONS = [
   {
     id: 'birthday',
     from: ['cake-1411', 'birthday-card'],
     text: '→ Son anniv, c’est le 14 novembre !',
   },
+  // Rex is her dog: the calendar only says Rex goes to the vet, the phone
+  // shows a puppy, and the gallery or her mum's text tie the two together.
   {
     id: 'dog-rex',
     from: ['vet-rex', 'dog-wallpaper'],
     text: '→ Rex, c’est son chien (sûrement le chiot du fond d’écran) !',
+  },
+  {
+    id: 'dog-rex',
+    from: ['rex-2019', 'dog-wallpaper'],
+    text: '→ Le chiot du fond d’écran, c’est Rex : son chien, depuis mars 2019 !',
+  },
+  {
+    id: 'dog-rex',
+    from: ['rex-7-years'],
+    text: '→ Rex, c’est son chien. Elle l’a depuis 7 ans.',
   },
 ];

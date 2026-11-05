@@ -40,6 +40,19 @@ test('a deduction is written once all its clues are found', () => {
   assert.deepEqual(state.clues.map(c => c.id), ['cake', 'card', 'birthday']);
 });
 
+test('a conclusion reached two ways is written once, with the first way found', () => {
+  const state = createState();
+  const deductions = [
+    { id: 'dog', from: ['vet', 'wallpaper'], text: 'par le calendrier' },
+    { id: 'dog', from: ['photo', 'wallpaper'], text: 'par la photo' },
+  ];
+  addClue(state, { id: 'wallpaper', text: 'Un chiot' });
+  addClue(state, { id: 'photo', text: 'Bienvenue Rex' });
+  assert.deepEqual(applyDeductions(state, deductions), [{ id: 'dog', text: 'par la photo', deduction: true }]);
+  addClue(state, { id: 'vet', text: 'Véto Rex' });
+  assert.deepEqual(applyDeductions(state, deductions), [], 'already written');
+});
+
 test(`the phone locks for a minute after ${MAX_ATTEMPTS} wrong codes`, () => {
   const state = createState();
   for (let i = 1; i < MAX_ATTEMPTS; i++) {
