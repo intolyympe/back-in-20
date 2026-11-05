@@ -124,3 +124,84 @@
 @keyframes banner-in {
   from { opacity: 0; translate: 0 -12px; }
 }
+
+/* ---- Debrief ---- */
+
+.debrief {
+  justify-content: flex-start;
+  gap: 18px;
+  padding: 40px 60px 30px;
+  background: rgb(14 14 18 / 0.97); /* the desk no longer matters */
+}
+
+#end-screen.debrief .screen-title {
+  font-size: 56px;
+}
+
+.debrief-body {
+  display: grid;
+  grid-template-columns: 380px 1fr;
+  gap: 40px;
+  width: 100%;
+  min-height: 0;
+  text-align: left;
+}
+
+.debrief-heading {
+  margin: 0 0 10px;
+  font-family: var(--font-hand);
+  font-size: 34px;
+  font-weight: 400;
+  color: #fff59a;
+}
+
+.debrief-found .screen-text {
+  margin: 0;
+  font-size: 19px;
+}
+
+#end-lessons {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 14px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.lesson {
+  padding: 14px 16px;
+  border-radius: 12px;
+  background: rgb(255 255 255 / 0.06);
+  opacity: 0.6;
+}
+
+.lesson.reached {
+  background: rgb(255 255 255 / 0.12);
+  opacity: 1;
+}
+
+.lesson p {
+  margin: 0;
+  font-size: 15px;
+  line-height: 1.4;
+}
+
+.lesson-title {
+  margin-bottom: 6px !important;
+  font-weight: 700;
+  font-size: 17px !important;
+}
+
+.lesson-mistake {
+  color: #ffc9bd;
+}
+
+.lesson-fix {
+  margin-top: 8px !important;
+  color: #c9f2d2;
+}
+
+.lesson-fix::before {
+  content: "→ ";
+}

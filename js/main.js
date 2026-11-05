@@ -13,6 +13,7 @@ import { createCalendarView, CALENDAR_CLUES } from './scenes/calendar.js';
 import { createNotepadView } from './scenes/notepad.js';
 import { createDrawerView } from './scenes/drawer.js';
 import { STORY_START, DEDUCTIONS, PHONE, PC, MAIL, BANK } from './data/camille.js';
+import { LESSONS } from './data/debrief.js';
 
 const STAGE_W = 1600;
 const STAGE_H = 900;
@@ -183,6 +184,16 @@ function onBankEvent(type) {
   }
 }
 
+const VAULT_NOTE = {
+  id: 'vault-tried',
+  text: 'Coffre : une phrase de passe ET une clé physique. Celui-là résiste.',
+};
+
+function onVaultEvent(type) {
+  if (type === 'tried') note([VAULT_NOTE]);
+  else if (type === 'give-up') endGame('vault');
+}
+
 const BULLE_NOTES = {
   resetSent: { id: 'bulle-reset-sent', text: 'Bulle : lien de réinitialisation envoyé… dans sa boîte mail.' },
   taken: { id: 'bulle-taken', text: 'Compte Bulle repris avec un nouveau mot de passe. Elle ne pourra plus s’y connecter…' },
@@ -211,9 +222,9 @@ function onBulleEvent(type, data) {
 
 const VIEWS = {
   phone: () => createPhoneView({
-    state, now: elapsed, storyTime, onEvent: onPhoneEvent, onMailEvent, onBulleEvent, onBankEvent,
+    state, now: elapsed, storyTime, onEvent: onPhoneEvent, onMailEvent, onBulleEvent, onBankEvent, onVaultEvent,
   }),
-  pc: () => createPcView({ state, now: elapsed, storyTime, onEvent: onPcEvent, onMailEvent, onBulleEvent }),
+  pc: () => createPcView({ state, now: elapsed, storyTime, onEvent: onPcEvent, onMailEvent, onBulleEvent, onVaultEvent }),
   calendar: () => createCalendarView({
     onPage: month => { if (CALENDAR_CLUES[month]) note([CALENDAR_CLUES[month]]); },
   }),
@@ -274,18 +285,42 @@ function endSummary() {
   if (hasCracked(state, 'mail')) lines.push('Tu es entré dans sa messagerie.');
   if (hasCracked(state, 'bulle')) lines.push('Tu as pris son compte Bulle.');
   if (hasCracked(state, 'bank')) lines.push('Tu es entré dans son espace bancaire, sans toucher à rien.');
+  if (state.vaultTries) lines.push('Son Coffre, lui, n’a pas cédé.');
   return lines;
 }
 
-function endGame() {
+/** One card of the debrief: what Camille did, how to avoid it. */
+function lessonItem(lesson) {
+  const reached = lesson.device === 'vault' ? state.vaultTries > 0 : hasCracked(state, lesson.device);
+  const item = document.createElement('li');
+  item.className = `lesson ${reached ? 'reached' : ''}`;
+  const head = document.createElement('p');
+  head.className = 'lesson-title';
+  const status = lesson.device === 'vault' ? 'a tenu bon' : 'pris';
+  head.textContent = reached ? `${lesson.title} · ${status}` : lesson.title;
+  const mistake = document.createElement('p');
+  mistake.className = 'lesson-mistake';
+  mistake.textContent = lesson.mistake;
+  const fix = document.createElement('p');
+  fix.className = 'lesson-fix';
+  fix.textContent = lesson.fix;
+  item.append(head, mistake, fix);
+  return item;
+}
+
+/** `reason`: 'time' (Camille is back) or 'vault' (the player gave up on it). */
+function endGame(reason = 'time') {
   playing = false;
   timer.pause();
   overlay.close();
+  $('end-title').textContent = reason === 'vault' ? 'Le Coffre a tenu bon.' : 'Camille est de retour.';
+  $('chapter-banner').hidden = true;
   $('end-summary').replaceChildren(...endSummary().map(line => {
     const p = document.createElement('p');
     p.textContent = line;
     return p;
   }));
+  $('end-lessons').replaceChildren(...LESSONS.map(lessonItem));
   $('end-screen').hidden = false;
   $('restart-button').focus();
 }
