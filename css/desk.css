@@ -103,7 +103,47 @@
   height: 320px;
   border: 14px solid #222;
   border-radius: 10px;
-  background: linear-gradient(135deg, #1e3a5f, #3b2f5c);
+  background:
+    radial-gradient(circle at 30% 20%, rgb(255 255 255 / 0.08), transparent 50%),
+    linear-gradient(135deg, #1e3a5f, #3b2f5c);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  color: #fff;
+}
+
+/* The computer's lock screen (fictional OS). */
+.pc-avatar {
+  display: grid;
+  place-items: center;
+  width: 64px;
+  height: 64px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #f2a65a, #c2477a);
+  font-size: 30px;
+  font-weight: 600;
+}
+
+.pc-user {
+  font-size: 20px;
+  font-weight: 600;
+}
+
+.pc-field {
+  width: 190px;
+  padding: 7px 12px;
+  border-radius: 6px;
+  background: rgb(255 255 255 / 0.14);
+  color: rgb(255 255 255 / 0.6);
+  font-size: 14px;
+  text-align: left;
+}
+
+.pc-hint {
+  font-size: 12px;
+  color: rgb(255 255 255 / 0.55);
 }
 
 .monitor-neck {
@@ -166,16 +206,11 @@
 }
 
 .keyboard {
-  position: absolute;
   left: 470px;
   top: 600px;
   width: 380px;
-  height: 80px;
-  border-radius: 8px;
-  background:
-    repeating-linear-gradient(90deg, #2e2e2e 0 26px, #444 26px 28px),
-    #2e2e2e;
-  box-shadow: 0 6px 0 #1b1b1b;
+  height: 86px;
+  filter: drop-shadow(0 6px 5px rgb(0 0 0 / 0.3));
 }
 
 /* Scenery that does nothing when clicked. */
