@@ -21,6 +21,7 @@
   <link rel="stylesheet" href="css/bulle.css">
   <link rel="stylesheet" href="css/bank.css">
   <link rel="stylesheet" href="css/vault.css">
+  <link rel="stylesheet" href="css/defend.css">
   <script type="module" src="js/main.js"></script>
 </head>
 <body>
@@ -117,8 +118,12 @@
           <ul class="missed" id="end-missed"></ul>
         </div>
       </div>
-      <button class="screen-button" id="restart-button">Rejouer</button>
+      <div class="debrief-actions">
+        <button class="screen-button" id="defend-button">Défendre Camille</button>
+        <button class="screen-button secondary" id="restart-button">Rejouer</button>
+      </div>
     </section>
+    <section class="screen defend" id="defend-screen" aria-labelledby="defend-title" hidden></section>
   </main>
 </body>
 </html>
