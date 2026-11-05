@@ -60,8 +60,8 @@ export const DESK_OBJECTS = {
   drawer: {
     verb: 'Ouvrir',
     opens: 'drawer',
-    text: 'Le bazar habituel… et une carte d’anniversaire.',
-    clues: [{ id: 'birthday-card', text: 'Carte de Léa : « Joyeux anniversaire ma Cam ! »' }],
+    text: 'Le bazar habituel… et sa carte d’anniversaire de l’an dernier. Elle l’a gardée.',
+    clues: [{ id: 'birthday-card', text: 'Vieille carte de Léa : « joyeux 29 ans ! », postée en nov. 2025.' }],
   },
   lamp: {
     toggle: 'lamp-on',

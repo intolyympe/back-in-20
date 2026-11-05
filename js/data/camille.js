@@ -5,8 +5,9 @@
 //   - birthday 14/11 -> chapter 1, phone PIN 1411. The game is in July: the
 //     player flips the calendar to November and finds a cake drawn on the
 //     14th, with no name (people write other people's names, not their own:
-//     "Anniv Léa" is written in March). The birthday card in the drawer
-//     confirms it.
+//     "Anniv Léa" is written in March). The drawer holds last year's
+//     birthday card, kept in its envelope: the postmark is smudged, only
+//     "NOV. 2025" can be read. Card + cake = 14/11.
 //   - the dog's name (Rex), on the calendar in July -> chapter 2
 //   - "ne JAMAIS réutiliser ses mdp (oups…)" in the notes -> chapter 3
 
@@ -51,10 +52,12 @@ export const MEETING_NOTES = {
   ],
 };
 
+// Last year's card: Camille kept it in her drawer.
 export const BIRTHDAY_CARD = {
   front: 'Joyeux anniversaire !',
+  postmark: { day: '1?', month: 'NOV.', year: '2025' }, // the day is smudged
   message: [
-    'Ma Cam,',
+    'Ma Cam, joyeux 29 ans !',
     'Encore une année à supporter',
     'tes blagues (et Rex qui mange',
     'mes chaussures) !',

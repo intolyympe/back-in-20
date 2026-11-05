@@ -1,4 +1,5 @@
-// The desk drawer, pulled open: the usual mess, and a birthday card from Léa.
+// The desk drawer, pulled open: the usual mess, and last year's birthday card
+// from Léa with its envelope (postmark smudged).
 
 import { BIRTHDAY_CARD } from '../data/camille.js';
 
@@ -22,6 +23,18 @@ export function createDrawerView() {
     <span class="drawer-clip" style="left: 110px; top: 350px; rotate: -35deg"></span>
     <span class="drawer-band" style="right: 90px; top: 60px"></span>
     <span class="drawer-band" style="right: 60px; top: 90px; border-color: #e0a830"></span>`);
+
+  const { postmark } = BIRTHDAY_CARD;
+  const envelope = el('div', 'bday-envelope');
+  const stamp = el('div', 'bday-stamp');
+  const mark = el('div', 'bday-postmark');
+  mark.append(
+    el('span', 'postmark-day', postmark.day),
+    el('span', 'postmark-month', postmark.month),
+    el('span', 'postmark-year', postmark.year),
+  );
+  envelope.append(el('div', 'bday-address'), stamp, mark);
+  drawer.append(envelope);
 
   const card = el('div', 'bday-card');
   const front = el('div', 'bday-front');
