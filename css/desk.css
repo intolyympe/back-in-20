@@ -25,11 +25,43 @@
   padding: 0;
   border: 0;
   cursor: pointer;
-  transition: filter 120ms, transform 120ms;
+  transition: filter 150ms, scale 150ms;
 }
 
-.hotspot:hover {
-  filter: brightness(1.08);
+/* On hover the object grows a little and a handwritten verb appears above
+   it ("Regarder", "Prendre"...). `scale` stacks with each object's own
+   rotation. Big objects grow less (--grow). */
+.hotspot:hover,
+.hotspot:focus-visible {
+  z-index: 3;
+  scale: var(--grow, 1.07);
+  filter: brightness(1.06);
+}
+
+.hotspot::before {
+  content: attr(data-verb);
+  position: absolute;
+  left: 50%;
+  bottom: calc(100% + 6px);
+  padding: 0 8px 10px;
+  transform: translate(-50%, 8px);
+  background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 10' preserveAspectRatio='none'%3E%3Cpath d='M3 6 Q25 1 50 5 T97 4' stroke='white' stroke-width='2.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E") center bottom / 100% 10px no-repeat;
+  color: #fff;
+  font-family: var(--font-hand);
+  font-size: 32px;
+  font-weight: 700;
+  line-height: 1;
+  white-space: nowrap;
+  text-shadow: 0 0 2px rgb(0 0 0 / 0.8), 0 2px 8px rgb(0 0 0 / 0.6);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 150ms, transform 150ms;
+}
+
+.hotspot:hover::before,
+.hotspot:focus-visible::before {
+  opacity: 1;
+  transform: translate(-50%, 0);
 }
 
 /* Objects drawn as SVG files in assets/desk/. */
@@ -49,6 +81,7 @@
 }
 
 .window {
+  --grow: 1.03;
   left: 975px;
   top: 40px;
   width: 260px;
@@ -57,6 +90,7 @@
 
 /* Calendar on the wall */
 .calendar {
+  --grow: 1.04;
   left: 90px;
   top: 70px;
   width: 210px;
@@ -97,6 +131,7 @@
 }
 
 .monitor-screen {
+  --grow: 1.03;
   left: 0;
   top: 0;
   width: 520px;
@@ -181,10 +216,6 @@
   text-align: left;
 }
 
-.postit:hover {
-  transform: rotate(4deg) scale(1.04);
-}
-
 .postit-sign {
   display: block;
   margin-top: 6px;
@@ -240,10 +271,6 @@
   width: 260px;
   height: 160px;
   transform: rotate(-5deg);
-}
-
-.notepad:hover {
-  transform: rotate(-5deg) translateY(-3px);
 }
 
 .mug {
@@ -302,10 +329,6 @@
   background: #15151a;
   box-shadow: inset 0 0 0 4px #2b2b33, 0 6px 10px rgb(0 0 0 / 0.35);
   transform: rotate(-12deg);
-}
-
-.phone:hover {
-  transform: rotate(-12deg) translateY(-4px);
 }
 
 .lamp {

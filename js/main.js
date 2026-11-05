@@ -2,7 +2,7 @@ import { createState, addClue, ROUND_MINUTES } from './state.js';
 import { createTimer, formatClock } from './timer.js';
 import { createNotebook } from './notebook.js';
 import { createOverlay } from './overlay.js';
-import { setupDesk } from './scenes/desk.js';
+import { setupDesk, verbFor } from './scenes/desk.js';
 import { createPhoneView } from './scenes/phone.js';
 
 const STAGE_W = 1600;
@@ -47,6 +47,7 @@ function inspect(id, object, button) {
   if (object.toggle) {
     const on = button.closest('.desk').classList.toggle(object.toggle);
     button.setAttribute('aria-pressed', on);
+    button.dataset.verb = verbFor(object, on);
   } else if (object.opens) {
     overlay.open(VIEWS[object.opens](), button);
   } else {
