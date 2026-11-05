@@ -9,7 +9,8 @@
 //     birthday card, kept in its envelope: the postmark is smudged, only
 //     "NOV. 2025" can be read. Card + cake = 14/11.
 //   - the dog's name (Rex), on the calendar in July, and the year he arrived
-//     (2019), in the phone's photos once it is unlocked -> chapter 2
+//     (2019), in the phone's photos once it is unlocked (her mum's text
+//     "déjà 7 ans" backs it up) -> chapter 2
 //   - "ne JAMAIS réutiliser ses mdp (oups…)" in the notes -> chapter 3
 
 // The round starts when Camille leaves her desk: Thursday 9 July 2026, 14:05
@@ -81,6 +82,49 @@ export const PHONE = {
       date: [2019, 3, 12],
       caption: 'Bienvenue à la maison, Rex !',
       clue: { id: 'rex-2019', text: 'Photo : « Bienvenue à la maison, Rex ! », 12 mars 2019.' },
+    },
+  ],
+  // Messages app, most recent first. `me: true` is Camille writing.
+  threads: [
+    {
+      id: 'julie',
+      name: 'Julie',
+      time: '13:12',
+      messages: [
+        { text: 'J-9 avant le mariage !!! 💍' },
+        { text: 'Trop hâte 🥹 J’ai enfin trouvé la robe', me: true },
+      ],
+    },
+    {
+      id: 'hugo',
+      name: 'Hugo (boulot)',
+      time: '11:48',
+      messages: [
+        { text: 'Tu m’envoies les factures avant vendredi ?' },
+        { text: 'Oui oui, je regarde ça après la pause', me: true },
+      ],
+    },
+    {
+      id: 'maman',
+      name: 'Maman',
+      time: 'Hier',
+      messages: [
+        { text: 'Tu passes dimanche avec Rex ?' },
+        { text: 'Oui ! Vers midi', me: true },
+        { text: 'Déjà 7 ans que tu as ce chien, le temps passe vite…' },
+        { text: 'Ne m’en parle pas 😭', me: true },
+      ],
+      clue: { id: 'rex-7-years', text: 'Maman, par SMS : « déjà 7 ans que tu as ce chien ».' },
+    },
+    {
+      id: 'lea',
+      name: 'Léa',
+      time: 'Lun.',
+      messages: [
+        { text: 'Resto le 24, toujours ok ? 🍝' },
+        { text: 'Oui ! 20h comme d’hab', me: true },
+        { text: 'Et tu ramènes enfin les photos de Norvège 😍' },
+      ],
     },
   ],
 };

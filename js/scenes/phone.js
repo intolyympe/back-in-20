@@ -1,5 +1,6 @@
 // Camille's phone, held in the foreground: lock screen, PIN pad, home screen,
-// photos and "Supprimés récemment". Fictional OS.
+// photos and "Supprimés récemment", plus the other apps, which can be looked
+// at but not used ("Pas le temps pour ça…"). Fictional OS.
 //
 // The view only draws and reacts; the game state (attempts, lockout, photos)
 // lives in js/state.js, and main.js turns events into notebook entries.
@@ -14,6 +15,15 @@ const DATE_FORMAT = new Intl.DateTimeFormat('fr-FR', { weekday: 'long', day: 'nu
 const PHOTO_DATE = new Intl.DateTimeFormat('fr-FR', { day: 'numeric', month: 'long', year: 'numeric' });
 const INTRUDER_SRC = 'assets/photos/intruder.svg';
 const PIN_LENGTH = PHONE.pin.length;
+const NOT_NOW = 'Pas le temps pour ça…';
+
+const FORECAST = [
+  ['Ven.', '☀', 32], ['Sam.', '⛅', 29], ['Dim.', '☁', 26], ['Lun.', '☀', 30], ['Mar.', '☀', 31],
+];
+const SETTINGS = [
+  ['Wi-Fi', 'Bureau-Invités'], ['Bluetooth', 'Activé'], ['Notifications', ''],
+  ['Code de verrouillage', '4 chiffres'], ['Batterie', '62 %'], ['Général', ''],
+];
 
 const APPS = [
   { id: 'photos', name: 'Photos', glyph: '✿', color: '#f2a65a' },
@@ -50,7 +60,8 @@ const mss = ms => {
  * @param {() => number} options.now   ms since the round started
  * @param {(ms: number) => Date} options.storyTime  story clock at that time
  * @param {(type: string, data?: object) => void} options.onEvent
- *   'unlock', 'lockout', 'photo-viewed' {photo}, 'photo-deleted', 'trash-emptied'
+ *   'unlock', 'lockout', 'photo-viewed' {photo}, 'thread-viewed' {thread},
+ *   'photo-deleted', 'trash-emptied'
  */
 export function createPhoneView({ state, now, storyTime, onEvent = () => {} }) {
   const handset = el('div', 'handset');
@@ -61,11 +72,13 @@ export function createPhoneView({ state, now, storyTime, onEvent = () => {} }) {
   let entered = '';
   let message = '';
   let openPhoto = null;
+  let openThread = null;
   let confirmEmpty = false;
 
   const go = (next, extra = {}) => {
     view = next;
     if ('openPhoto' in extra) openPhoto = extra.openPhoto;
+    if ('openThread' in extra) openThread = extra.openThread;
     message = extra.message ?? '';
     confirmEmpty = false;
     render();
@@ -148,17 +161,104 @@ export function createPhoneView({ state, now, storyTime, onEvent = () => {} }) {
     }
     const grid = el('div', 'app-grid');
     for (const app of APPS) {
-      const b = button(`app ${app.id === 'photos' ? '' : 'inactive'}`, '', () => {
-        if (app.id === 'photos') go('photos');
-        else go('home', { message: 'Pas le temps pour ça…' });
-      });
+      const b = button('app', '', () => go(app.id));
       const icon = el('span', 'app-icon', app.glyph);
       icon.style.background = app.color;
       b.append(icon, el('span', 'app-name', app.name));
       grid.append(b);
     }
-    parts.push(grid, el('p', 'home-message', message));
+    parts.push(grid);
     return parts;
+  }
+
+  // ---- Apps that can only be looked at ----
+
+  // A line at the bottom of the screen for "Pas le temps pour ça…". It is
+  // filled in place so the focus stays on the control that was pressed.
+  const notNowLine = () => el('p', 'app-message', '');
+  function notNow() {
+    const line = screen.querySelector('.app-message');
+    if (!line) return;
+    line.textContent = NOT_NOW;
+    line.classList.remove('show');
+    void line.offsetWidth; // restart the animation
+    line.classList.add('show');
+  }
+
+  function messagesScreen() {
+    const list = el('div', 'thread-list');
+    for (const thread of PHONE.threads) {
+      const b = button('thread-row', '', () => {
+        go('thread', { openThread: thread });
+        onEvent('thread-viewed', { thread });
+      });
+      const last = thread.messages.at(-1);
+      const text = el('span', 'thread-text');
+      text.append(el('strong', '', thread.name), el('span', 'thread-last', last.text));
+      b.append(el('span', 'thread-avatar', thread.name[0]), text, el('span', 'thread-time', thread.time));
+      list.append(b);
+    }
+    return [header('Messages', 'home'), list, notNowLine()];
+  }
+
+  function threadScreen() {
+    const thread = openThread;
+    const bubbles = el('div', 'bubbles');
+    for (const m of thread.messages) bubbles.append(el('p', m.me ? 'bubble me' : 'bubble', m.text));
+    const reply = button('reply-field', 'Message', notNow);
+    return [header(thread.name, 'messages'), bubbles, notNowLine(), reply];
+  }
+
+  function mailScreen() {
+    const box = el('div', 'mail-login');
+    box.append(
+      el('span', 'mail-logo', '✉'),
+      el('p', 'mail-title', 'Session expirée'),
+      el('p', 'mail-text', 'Saisissez le mot de passe du compte de Camille pour voir vos e-mails.'),
+      button('mail-field', 'Mot de passe', notNow),
+      button('mail-login-button', 'Se connecter', notNow),
+    );
+    return [header('Mail', 'home'), box, notNowLine()];
+  }
+
+  function cameraScreen() {
+    // The front camera is on: the player sees themselves.
+    const finder = el('div', 'camera-finder');
+    const img = el('img');
+    img.src = INTRUDER_SRC;
+    img.alt = 'Vous, dans l’objectif de la caméra avant';
+    finder.append(img);
+    const shutter = button('camera-shutter', '', notNow);
+    shutter.setAttribute('aria-label', 'Prendre une photo');
+    return [header('', 'home'), finder, notNowLine(), shutter];
+  }
+
+  function weatherScreen() {
+    const days = el('div', 'forecast');
+    for (const [day, glyph, temp] of FORECAST) {
+      const cell = el('div', 'forecast-day');
+      cell.append(el('span', '', day), el('span', 'forecast-glyph', glyph), el('span', '', `${temp}°`));
+      days.append(cell);
+    }
+    return [
+      header('', 'home'),
+      el('p', 'weather-city', 'Lyon'),
+      el('p', 'weather-temp', '31°'),
+      el('p', 'weather-sky', 'Ensoleillé · max. 33° min. 19°'),
+      days,
+      notNowLine(),
+      button('weather-add', '+ Ajouter une ville', notNow),
+    ];
+  }
+
+  function settingsScreen() {
+    const list = el('div', 'settings-list');
+    for (const [name, value] of SETTINGS) {
+      const b = button('settings-row', '', notNow);
+      b.append(el('span', '', name), el('span', 'settings-value', `${value} ›`));
+      list.append(b);
+    }
+    return [header('Réglages', 'home'), list, notNowLine()];
   }
 
   function thumbnails(photos) {
@@ -244,6 +344,8 @@ export function createPhoneView({ state, now, storyTime, onEvent = () => {} }) {
   const SCREENS = {
     lock: lockScreen, pin: pinScreen, home: homeScreen,
     photos: photosScreen, photo: photoScreen, trash: trashScreen,
+    messages: messagesScreen, thread: threadScreen, mail: mailScreen,
+    camera: cameraScreen, weather: weatherScreen, settings: settingsScreen,
   };
 
   function render() {

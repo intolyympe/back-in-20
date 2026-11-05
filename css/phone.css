@@ -242,17 +242,16 @@
   font-size: 12px;
 }
 
-.home-message {
-  min-height: 20px;
-  margin: auto 0 30px;
-  font-size: 14px;
-}
 
 /* ---- Photos ---- */
 
 .screen-photos,
 .screen-photo,
-.screen-trash {
+.screen-trash,
+.screen-messages,
+.screen-thread,
+.screen-mail,
+.screen-settings {
   background: #111216;
   text-shadow: none;
 }
@@ -414,4 +413,266 @@
   border-radius: 999px;
   background: #2c2f37 !important;
   font-size: 15px !important;
+}
+
+/* ---- Apps that can only be looked at ---- */
+
+.app-message {
+  min-height: 20px;
+  margin: auto 0 10px;
+  font-family: var(--font-hand);
+  font-size: 24px;
+  color: #ffe3a3;
+}
+
+.app-message.show {
+  animation: not-now 300ms ease-out;
+}
+
+@keyframes not-now {
+  from { opacity: 0; translate: 0 6px; }
+}
+
+/* Messages */
+
+.thread-list {
+  width: 100%;
+}
+
+.thread-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+  padding: 10px 14px !important;
+  border-bottom: 1px solid #23252c !important;
+  text-align: left;
+}
+
+.thread-row:hover {
+  background: #1a1c22 !important;
+}
+
+.thread-avatar {
+  flex: none;
+  display: grid;
+  place-items: center;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: #4d8a52;
+  font-weight: 700;
+}
+
+.thread-text {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  flex: 1;
+  font-size: 14px;
+}
+
+.thread-last {
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  color: #9aa0ab;
+  font-size: 13px;
+}
+
+.thread-time {
+  align-self: flex-start;
+  color: #9aa0ab;
+  font-size: 12px;
+}
+
+.bubbles {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  width: 100%;
+  padding: 10px 12px;
+}
+
+.bubble {
+  max-width: 78%;
+  margin: 0;
+  padding: 8px 12px;
+  border-radius: 16px 16px 16px 4px;
+  background: #2a2d35;
+  font-size: 14px;
+  line-height: 1.35;
+}
+
+.bubble.me {
+  align-self: flex-end;
+  border-radius: 16px 16px 4px 16px;
+  background: #3f7f4a;
+}
+
+.reply-field,
+.mail-field {
+  width: calc(100% - 24px);
+  margin: 0 12px 24px;
+  padding: 9px 14px !important;
+  border: 1px solid #3a3d46 !important;
+  border-radius: 999px;
+  color: #7d828c !important;
+  font-size: 14px !important;
+  text-align: left;
+}
+
+/* Mail */
+
+.mail-login {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 100%;
+  padding: 40px 22px 0;
+  text-align: center;
+}
+
+.mail-logo {
+  display: grid;
+  place-items: center;
+  width: 64px;
+  height: 64px;
+  border-radius: 18px;
+  background: #2b5fa8;
+  font-size: 32px;
+}
+
+.mail-title {
+  margin: 16px 0 6px;
+  font-size: 19px;
+  font-weight: 700;
+}
+
+.mail-text {
+  margin: 0 0 22px;
+  color: #9aa0ab;
+  font-size: 14px;
+  line-height: 1.4;
+}
+
+.mail-login .mail-field {
+  width: 100%;
+  margin: 0 0 12px;
+  border-radius: 10px;
+}
+
+.mail-login-button {
+  width: 100%;
+  padding: 10px !important;
+  border-radius: 10px;
+  background: #2b5fa8 !important;
+  font-size: 15px !important;
+}
+
+/* Camera */
+
+.screen-camera {
+  background: #000;
+}
+
+.camera-finder {
+  width: 100%;
+  height: 420px;
+  overflow: hidden;
+}
+
+.camera-finder img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  scale: -1 1; /* front camera: mirrored */
+}
+
+.camera-shutter {
+  width: 64px;
+  height: 64px;
+  margin-bottom: 24px;
+  border: 4px solid #fff !important;
+  border-radius: 50%;
+  background: rgb(255 255 255 / 0.25) !important;
+}
+
+/* Weather */
+
+.screen-weather {
+  background: linear-gradient(#3d8fd6, #7fbbea);
+}
+
+.weather-city {
+  margin: 10px 0 0;
+  font-size: 26px;
+}
+
+.weather-temp {
+  margin: 0;
+  font-size: 84px;
+  font-weight: 200;
+  line-height: 1.1;
+}
+
+.weather-sky {
+  margin: 0 0 24px;
+  font-size: 15px;
+}
+
+.forecast {
+  display: flex;
+  justify-content: space-between;
+  width: calc(100% - 28px);
+  padding: 12px 10px;
+  border-radius: 14px;
+  background: rgb(255 255 255 / 0.18);
+}
+
+.forecast-day {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  font-size: 14px;
+}
+
+.forecast-glyph {
+  font-size: 22px;
+}
+
+.weather-add {
+  margin-bottom: 24px;
+  font-size: 15px !important;
+}
+
+/* Settings */
+
+.settings-list {
+  width: calc(100% - 24px);
+  border-radius: 12px;
+  overflow: hidden;
+  background: #1f2128;
+}
+
+.settings-row {
+  display: flex;
+  justify-content: space-between;
+  width: 100%;
+  padding: 12px 14px !important;
+  border-bottom: 1px solid #2c2f37 !important;
+  font-size: 15px !important;
+}
+
+.settings-row:last-child {
+  border-bottom: 0 !important;
+}
+
+.settings-value {
+  color: #9aa0ab;
+}
+
+.screen-weather .phone-back {
+  color: #fff !important;
 }
