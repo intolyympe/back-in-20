@@ -1,7 +1,7 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import {
-  createState, addClue, recordFailedAttempt, isLocked, unlock, isUnlocked, MAX_ATTEMPTS,
+  createState, addClue, applyDeductions, recordFailedAttempt, isLocked, unlock, isUnlocked, MAX_ATTEMPTS,
 } from '../js/state.js';
 
 test('a clue is added once', () => {
@@ -34,4 +34,15 @@ test('unlocking is tracked per device', () => {
   unlock(state, 'phone');
   assert.equal(isUnlocked(state, 'phone'), true);
   assert.equal(isUnlocked(state, 'laptop'), false);
+});
+
+test('a deduction is written once all its clues are found', () => {
+  const state = createState();
+  const deductions = [{ id: 'birthday', from: ['cake', 'card'], text: '14/11 !' }];
+  addClue(state, { id: 'cake', text: 'Un gâteau le 14/11' });
+  assert.deepEqual(applyDeductions(state, deductions), []);
+  addClue(state, { id: 'card', text: 'Une carte d’anniversaire' });
+  assert.deepEqual(applyDeductions(state, deductions), [{ id: 'birthday', text: '14/11 !', deduction: true }]);
+  assert.deepEqual(applyDeductions(state, deductions), [], 'only once');
+  assert.deepEqual(state.clues.map(c => c.id), ['cake', 'card', 'birthday']);
 });

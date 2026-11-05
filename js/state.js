@@ -19,6 +19,18 @@ export function addClue(state, clue) {
   return true;
 }
 
+/**
+ * Adds the conclusion of every deduction whose clues have all been found.
+ * Returns the deductions just added (marked `deduction: true`).
+ */
+export function applyDeductions(state, deductions) {
+  const found = new Set(state.clues.map(c => c.id));
+  return deductions
+    .filter(d => d.from.every(id => found.has(id)))
+    .map(d => ({ id: d.id, text: d.text, deduction: true }))
+    .filter(clue => addClue(state, clue));
+}
+
 /** Counts a wrong try on a device; it locks after MAX_ATTEMPTS. */
 export function recordFailedAttempt(state, deviceId) {
   const attempts = (state.attempts[deviceId] || 0) + 1;
