@@ -1,0 +1,30 @@
+// The desk scene: what each object says when the player inspects it.
+// Chapter content (the circled date, the phone lock screen...) comes later.
+
+export const DESK_OBJECTS = {
+  postit: {
+    text: '« De retour dans 20 minutes. — C. » Camille vient de partir.',
+  },
+  calendar: {
+    text: 'Le calendrier de Camille, ouvert sur novembre.',
+  },
+  monitor: {
+    text: 'L’ordinateur est verrouillé.',
+  },
+  mug: {
+    text: 'Le café est encore chaud. Elle ne va pas tarder.',
+  },
+  phone: {
+    text: 'Le téléphone de Camille. Elle l’a oublié sur le bureau.',
+  },
+};
+
+/**
+ * Wires every [data-hotspot] button in `root` to onInspect(id, object).
+ */
+export function setupDesk(root, onInspect) {
+  for (const button of root.querySelectorAll('[data-hotspot]')) {
+    const id = button.dataset.hotspot;
+    button.addEventListener('click', () => onInspect(id, DESK_OBJECTS[id]));
+  }
+}

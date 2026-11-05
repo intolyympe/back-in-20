@@ -1,0 +1,41 @@
+<!doctype html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Back in 20 — De retour dans 20 minutes</title>
+  <meta name="description" content="Assieds-toi au bureau de Camille et devine ses mots de passe, indice après indice, avant son retour.">
+  <link rel="stylesheet" href="css/base.css">
+  <link rel="stylesheet" href="css/desk.css">
+  <script type="module" src="js/main.js"></script>
+</head>
+<body>
+  <main class="stage" id="stage">
+    <section class="desk" aria-label="Le bureau de Camille">
+      <div class="wall"></div>
+      <div class="desk-top"></div>
+
+      <button class="hotspot calendar" data-hotspot="calendar" aria-label="Calendrier">
+        <span class="calendar-month">Novembre</span>
+        <span class="calendar-grid"></span>
+      </button>
+
+      <div class="monitor">
+        <button class="hotspot monitor-screen" data-hotspot="monitor" aria-label="Écran de l'ordinateur"></button>
+        <div class="monitor-neck"></div>
+        <div class="monitor-base"></div>
+      </div>
+
+      <button class="hotspot postit" data-hotspot="postit" aria-label="Post-it sur l'écran">
+        De retour<br>dans 20 min !<br><span class="postit-sign">— C.</span>
+      </button>
+
+      <div class="keyboard"></div>
+      <button class="hotspot mug" data-hotspot="mug" aria-label="Tasse de café"></button>
+      <button class="hotspot phone" data-hotspot="phone" aria-label="Téléphone de Camille"></button>
+
+      <p class="toast" id="toast" role="status" aria-live="polite"></p>
+    </section>
+  </main>
+</body>
+</html>

@@ -1,0 +1,202 @@
+/* Camille's desk, seen from the front. Placeholder art in CSS until the
+   final style is chosen. Coordinates are in stage px (desk area: 1260x900). */
+
+.desk {
+  position: relative;
+  overflow: hidden;
+}
+
+.wall {
+  position: absolute;
+  inset: 0 0 360px 0;
+  background: linear-gradient(#e9dfcf, #d8cbb6);
+}
+
+.desk-top {
+  position: absolute;
+  inset: 540px 0 0 0;
+  background: linear-gradient(#a8784f, #8a5f3b 30%, #7a5233);
+  box-shadow: inset 0 6px 0 #c0906a;
+}
+
+/* Every interactive object is a button so it works with the keyboard too. */
+.hotspot {
+  position: absolute;
+  padding: 0;
+  border: 0;
+  cursor: pointer;
+  transition: filter 120ms, transform 120ms;
+}
+
+.hotspot:hover {
+  filter: brightness(1.08);
+}
+
+/* Calendar on the wall */
+.calendar {
+  left: 90px;
+  top: 70px;
+  width: 210px;
+  height: 250px;
+  background: #fff;
+  border-radius: 4px;
+  box-shadow: 0 4px 10px rgb(0 0 0 / 0.2);
+  display: flex;
+  flex-direction: column;
+}
+
+.calendar-month {
+  padding: 10px 0;
+  background: var(--accent);
+  color: #fff;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  font-size: 16px;
+  border-radius: 4px 4px 0 0;
+}
+
+.calendar-grid {
+  flex: 1;
+  margin: 12px;
+  background:
+    repeating-linear-gradient(90deg, transparent 0 25px, #ddd 25px 26.5px),
+    repeating-linear-gradient(transparent 0 30px, #ddd 30px 31.5px);
+}
+
+/* Monitor */
+.monitor {
+  position: absolute;
+  left: 400px;
+  top: 150px;
+  width: 520px;
+  height: 405px;
+}
+
+.monitor-screen {
+  left: 0;
+  top: 0;
+  width: 520px;
+  height: 320px;
+  border: 14px solid #222;
+  border-radius: 10px;
+  background: linear-gradient(135deg, #1e3a5f, #3b2f5c);
+}
+
+.monitor-neck {
+  position: absolute;
+  left: 230px;
+  top: 320px;
+  width: 60px;
+  height: 70px;
+  background: linear-gradient(90deg, #333, #555, #333);
+}
+
+.monitor-base {
+  position: absolute;
+  left: 170px;
+  top: 385px;
+  width: 180px;
+  height: 20px;
+  border-radius: 10px 10px 4px 4px;
+  background: #3a3a3a;
+}
+
+/* The post-it that gives the game its name */
+.postit {
+  left: 770px;
+  top: 172px;
+  width: 140px;
+  height: 130px;
+  padding: 14px 10px;
+  background: linear-gradient(#fff59a, #f7e46b);
+  box-shadow: 2px 4px 8px rgb(0 0 0 / 0.25);
+  transform: rotate(4deg);
+  font-family: var(--font-hand);
+  font-size: 19px;
+  line-height: 1.25;
+  text-align: left;
+}
+
+.postit:hover {
+  transform: rotate(4deg) scale(1.04);
+}
+
+.postit-sign {
+  display: block;
+  margin-top: 6px;
+  text-align: right;
+}
+
+.keyboard {
+  position: absolute;
+  left: 470px;
+  top: 600px;
+  width: 380px;
+  height: 80px;
+  border-radius: 8px;
+  background:
+    repeating-linear-gradient(90deg, #2e2e2e 0 26px, #444 26px 28px),
+    #2e2e2e;
+  box-shadow: 0 6px 0 #1b1b1b;
+}
+
+.mug {
+  left: 220px;
+  top: 600px;
+  width: 80px;
+  height: 95px;
+  border-radius: 6px 6px 18px 18px;
+  background: linear-gradient(90deg, #e5e1d8, #fff 40%, #d6d0c4);
+}
+
+.mug::after {
+  content: "";
+  position: absolute;
+  right: -26px;
+  top: 22px;
+  width: 30px;
+  height: 40px;
+  border: 9px solid #e5e1d8;
+  border-left: 0;
+  border-radius: 0 20px 20px 0;
+}
+
+.phone {
+  left: 960px;
+  top: 640px;
+  width: 92px;
+  height: 172px;
+  border-radius: 16px;
+  background: #15151a;
+  box-shadow: inset 0 0 0 4px #2b2b33, 0 6px 10px rgb(0 0 0 / 0.35);
+  transform: rotate(-12deg);
+}
+
+.phone:hover {
+  transform: rotate(-12deg) translateY(-4px);
+}
+
+/* Short description shown when an object is inspected */
+.toast {
+  position: absolute;
+  left: 50%;
+  bottom: 40px;
+  max-width: 760px;
+  margin: 0;
+  padding: 14px 22px;
+  border-radius: 10px;
+  background: rgb(20 18 16 / 0.88);
+  color: #fff;
+  font-size: 20px;
+  line-height: 1.4;
+  transform: translate(-50%, 12px);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 200ms, transform 200ms;
+}
+
+.toast.visible {
+  opacity: 1;
+  transform: translate(-50%, 0);
+}
