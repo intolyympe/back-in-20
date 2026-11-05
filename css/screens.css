@@ -127,6 +127,12 @@
 
 /* ---- Debrief ---- */
 
+@media (prefers-reduced-motion: reduce) {
+  .domino {
+    animation-duration: 1ms;
+  }
+}
+
 .debrief {
   justify-content: flex-start;
   gap: 18px;
@@ -160,28 +166,117 @@
   font-size: 19px;
 }
 
-#end-lessons {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 14px;
-  margin: 0;
-  padding: 0;
+/* The rank, handwritten, under the title. */
+.debrief-rank {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin: -10px 0 0;
+}
+
+.debrief-rank strong {
+  font-family: var(--font-hand);
+  font-size: 52px;
+  color: #fff59a;
+  line-height: 1;
+}
+
+.debrief-rank span {
+  color: #ccc;
+  font-size: 20px;
+}
+
+/* The player's chain: dominos that tip over one after the other. */
+.dominos {
+  display: flex;
+  gap: 18px;
+  margin: 6px 0 18px;
+  padding: 0 0 0 6px;
   list-style: none;
 }
 
-.lesson {
-  padding: 14px 16px;
+.domino {
+  display: flex;
+  flex-direction: column;
+  width: 118px;
+  height: 150px;
+  padding: 0;
+  border: 2px solid #f4f1e8;
+  border-radius: 10px;
+  background: #fbf8ef;
+  color: #22252b;
+  font: inherit;
+  cursor: pointer;
+  transform-origin: 100% 100%;
+  animation: domino-tip 450ms ease-in forwards;
+}
+
+.domino.standing {
+  border-color: #c9a34a;
+  background: #1b1e25;
+  color: #e6c46a;
+  animation: none; /* Coffre stays standing */
+}
+
+@keyframes domino-tip {
+  to { transform: rotate(12deg); }
+}
+
+.domino.selected {
+  outline: 3px solid #fff59a;
+  outline-offset: 3px;
+}
+
+.domino-half {
+  display: grid;
+  flex: 1;
+  place-items: center;
+  padding: 6px;
+  font-size: 14px;
+  font-weight: 600;
+  line-height: 1.25;
+  text-align: center;
+}
+
+.domino-half + .domino-half {
+  border-top: 2px dashed currentColor;
+}
+
+.domino-none {
+  color: #bbb;
+  font-size: 18px;
+}
+
+.lesson-detail {
+  min-height: 112px;
+  margin-bottom: 14px;
+  padding: 14px 18px;
   border-radius: 12px;
-  background: rgb(255 255 255 / 0.06);
-  opacity: 0.6;
+  background: rgb(255 255 255 / 0.08);
 }
 
-.lesson.reached {
-  background: rgb(255 255 255 / 0.12);
-  opacity: 1;
+.lesson-detail:empty {
+  display: none;
 }
 
-.lesson p {
+.missed {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  font-size: 16px;
+  line-height: 1.45;
+  color: #ccc;
+}
+
+.missed li + li {
+  margin-top: 6px;
+}
+
+.missed strong {
+  color: #fff;
+}
+
+.lesson-detail p {
   margin: 0;
   font-size: 15px;
   line-height: 1.4;
@@ -204,4 +299,26 @@
 
 .lesson-fix::before {
   content: "→ ";
+}
+
+/* The last minute: the room goes red at the edges, and breathes. */
+.stage.finale::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 9;
+  pointer-events: none;
+  box-shadow: inset 0 0 120px 30px rgb(200 30 20 / 0.55);
+  animation: finale-pulse 1.2s ease-in-out infinite alternate;
+}
+
+@keyframes finale-pulse {
+  from { opacity: 0.45; }
+  to { opacity: 1; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .stage.finale::after {
+    animation: none;
+  }
 }
