@@ -8,8 +8,12 @@ export const ROUND_MINUTES = 20;
 export const MAX_ATTEMPTS = 5;
 export const LOCKOUT_MS = 60_000;
 
-/** @param {{photos?: object[]}} [phone] photos already on Camille's phone */
-export function createState({ photos = [] } = {}) {
+/**
+ * @param {object} [start]
+ * @param {object[]} [start.photos] photos already on Camille's phone
+ * @param {object[]} [start.emails] e-mails already in her inbox
+ */
+export function createState({ photos = [], emails = [] } = {}) {
   return {
     clues: [],           // {id, text, deduction?, done?}, in the order found
     unlocked: new Set(), // devices or accounts open right now
@@ -18,7 +22,12 @@ export function createState({ photos = [] } = {}) {
     lockedUntil: {},     // device id -> time the lockout ends
     photos: [...photos], // phone gallery, newest first
     trash: [],           // "Supprimés récemment"
-    alerts: [],          // security e-mails sent to Camille
+    // Her mailbox, the same on the phone and on the PC. Security alerts
+    // land here too ({id, alert, sentAt}).
+    inbox: [...emails],  // newest first
+    mailTrash: [],       // the mailbox's "Corbeille"
+    erasedEmails: [],    // her own e-mails gone for good (she may miss them)
+    alertCount: 0,
   };
 }
 
@@ -98,11 +107,36 @@ export function hasCracked(state, deviceId) {
  * alert goes to Camille's mailbox. Returns the photo.
  */
 export function takeIntruderPhoto(state, now) {
-  const n = state.alerts.length + 1;
-  const photo = { id: `intruder-${n}`, intruder: true, takenAt: now };
+  const n = state.photos.filter(p => p.intruder).length + state.trash.filter(p => p.intruder).length + 1;
+  const photo = { id: `intruder-${n}-${now}`, intruder: true, takenAt: now };
   state.photos.unshift(photo);
-  state.alerts.push({ id: `alert-${n}`, photoId: photo.id, sentAt: now });
+  sendAlert(state, 'phone', now);
   return photo;
+}
+
+/**
+ * A security e-mail lands in Camille's inbox: 'phone' (too many wrong PIN
+ * codes) or 'login' (too many wrong mailbox passwords). Returns it.
+ */
+export function sendAlert(state, kind, now) {
+  state.alertCount += 1;
+  const email = { id: `alert-${state.alertCount}`, alert: kind, sentAt: now };
+  state.inbox.unshift(email);
+  return email;
+}
+
+/** Moves an e-mail from the inbox to the mailbox's "Corbeille". */
+export function deleteEmail(state, emailId) {
+  const index = state.inbox.findIndex(e => e.id === emailId);
+  if (index === -1) return false;
+  state.mailTrash.unshift(...state.inbox.splice(index, 1));
+  return true;
+}
+
+/** Empties the mailbox's "Corbeille": those e-mails are gone for good. */
+export function emptyMailTrash(state) {
+  for (const email of state.mailTrash) if (!email.alert) state.erasedEmails.push(email.id);
+  state.mailTrash = [];
 }
 
 /** Moves a photo from the gallery to "Supprimés récemment". */
@@ -122,7 +156,9 @@ export function emptyTrash(state) {
 export function leftoverTraces(state) {
   return {
     intruderPhotos: [...state.photos, ...state.trash].filter(p => p.intruder).length,
-    alerts: state.alerts.length,
+    alerts: [...state.inbox, ...state.mailTrash].filter(e => e.alert).length,
+    // Her own e-mails deleted: missing from her inbox.
+    missingEmails: state.mailTrash.filter(e => !e.alert).length + state.erasedEmails.length,
     openPc: state.unlocked.has('pc'), // she would find her session open
   };
 }

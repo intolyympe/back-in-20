@@ -11,7 +11,7 @@ import { createPcView } from './scenes/pc.js';
 import { createCalendarView, CALENDAR_CLUES } from './scenes/calendar.js';
 import { createNotepadView } from './scenes/notepad.js';
 import { createDrawerView } from './scenes/drawer.js';
-import { STORY_START, DEDUCTIONS, PHONE, PC } from './data/camille.js';
+import { STORY_START, DEDUCTIONS, PHONE, PC, MAIL } from './data/camille.js';
 
 const STAGE_W = 1600;
 const STAGE_H = 900;
@@ -27,7 +27,7 @@ const clock = $('clock');
 const seconds = Number(new URLSearchParams(location.search).get('seconds'));
 const roundMs = seconds > 0 ? seconds * 1000 : ROUND_MINUTES * 60_000;
 
-const state = createState({ photos: PHONE.photos });
+const state = createState({ photos: PHONE.photos, emails: MAIL.emails });
 const timer = createTimer(roundMs);
 const notebook = createNotebook($('notebook-list'), $('notebook-empty'));
 const overlay = createOverlay($('overlay'), $('overlay-content'));
@@ -69,7 +69,7 @@ const PHONE_NOTES = {
   unlocked: { id: 'phone-unlocked', text: 'Téléphone déverrouillé avec 1411.' },
   caught: { id: 'phone-caught', text: 'Le téléphone m’a pris en photo ! Et il a prévenu Camille par mail…' },
   erasePhoto: { id: 'erase-photo', task: true, text: 'Effacer ma photo : galerie, puis « Supprimés récemment ».' },
-  eraseAlert: { id: 'erase-alert', task: true, text: 'Effacer le mail d’alerte dans sa boîte.' },
+  eraseAlert: { id: 'erase-alert', task: true, text: 'Effacer le mail d’alerte : sa boîte mail, puis la corbeille.' },
 };
 
 function onPhoneEvent(type, data) {
@@ -78,10 +78,15 @@ function onPhoneEvent(type, data) {
     showChapterBanner(1, 'Le téléphone · terminé');
   } else if (type === 'lockout') {
     note([PHONE_NOTES.caught, PHONE_NOTES.erasePhoto, PHONE_NOTES.eraseAlert]);
+    // A second lockout: both tasks are back if they were done.
+    const reopened = [PHONE_NOTES.erasePhoto.id, PHONE_NOTES.eraseAlert.id].map(id => markDone(state, id, false));
+    if (reopened.some(Boolean)) notebook.render(state.clues);
   } else if (type === 'photo-viewed' && data.photo.clue) {
     note([data.photo.clue]);
   } else if (type === 'thread-viewed' && data.thread.clue) {
     note([data.thread.clue]);
+  } else if (type === 'note-viewed' && data.note.clue) {
+    note([data.note.clue]);
   } else if (type === 'trash-emptied' && leftoverTraces(state).intruderPhotos === 0) {
     if (markDone(state, PHONE_NOTES.erasePhoto.id)) {
       notebook.render(state.clues);
@@ -125,9 +130,37 @@ function onPcEvent(type, data) {
   }
 }
 
+const MAIL_NOTES = {
+  unlocked: { id: 'mail-unlocked', text: `Messagerie ouverte avec ${MAIL.password}, comme le PC.` },
+  caught: { id: 'mail-caught', text: 'La messagerie a bloqué la connexion et prévenu Camille par mail…' },
+};
+
+/** Crosses out "erase the alert" once no alert e-mail is left anywhere. */
+function checkAlertsErased() {
+  if (leftoverTraces(state).alerts === 0 && markDone(state, PHONE_NOTES.eraseAlert.id)) {
+    notebook.render(state.clues);
+    showToast('Mail d’alerte effacé pour de bon.');
+  }
+}
+
+function onMailEvent(type, data) {
+  if (type === 'unlock') {
+    const first = !state.clues.some(clue => clue.id === MAIL_NOTES.unlocked.id);
+    note([MAIL_NOTES.unlocked]);
+    if (first) showChapterBanner(3, 'La messagerie · terminé');
+  } else if (type === 'lockout') {
+    note([MAIL_NOTES.caught, PHONE_NOTES.eraseAlert]);
+    if (markDone(state, PHONE_NOTES.eraseAlert.id, false)) notebook.render(state.clues);
+  } else if (type === 'email-viewed' && data.email.clue) {
+    note([data.email.clue]);
+  } else if (type === 'trash-emptied') {
+    checkAlertsErased();
+  }
+}
+
 const VIEWS = {
-  phone: () => createPhoneView({ state, now: elapsed, storyTime, onEvent: onPhoneEvent }),
-  pc: () => createPcView({ state, now: elapsed, storyTime, onEvent: onPcEvent }),
+  phone: () => createPhoneView({ state, now: elapsed, storyTime, onEvent: onPhoneEvent, onMailEvent }),
+  pc: () => createPcView({ state, now: elapsed, storyTime, onEvent: onPcEvent, onMailEvent }),
   calendar: () => createCalendarView({
     onPage: month => { if (CALENDAR_CLUES[month]) note([CALENDAR_CLUES[month]]); },
   }),
@@ -170,9 +203,11 @@ function endSummary() {
   const traces = leftoverTraces(state);
   const lines = [];
   if (traces.intruderPhotos) lines.push('Elle trouve ta photo dans son téléphone.');
-  if (traces.alerts) lines.push('Un mail l’attend : « Tentative d’accès à votre téléphone ».');
+  if (traces.alerts === 1) lines.push('Un mail d’alerte l’attend dans sa boîte.');
+  if (traces.alerts > 1) lines.push(`${traces.alerts} mails d’alerte l’attendent dans sa boîte.`);
+  if (traces.missingEmails) lines.push('Elle remarque qu’il lui manque des mails.');
   if (traces.openPc) lines.push('Elle retrouve sa session ouverte sur son PC.');
-  if (!traces.intruderPhotos && !traces.alerts && !traces.openPc) lines.push('Elle ne remarque rien.');
+  if (!Object.values(traces).some(Boolean)) lines.push('Elle ne remarque rien.');
   lines.push(hasCracked(state, 'phone')
     ? 'Tu as déverrouillé son téléphone.'
     : 'Tu n’as pas réussi à déverrouiller son téléphone.');
@@ -181,6 +216,7 @@ function endSummary() {
       ? 'Tu es entré dans sa session sur le PC.'
       : 'Tu n’as pas trouvé le mot de passe de son PC.');
   }
+  if (hasCracked(state, 'mail')) lines.push('Tu es entré dans sa messagerie.');
   return lines;
 }
 

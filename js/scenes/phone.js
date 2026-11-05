@@ -7,10 +7,13 @@
 // lives in js/state.js, and main.js turns events into notebook entries.
 
 import { PHONE } from '../data/camille.js';
+import { createMailbox } from './mailbox.js';
+import { MORE_APPS, moreAppScreens } from './phone-apps.js';
 import {
   recordFailedAttempt, lockRemaining, unlock, isUnlocked,
-  takeIntruderPhoto, deletePhoto, emptyTrash,
+  takeIntruderPhoto, deletePhoto, emptyTrash, leftoverTraces,
 } from '../state.js';
+import { el, button, hhmm, mss } from '../dom.js';
 
 const DATE_FORMAT = new Intl.DateTimeFormat('fr-FR', { weekday: 'long', day: 'numeric', month: 'long' });
 const PHOTO_DATE = new Intl.DateTimeFormat('fr-FR', { day: 'numeric', month: 'long', year: 'numeric' });
@@ -23,7 +26,6 @@ const THOUGHTS = {
   reply: 'Surtout pas : elle verrait le message.',
   photo: 'Surtout pas : la photo resterait dans sa galerie.',
   scam: 'Payer 1,99 € par un lien inconnu ? C’est du hameçonnage.',
-  mail: 'Il me faudrait son mot de passe…',
 };
 
 const HOURLY = [['14h', '☀', 31], ['15h', '☀', 32], ['16h', '☀', 33], ['17h', '⛅', 32], ['18h', '⛅', 30]];
@@ -73,34 +75,19 @@ const SETTINGS = [
   },
 ];
 
-const APPS = [
+// The dock at the bottom of the home screen, and the grid above it.
+const DOCK = [
   { id: 'photos', name: 'Photos', glyph: '✿', color: '#f2a65a' },
   { id: 'messages', name: 'Messages', glyph: '…', color: '#4d8a52' },
   { id: 'mail', name: 'Mail', glyph: '✉', color: '#2b5fa8' },
   { id: 'camera', name: 'Caméra', glyph: '◉', color: '#555b66' },
+];
+const GRID = [
+  ...MORE_APPS.slice(0, 4), // Plans, Calendrier, Notes, Musique
   { id: 'weather', name: 'Météo', glyph: '☀', color: '#e0a830' },
   { id: 'settings', name: 'Réglages', glyph: '⚙', color: '#6b7079' },
+  ...MORE_APPS.slice(4),    // Bulle, Nébula, Coffre
 ];
-
-function el(tag, className, text) {
-  const node = document.createElement(tag);
-  if (className) node.className = className;
-  if (text !== undefined) node.textContent = text;
-  return node;
-}
-
-function button(className, text, onClick) {
-  const b = el('button', className, text);
-  b.type = 'button';
-  b.addEventListener('click', onClick);
-  return b;
-}
-
-const hhmm = date => `${String(date.getHours()).padStart(2, '0')}:${String(date.getMinutes()).padStart(2, '0')}`;
-const mss = ms => {
-  const s = Math.ceil(ms / 1000);
-  return `${Math.floor(s / 60)}:${String(s % 60).padStart(2, '0')}`;
-};
 
 /**
  * @param {object} options
@@ -109,9 +96,11 @@ const mss = ms => {
  * @param {(ms: number) => Date} options.storyTime  story clock at that time
  * @param {(type: string, data?: object) => void} options.onEvent
  *   'unlock', 'lockout', 'photo-viewed' {photo}, 'thread-viewed' {thread},
- *   'photo-deleted', 'trash-emptied'
+ *   'note-viewed' {note}, 'photo-deleted', 'trash-emptied'
+ * @param {(type: string, data?: object) => void} options.onMailEvent
+ *   events of the Mail app (see mailbox.js)
  */
-export function createPhoneView({ state, now, storyTime, onEvent = () => {} }) {
+export function createPhoneView({ state, now, storyTime, onEvent = () => {}, onMailEvent = () => {} }) {
   const handset = el('div', 'handset');
   const screen = el('div', 'handset-screen');
   handset.append(screen);
@@ -165,7 +154,8 @@ export function createPhoneView({ state, now, storyTime, onEvent = () => {} }) {
   function lockScreen() {
     const time = storyTime(now());
     const parts = [el('div', 'lock-time', hhmm(time)), el('div', 'lock-date', DATE_FORMAT.format(time))];
-    if (state.alerts.length) parts.push(alertNotification());
+    // The notification goes once the intruder photo is erased.
+    if (leftoverTraces(state).intruderPhotos) parts.push(alertNotification());
 
     const bottom = el('div', 'lock-bottom');
     const wait = lockRemaining(state, 'phone', now());
@@ -201,7 +191,8 @@ export function createPhoneView({ state, now, storyTime, onEvent = () => {} }) {
 
   function homeScreen() {
     const parts = [statusBar()];
-    if (state.alerts.length) {
+    // Mail notification while an alert e-mail sits in her inbox.
+    if (state.inbox.some(email => email.alert)) {
       const mail = el('div', 'phone-notification');
       mail.append(
         el('strong', '', 'Mail · Alerte de sécurité'),
@@ -209,15 +200,18 @@ export function createPhoneView({ state, now, storyTime, onEvent = () => {} }) {
       );
       parts.push(mail);
     }
-    const grid = el('div', 'app-grid');
-    for (const app of APPS) {
+    const appButton = app => {
       const b = button('app', '', () => go(app.id));
       const icon = el('span', 'app-icon', app.glyph);
       icon.style.background = app.color;
       b.append(icon, el('span', 'app-name', app.name));
-      grid.append(b);
-    }
-    parts.push(grid);
+      return b;
+    };
+    const grid = el('div', 'app-grid');
+    grid.append(...GRID.map(appButton));
+    const dock = el('div', 'app-dock');
+    dock.append(...DOCK.map(appButton));
+    parts.push(grid, dock);
     return parts;
   }
 
@@ -264,15 +258,7 @@ export function createPhoneView({ state, now, storyTime, onEvent = () => {} }) {
   }
 
   function mailScreen() {
-    const box = el('div', 'mail-login');
-    box.append(
-      el('span', 'mail-logo', '✉'),
-      el('p', 'mail-title', 'Session expirée'),
-      el('p', 'mail-text', 'Saisissez le mot de passe du compte de Camille pour voir vos e-mails.'),
-      button('mail-field', 'Mot de passe', think(THOUGHTS.mail)),
-      button('mail-login-button', 'Se connecter', think(THOUGHTS.mail)),
-    );
-    return [header('Mail', 'home'), box, notNowLine()];
+    return [header('Mail', 'home'), createMailbox({ state, now, storyTime, variant: 'phone', onEvent: onMailEvent })];
   }
 
   function cameraScreen() {
@@ -418,6 +404,7 @@ export function createPhoneView({ state, now, storyTime, onEvent = () => {} }) {
     photos: photosScreen, photo: photoScreen, trash: trashScreen,
     messages: messagesScreen, thread: threadScreen, mail: mailScreen,
     camera: cameraScreen, weather: weatherScreen, settings: settingsScreen, setting: settingScreen,
+    ...moreAppScreens({ go, header, think, thoughtLine: notNowLine, onEvent }),
   };
 
   function render() {
@@ -426,8 +413,9 @@ export function createPhoneView({ state, now, storyTime, onEvent = () => {} }) {
     // A conversation opens on its latest messages.
     const bubbles = screen.querySelector('.bubbles');
     if (bubbles) bubbles.scrollTop = bubbles.scrollHeight;
-    // Keep the keyboard working: focus the first control of the new screen.
-    screen.querySelector('button:not(:disabled)')?.focus();
+    // Keep the keyboard working: a field to type in (Mail), else the first
+    // control of the new screen.
+    (screen.querySelector('input:not(:disabled)') ?? screen.querySelector('button:not(:disabled)'))?.focus();
   }
 
   // ---- PIN ----

@@ -3,6 +3,7 @@ import assert from 'node:assert/strict';
 import {
   createState, addClue, markDone, applyDeductions, recordFailedAttempt, lockRemaining,
   unlock, relock, isUnlocked, hasCracked, takeIntruderPhoto, deletePhoto, emptyTrash, leftoverTraces,
+  sendAlert, deleteEmail, emptyMailTrash,
   MAX_ATTEMPTS, LOCKOUT_MS,
 } from '../js/state.js';
 
@@ -92,27 +93,52 @@ test('a device locked again stays cracked, and an open PC is a trace', () => {
 });
 
 test('an intruder photo lands first in the gallery and sends an alert', () => {
-  const state = createState({ photos: [{ id: 'rex' }] });
+  const state = createState({ photos: [{ id: 'rex' }], emails: [{ id: 'julie' }] });
   const photo = takeIntruderPhoto(state, 5000);
-  assert.deepEqual(photo, { id: 'intruder-1', intruder: true, takenAt: 5000 });
-  assert.deepEqual(state.photos.map(p => p.id), ['intruder-1', 'rex']);
-  assert.deepEqual(state.alerts, [{ id: 'alert-1', photoId: 'intruder-1', sentAt: 5000 }]);
-  assert.equal(takeIntruderPhoto(state, 9000).id, 'intruder-2');
+  assert.equal(photo.intruder, true);
+  assert.equal(photo.takenAt, 5000);
+  assert.deepEqual(state.photos.map(p => p.id), [photo.id, 'rex']);
+  assert.deepEqual(state.inbox, [{ id: 'alert-1', alert: 'phone', sentAt: 5000 }, { id: 'julie' }]);
+  assert.notEqual(takeIntruderPhoto(state, 9000).id, photo.id);
+  assert.equal(state.inbox[0].id, 'alert-2');
 });
 
 test('a deleted photo waits in "Supprimés récemment" until it is emptied', () => {
   const state = createState({ photos: [{ id: 'rex' }] });
-  takeIntruderPhoto(state, 0);
-  assert.deepEqual(leftoverTraces(state), { intruderPhotos: 1, alerts: 1, openPc: false });
+  const { id } = takeIntruderPhoto(state, 0);
+  const traces = { intruderPhotos: 1, alerts: 1, missingEmails: 0, openPc: false };
+  assert.deepEqual(leftoverTraces(state), traces);
 
-  assert.equal(deletePhoto(state, 'intruder-1'), true);
+  assert.equal(deletePhoto(state, id), true);
   assert.deepEqual(state.photos.map(p => p.id), ['rex']);
-  assert.deepEqual(state.trash.map(p => p.id), ['intruder-1']);
-  assert.deepEqual(leftoverTraces(state), { intruderPhotos: 1, alerts: 1, openPc: false }, 'still on the phone');
+  assert.deepEqual(state.trash.map(p => p.id), [id]);
+  assert.deepEqual(leftoverTraces(state), traces, 'still on the phone');
 
   emptyTrash(state);
-  assert.deepEqual(leftoverTraces(state), { intruderPhotos: 0, alerts: 1, openPc: false }, 'the e-mail is still there');
-  assert.equal(deletePhoto(state, 'intruder-1'), false);
+  assert.deepEqual(leftoverTraces(state), { ...traces, intruderPhotos: 0 }, 'the e-mail is still there');
+  assert.equal(deletePhoto(state, id), false);
+});
+
+test('an alert e-mail is only gone once the mailbox trash is emptied', () => {
+  const state = createState({ emails: [{ id: 'julie' }] });
+  sendAlert(state, 'login', 0);
+  assert.equal(leftoverTraces(state).alerts, 1);
+  assert.equal(deleteEmail(state, 'alert-1'), true);
+  assert.deepEqual(state.mailTrash.map(e => e.id), ['alert-1']);
+  assert.equal(leftoverTraces(state).alerts, 1, 'still in the trash');
+  emptyMailTrash(state);
+  assert.equal(leftoverTraces(state).alerts, 0);
+  assert.equal(leftoverTraces(state).missingEmails, 0);
+  assert.equal(deleteEmail(state, 'nope'), false);
+});
+
+test('deleting her own e-mails leaves a gap she can notice', () => {
+  const state = createState({ emails: [{ id: 'julie' }, { id: 'bank' }] });
+  deleteEmail(state, 'julie');
+  assert.equal(leftoverTraces(state).missingEmails, 1, 'missing from the inbox');
+  emptyMailTrash(state);
+  assert.equal(leftoverTraces(state).missingEmails, 1, 'and gone for good');
+  assert.deepEqual(state.inbox.map(e => e.id), ['bank']);
 });
 
 test('the photos the phone starts with are not shared between games', () => {

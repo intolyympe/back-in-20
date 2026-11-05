@@ -2,7 +2,7 @@ import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { DESK_OBJECTS, verbFor } from '../js/scenes/desk.js';
 import { CALENDAR_CLUES } from '../js/scenes/calendar.js';
-import { PHONE, PC, STORY_START } from '../js/data/camille.js';
+import { PHONE, PC, MAIL, STORY_START } from '../js/data/camille.js';
 
 const objects = Object.entries(DESK_OBJECTS);
 
@@ -30,7 +30,9 @@ test('clue ids are unique across the desk, the calendar and the phone', () => {
     ...Object.values(CALENDAR_CLUES),
     ...PHONE.photos.map(photo => photo.clue),
     ...PHONE.threads.map(thread => thread.clue),
+    ...PHONE.notes.map(note => note.clue),
     ...PC.notes.map(note => note.clue),
+    ...MAIL.emails.map(email => email.clue),
   ].filter(Boolean);
   const ids = clues.map(clue => clue.id);
   assert.equal(new Set(ids).size, ids.length);
@@ -50,4 +52,9 @@ test('the PC password follows the rule in her notes and comes from the clues', (
   assert.match(password, /[0-9]/, 'a digit');
   assert.match(password, /[^A-Za-z0-9]/, 'a special character');
   assert.ok(password.startsWith('Rex') && password.includes('2019'), 'dog + year he arrived');
+});
+
+test('her mailbox password is the PC one: that is the mistake', () => {
+  assert.equal(MAIL.password, PC.password);
+  assert.ok(PC.notes.some(note => note.lines.some(line => line.includes('même mdp que le PC'))));
 });

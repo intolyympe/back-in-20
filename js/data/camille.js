@@ -16,7 +16,10 @@
 //     company rule written in her notes (8 characters, a capital, a digit,
 //     a special character) explains the "!". Rex2019! is exactly 8.
 //   - "ne JAMAIS réutiliser ses mdp (oups…)" in the notes, and her Notes app
-//     on the PC: "Mail perso : même mdp que le PC" -> chapter 3
+//     on the PC: "Mail perso : même mdp que le PC" -> chapter 3, her mailbox
+//     opens with Rex2019! too
+//   - in her mailbox, an e-mail from Bulle (social network) sent to the
+//     address tied to her account: "mot de passe oublié ?" -> chapter 4
 
 // The round starts when Camille leaves her desk: Thursday 9 July 2026, 14:05
 // (local time). She is back 20 minutes later.
@@ -114,6 +117,53 @@ export const PHONE = {
       clue: { id: 'rex-2019', text: 'Photo : « Bienvenue à la maison, Rex ! », 12 mars 2019.' },
     },
   ],
+  // Notes app on the phone (the PC has its own), newest first.
+  notes: [
+    {
+      id: 'cadeaux',
+      title: 'Cadeaux 🎁',
+      date: '05/07/2026',
+      lines: ['Julie : cagnotte + un petit mot', 'Papa : le livre sur le Tour de France', 'Léa (21/03) : raté cette année… l’an prochain !'],
+    },
+    {
+      id: 'sac-bretagne',
+      title: 'Sac Bretagne',
+      date: '03/07/2026',
+      lines: ['Maillot, crème, lunettes', 'Laisse + gamelle + croquettes Rex', 'Chargeur !!'],
+    },
+    {
+      id: 'velo',
+      title: 'Vélo',
+      date: '14/04/2026',
+      lines: ['Cadenas : 2103 (l’anniv de Léa, facile à retenir)', 'Révision avant l’été'],
+      // Her habit: dates of people she loves as codes.
+      clue: { id: 'bike-lock', text: 'Note du téléphone : cadenas du vélo = 2103, l’anniversaire de Léa.' },
+    },
+    {
+      id: 'a-voir',
+      title: 'À regarder',
+      date: '02/02/2026',
+      lines: ['Le docu sur les fjords', 'La série que Hugo conseille (?)', 'Un film qui ne fait PAS pleurer'],
+    },
+  ],
+  // Plans app: saved places, placed on a drawn map (x, y in %).
+  places: [
+    { id: 'home', name: 'Domicile', detail: 'Croix-Rousse, Lyon', x: 36, y: 26, icon: '⌂' },
+    { id: 'park', name: 'Parc (balades de Rex)', detail: 'Presque tous les soirs', x: 66, y: 16, icon: '❀' },
+    { id: 'work', name: 'Bureau', detail: 'Part-Dieu, Lyon', x: 64, y: 54, icon: '▣' },
+    { id: 'vet', name: 'Clinique vétérinaire', detail: 'Dernière visite : 3 juillet', x: 26, y: 62, icon: '✚' },
+    { id: 'mum', name: 'Chez Maman', detail: 'Villeurbanne · le dimanche', x: 86, y: 40, icon: '♥' },
+  ],
+  // Musique app.
+  music: {
+    playing: { title: 'Lumière du Nord', artist: 'Les Aurores' },
+    playlists: [
+      { name: 'Balade avec Rex 🐶', count: 42 },
+      { name: 'Road trip Norvège', count: 67 },
+      { name: 'Concentration bureau', count: 120 },
+      { name: 'Mariage Julie 💃', count: 18 },
+    ],
+  },
   // Messages app, most recent first. `me: true` is Camille writing, `day`
   // starts a new day in the conversation, `scam` is a link not to touch.
   threads: [
@@ -232,6 +282,114 @@ export const PC = {
     },
   ],
   files: ['Budget_T3_final_v2.xlsx', 'Slides_vendredi.pres', 'Factures_Hugo (vide)', 'CV_2024.pdf'],
+};
+
+// Camille's mailbox, the same on her phone and her PC. Same password as the
+// PC: that is the chapter 3 mistake. Brands are made up (Bulle, Banque
+// Nébula, Compagnie des Îles).
+export const MAIL = {
+  password: PC.password,
+  // Inbox, newest first. `scam` is a link not to click, `clue` is written
+  // in the notebook when the e-mail is opened.
+  emails: [
+    {
+      id: 'it-reminder',
+      from: 'Service informatique',
+      subject: 'Rappel : formation cybersécurité',
+      time: '09:12',
+      body: [
+        'Bonjour à tous,',
+        'Petit rappel après la formation de mardi :',
+        '• un mot de passe différent pour chaque compte ;',
+        '• ne notez jamais vos mots de passe ;',
+        '• verrouillez votre poste dès que vous le quittez.',
+        'Merci à tous, le service informatique',
+      ],
+    },
+    {
+      id: 'bulle-likes',
+      from: 'Bulle',
+      subject: 'Léa et 2 autres personnes ont aimé votre photo',
+      time: 'Hier',
+      body: [
+        'Bonjour Camille,',
+        'Léa, Julie et 1 autre personne ont aimé votre photo « Balade du soir avec Rex 🌙 ».',
+        'Cet e-mail a été envoyé à l’adresse liée à votre compte Bulle @cam.et.rex.',
+        'Mot de passe oublié ? Recevez un lien de réinitialisation à cette adresse.',
+      ],
+      clue: {
+        id: 'bulle-account',
+        text: 'Mail de Bulle : son compte @cam.et.rex est lié à cette boîte (« mot de passe oublié » → lien envoyé ici).',
+      },
+    },
+    {
+      id: 'julie-wedding',
+      from: 'Julie',
+      subject: 'Infos mariage 💍',
+      time: 'Mar.',
+      body: [
+        'Coucou les filles !',
+        'Rendez-vous samedi 18 à 15h à la mairie, puis vin d’honneur au domaine.',
+        'Dress code : couleurs d’été ☀',
+        'Bisous, J.',
+      ],
+    },
+    {
+      id: 'bulle-scam',
+      from: 'Bulle Sécurité',
+      subject: 'Votre compte va être suspendu',
+      time: 'Lun.',
+      body: [
+        'Cher utilisateur,',
+        'Une activité inhabituelle a été détectée sur votre compte. Confirmez votre identité sous 24 h pour éviter sa suspension :',
+      ],
+      scam: 'bulle-verification-compte.co/login',
+    },
+    {
+      id: 'ferry',
+      from: 'Compagnie des Îles',
+      subject: 'Réservation confirmée : Quiberon → Belle-Île',
+      time: '2 juil.',
+      body: [
+        'Bonjour Camille,',
+        'Aller : samedi 1er août, 10h15.',
+        'Passagers : 1 adulte + 1 chien.',
+        'Bonne traversée !',
+      ],
+    },
+    {
+      id: 'bank',
+      from: 'Banque Nébula',
+      subject: 'Votre relevé de juin est disponible',
+      time: '1 juil.',
+      body: [
+        'Bonjour Madame,',
+        'Votre relevé de compte de juin est disponible dans votre espace client.',
+        'Banque Nébula ne vous demandera jamais vos codes par e-mail.',
+      ],
+    },
+  ],
+  // Security e-mails sent during the round (see sendAlert in state.js).
+  alerts: {
+    phone: {
+      from: 'Sécurité du téléphone',
+      subject: 'Tentative d’accès à votre téléphone',
+      body: [
+        '5 codes erronés ont été saisis sur votre téléphone.',
+        'La caméra avant a pris cette photo :',
+        'Si ce n’était pas vous, changez votre code.',
+      ],
+    },
+    login: {
+      from: 'Messagerie',
+      subject: 'Connexion bloquée sur votre compte',
+      body: [
+        'Plusieurs mots de passe erronés ont été saisis sur votre compte.',
+        'Par sécurité, la connexion a été bloquée pendant 1 minute.',
+        'Si ce n’était pas vous, changez votre mot de passe.',
+      ],
+    },
+  },
 };
 
 // When the player has found every clue in `from`, the notebook writes the

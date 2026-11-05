@@ -1,0 +1,348 @@
+/* Camille's mailbox, in the phone's Mail app (dark) and in the PC's Mail
+   window (light). Same markup, colours from the variant. */
+
+.mailbox {
+  --mail-bg: #111216;
+  --mail-ink: #f1f2f4;
+  --mail-soft: #9aa0ab;
+  --mail-line: #23252c;
+  --mail-hover: #1a1c22;
+  --mail-field: #1f2128;
+  --mail-accent: #2b5fa8;
+  --mail-danger-bg: #3a1f1d;
+  --mail-danger: #ff7a66;
+  --mail-thought: #ffe3a3;
+
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  min-height: 0;
+  width: 100%;
+  background: var(--mail-bg);
+  color: var(--mail-ink);
+  font-family: var(--font-ui);
+  text-shadow: none;
+}
+
+.mailbox--pc {
+  --mail-bg: #f6f6f4;
+  --mail-ink: #22252b;
+  --mail-soft: #6b6f78;
+  --mail-line: #e0e0dc;
+  --mail-hover: #ecebe6;
+  --mail-field: #fff;
+  --mail-danger-bg: #fbe3df;
+  --mail-danger: #b2321c;
+  --mail-thought: #9a5b00;
+}
+
+.mailbox button {
+  border: 0;
+  background: none;
+  color: inherit;
+  font: inherit;
+  cursor: pointer;
+}
+
+.mailbox button:disabled {
+  opacity: 0.4;
+  cursor: default;
+}
+
+/* ---- Login ---- */
+
+.mail-login {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: min(340px, 100% - 40px);
+  margin: 36px auto 0;
+  text-align: center;
+}
+
+.mail-logo {
+  display: grid;
+  place-items: center;
+  width: 64px;
+  height: 64px;
+  border-radius: 18px;
+  background: var(--mail-accent);
+  color: #fff;
+  font-size: 32px;
+}
+
+.mail-login-title {
+  margin: 14px 0 4px;
+  font-size: 19px;
+  font-weight: 700;
+}
+
+.mail-login-text {
+  margin: 0 0 20px;
+  color: var(--mail-soft);
+  font-size: 14px;
+  line-height: 1.4;
+}
+
+.mail-password {
+  width: 100%;
+  padding: 10px 14px;
+  border: 1px solid var(--mail-line);
+  border-radius: 10px;
+  background: var(--mail-field);
+  color: var(--mail-ink);
+  font: inherit;
+  font-size: 15px;
+}
+
+.mailbox--phone .mail-password {
+  border-color: #3a3d46;
+}
+
+.mail-password:focus {
+  outline: 2px solid #6ea8ff;
+  outline-offset: 1px;
+}
+
+.mail-password:disabled {
+  opacity: 0.5;
+}
+
+.mailbox .mail-login-go {
+  width: 100%;
+  margin-top: 10px;
+  padding: 10px;
+  border-radius: 10px;
+  background: var(--mail-accent);
+  color: #fff;
+  font-size: 15px;
+}
+
+.mail-login-message {
+  min-height: 20px;
+  margin: 10px 0 0;
+  color: var(--mail-danger);
+  font-size: 14px;
+}
+
+/* ---- Inbox and trash ---- */
+
+.mail-bar {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 8px 12px;
+  border-bottom: 1px solid var(--mail-line);
+  font-size: 14px;
+}
+
+.mail-bar-title {
+  margin-right: auto;
+  font-weight: 700;
+}
+
+.mail-back + .mail-bar-title {
+  margin-left: auto;
+  margin-right: 0;
+}
+
+.mailbox .mail-compose,
+.mailbox .mail-trash-link,
+.mailbox .mail-back {
+  padding: 5px 10px;
+  border-radius: 8px;
+  color: #6ea8ff;
+  font-size: 13px;
+}
+
+.mailbox--pc .mail-compose,
+.mailbox--pc .mail-trash-link,
+.mailbox--pc .mail-back {
+  color: var(--mail-accent);
+}
+
+.mailbox .mail-compose:hover,
+.mailbox .mail-trash-link:hover,
+.mailbox .mail-back:hover {
+  background: var(--mail-hover);
+}
+
+.mail-list {
+  flex: 0 1 auto;
+  min-height: 0;
+  overflow-y: auto;
+  scrollbar-width: none;
+}
+
+.mailbox .mail-row {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  width: 100%;
+  padding: 10px 14px;
+  border-bottom: 1px solid var(--mail-line);
+  text-align: left;
+}
+
+.mailbox button.mail-row:hover {
+  background: var(--mail-hover);
+}
+
+.mail-row.alert strong {
+  color: var(--mail-danger);
+}
+
+.mail-row-text {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  min-width: 0;
+  font-size: 14px;
+}
+
+.mail-row-subject {
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  color: var(--mail-soft);
+  font-size: 13px;
+}
+
+.mail-row-time {
+  flex: none;
+  color: var(--mail-soft);
+  font-size: 12px;
+}
+
+.mail-empty {
+  margin: 30px 0;
+  color: var(--mail-soft);
+  font-size: 14px;
+  text-align: center;
+}
+
+/* ---- One e-mail ---- */
+
+.mail-page {
+  flex: 0 1 auto;
+  min-height: 0;
+  overflow-y: auto;
+  padding: 14px 18px;
+  font-size: 14px;
+  line-height: 1.5;
+  scrollbar-width: none;
+}
+
+.mailbox--pc .mail-page {
+  font-size: 16px;
+}
+
+.mail-page p {
+  margin: 0 0 8px;
+}
+
+.mail-page .mail-subject {
+  margin: 0 0 4px;
+  font-size: 18px;
+}
+
+.mail-page .mail-from {
+  color: var(--mail-soft);
+  font-size: 13px;
+}
+
+.mail-photo {
+  display: block;
+  width: 120px;
+  margin: 4px 0 10px;
+  border-radius: 6px;
+}
+
+.mailbox .mail-scam-link {
+  padding: 0;
+  color: #6ea8ff;
+  text-decoration: underline;
+  text-align: left;
+}
+
+.mailbox--pc .mail-scam-link {
+  color: var(--mail-accent);
+}
+
+.mail-actions {
+  display: flex;
+  justify-content: center;
+  gap: 10px;
+  margin-top: auto;
+  padding: 10px 0 18px;
+}
+
+.mailbox .mail-reply,
+.mailbox .mail-cancel {
+  padding: 8px 20px;
+  border-radius: 999px;
+  background: var(--mail-hover);
+  font-size: 14px;
+}
+
+.mailbox .mail-delete,
+.mailbox .mail-empty-trash,
+.mailbox .mail-confirm-yes {
+  padding: 8px 20px;
+  border-radius: 999px;
+  background: var(--mail-danger-bg);
+  color: var(--mail-danger);
+  font-size: 14px;
+}
+
+.mailbox .mail-empty-trash {
+  align-self: center;
+  margin: auto 0 18px;
+}
+
+.mail-confirm {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 10px;
+  margin: auto 16px 18px;
+  padding: 12px;
+  border-radius: 14px;
+  background: var(--mail-hover);
+  font-size: 14px;
+  text-align: center;
+}
+
+.mail-confirm p {
+  flex-basis: 100%;
+  margin: 0 0 4px;
+}
+
+/* The player's thought, handwritten, at the bottom. */
+.mail-thought {
+  position: absolute;
+  left: 8px;
+  right: 8px;
+  bottom: 64px;
+  margin: 0;
+  color: var(--mail-thought);
+  font-family: var(--font-hand);
+  font-size: 24px;
+  line-height: 1.1;
+  text-align: center;
+  pointer-events: none;
+}
+
+.mailbox--pc .mail-thought {
+  bottom: 70px;
+  font-size: 28px;
+}
+
+.mail-thought.show {
+  animation: mail-thought-in 300ms ease-out;
+}
+
+@keyframes mail-thought-in {
+  from { opacity: 0; translate: 0 6px; }
+}

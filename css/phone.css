@@ -208,11 +208,28 @@
   font-weight: 600;
 }
 
-.app-grid {
+.app-grid,
+.app-dock {
   display: grid;
-  grid-template-columns: repeat(3, 72px);
-  gap: 18px 16px;
-  margin-top: 30px;
+  grid-template-columns: repeat(4, 60px);
+  gap: 16px 10px;
+}
+
+.app-grid {
+  margin-top: 24px;
+}
+
+/* Frosted dock at the bottom, like on real phones. */
+.app-dock {
+  margin: auto 0 14px;
+  padding: 10px 12px 8px;
+  border-radius: 26px;
+  background: rgb(255 255 255 / 0.2);
+  backdrop-filter: blur(10px);
+}
+
+.app-dock .app-name {
+  display: none;
 }
 
 .app {
@@ -225,9 +242,9 @@
 .app-icon {
   display: grid;
   place-items: center;
-  width: 58px;
-  height: 58px;
-  border-radius: 15px;
+  width: 54px;
+  height: 54px;
+  border-radius: 14px;
   color: #fff;
   font-size: 28px;
   box-shadow: 0 3px 8px rgb(0 0 0 / 0.35);
@@ -239,7 +256,8 @@
 }
 
 .app-name {
-  font-size: 12px;
+  font-size: 11px;
+  white-space: nowrap;
 }
 
 
@@ -252,7 +270,15 @@
 .screen-thread,
 .screen-mail,
 .screen-settings,
-.screen-setting {
+.screen-setting,
+.screen-notes,
+.screen-note,
+.screen-maps,
+.screen-music,
+.screen-calendar,
+.screen-bulle,
+.screen-bank,
+.screen-vault {
   background: #111216;
   text-shadow: none;
 }
@@ -420,7 +446,10 @@
 
 .app-message {
   min-height: 20px;
-  margin: auto 0 10px;
+  margin: auto 0 16px;
+  padding: 0 22px; /* clear of the screen's rounded corners */
+  line-height: 1.15;
+  text-align: center;
   font-family: var(--font-hand);
   font-size: 24px;
   color: #ffe3a3;
@@ -540,8 +569,7 @@
   background: #3f7f4a;
 }
 
-.reply-field,
-.mail-field {
+.reply-field {
   width: calc(100% - 24px);
   margin: 0 12px 24px;
   padding: 9px 14px !important;
@@ -550,54 +578,6 @@
   color: #7d828c !important;
   font-size: 14px !important;
   text-align: left;
-}
-
-/* Mail */
-
-.mail-login {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  width: 100%;
-  padding: 40px 22px 0;
-  text-align: center;
-}
-
-.mail-logo {
-  display: grid;
-  place-items: center;
-  width: 64px;
-  height: 64px;
-  border-radius: 18px;
-  background: #2b5fa8;
-  font-size: 32px;
-}
-
-.mail-title {
-  margin: 16px 0 6px;
-  font-size: 19px;
-  font-weight: 700;
-}
-
-.mail-text {
-  margin: 0 0 22px;
-  color: #9aa0ab;
-  font-size: 14px;
-  line-height: 1.4;
-}
-
-.mail-login .mail-field {
-  width: 100%;
-  margin: 0 0 12px;
-  border-radius: 10px;
-}
-
-.mail-login-button {
-  width: 100%;
-  padding: 10px !important;
-  border-radius: 10px;
-  background: #2b5fa8 !important;
-  font-size: 15px !important;
 }
 
 /* Camera */
@@ -714,4 +694,205 @@ div.settings-row {
 
 .screen-weather .phone-back {
   color: #fff !important;
+}
+
+/* ---- Notes, Plans, Musique, Calendrier ---- */
+
+.phone-note {
+  width: 100%;
+  padding: 6px 20px;
+  font-size: 15px;
+  line-height: 1.6;
+}
+
+.phone-note h3 {
+  margin: 0;
+  font-size: 22px;
+}
+
+.phone-note p {
+  margin: 0;
+}
+
+.phone-note .phone-note-date {
+  margin-bottom: 10px;
+  color: #9aa0ab;
+  font-size: 12px;
+}
+
+.map-search {
+  margin-bottom: 10px;
+}
+
+/* A drawn map: streets, a river, her saved places. */
+.map {
+  position: relative;
+  flex: none;
+  width: calc(100% - 24px);
+  height: 150px;
+  overflow: hidden;
+  border-radius: 14px;
+  background:
+    repeating-linear-gradient(90deg, transparent 0 34px, #3a3e48 34px 37px),
+    repeating-linear-gradient(0deg, transparent 0 28px, #3a3e48 28px 31px),
+    #262a33;
+}
+
+.map-river {
+  position: absolute;
+  left: -10%;
+  top: 40%;
+  width: 120%;
+  height: 22px;
+  background: #2f5f8f;
+  transform: rotate(-14deg);
+}
+
+.map-pin {
+  position: absolute;
+  display: grid;
+  place-items: center;
+  width: 26px;
+  height: 26px;
+  border: 2px solid #fff;
+  border-radius: 50% 50% 50% 0;
+  background: #d9482b;
+  font-size: 13px;
+  transform: translate(-50%, -100%) rotate(-45deg);
+}
+
+.places-title {
+  align-self: flex-start;
+  margin: 14px 18px 6px;
+  color: #9aa0ab;
+  font-size: 12px;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+
+.places,
+.agenda {
+  flex: 0 1 auto;
+  min-height: 0;
+  overflow-y: auto;
+  scrollbar-width: none;
+}
+
+.place-text {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  font-size: 14px;
+}
+
+.place-text .settings-value {
+  font-size: 12px;
+}
+
+.now-playing {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  width: calc(100% - 24px);
+  padding: 12px;
+  border-radius: 14px;
+  background: linear-gradient(135deg, #3b2a4f, #1f2a44);
+}
+
+.now-cover {
+  display: grid;
+  place-items: center;
+  width: 54px;
+  height: 54px;
+  border-radius: 10px;
+  background: linear-gradient(135deg, #2f6f9f, #8fbaff);
+  font-size: 26px;
+}
+
+.now-text {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  font-size: 14px;
+}
+
+.now-text span {
+  color: #b9bfcb;
+  font-size: 12px;
+}
+
+.now-play {
+  width: 42px;
+  height: 42px;
+  border-radius: 50%;
+  background: #fff !important;
+  color: #1d1d22 !important;
+  font-size: 16px !important;
+}
+
+.agenda .settings-row span:first-child {
+  font-size: 14px;
+}
+
+/* ---- Bulle, Nébula, Coffre: a login, for later chapters ---- */
+
+.app-login {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: calc(100% - 44px);
+  margin-top: 30px;
+  text-align: center;
+}
+
+.app-login-logo {
+  display: grid;
+  place-items: center;
+  width: 70px;
+  height: 70px;
+  border-radius: 20px;
+  font-size: 36px;
+}
+
+.app-login-title {
+  margin: 14px 0 2px;
+  font-size: 22px;
+  font-weight: 700;
+}
+
+.app-login-account {
+  margin: 0 0 20px;
+  color: #9aa0ab;
+  font-size: 13px;
+}
+
+.app-login-field {
+  width: 100%;
+  padding: 10px 14px;
+  border: 1px solid #3a3d46;
+  border-radius: 10px;
+  background: #1f2128;
+  color: #fff;
+  font: inherit;
+  font-size: 15px;
+}
+
+.app-login-field:focus {
+  outline: 2px solid #6ea8ff;
+  outline-offset: 1px;
+}
+
+.app-login-go {
+  width: 100%;
+  margin-top: 10px;
+  padding: 10px !important;
+  border-radius: 10px;
+  background: #2b5fa8 !important;
+  font-size: 15px !important;
+}
+
+.app-login-link {
+  margin-top: 14px;
+  color: #6ea8ff !important;
+  font-size: 14px !important;
 }

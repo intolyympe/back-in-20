@@ -3,18 +3,12 @@
 
 import { CALENDAR } from '../data/camille.js';
 import { monthGrid, WEEKDAYS, MONTHS } from '../calendar-grid.js';
+import { el } from '../dom.js';
 
 // Pages that teach something when the player turns to them (month -> clue).
 export const CALENDAR_CLUES = {
   11: { id: 'cake-1411', text: 'Calendrier, 14 novembre : un gâteau dessiné. Pas de nom.' },
 };
-
-function el(tag, className, text) {
-  const node = document.createElement(tag);
-  node.className = className;
-  if (text !== undefined) node.textContent = text;
-  return node;
-}
 
 /** Is this day already gone in the story? (crossed out on the calendar) */
 function isPast(month, day) {
