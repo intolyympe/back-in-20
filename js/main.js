@@ -60,12 +60,13 @@ function tick() {
   requestAnimationFrame(tick);
 }
 
-function startGame() {
+function startGame(event) {
   $('start-screen').hidden = true;
   playing = true;
   timer.start();
   requestAnimationFrame(tick);
-  stage.querySelector('[data-hotspot]').focus();
+  // Started with the keyboard (no mouse click): keep the focus on the desk.
+  if (event.detail === 0) stage.querySelector('[data-hotspot]').focus();
 }
 
 function endGame() {
