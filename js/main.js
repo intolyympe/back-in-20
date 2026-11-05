@@ -6,6 +6,7 @@ import { createCloseUp, withThought } from './closeup.js';
 import { setupDesk, verbFor } from './scenes/desk.js';
 import { createPhoneView } from './scenes/phone.js';
 import { createCalendarView } from './scenes/calendar.js';
+import { createNotepadView } from './scenes/notepad.js';
 
 const STAGE_W = 1600;
 const STAGE_H = 900;
@@ -43,6 +44,7 @@ function showToast(text) {
 const VIEWS = {
   phone: createPhoneView,
   calendar: createCalendarView,
+  notepad: createNotepadView,
 };
 
 function inspect(id, object, button) {

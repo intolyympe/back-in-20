@@ -46,7 +46,8 @@ export const DESK_OBJECTS = {
   notepad: {
     verb: 'Lire',
     pickUp: true,
-    text: 'Des notes de réunion griffonnées. Rien d’utile… pour l’instant.',
+    opens: 'notepad',
+    text: 'Ses notes de la réunion de mardi.',
   },
   mug: {
     verb: 'Regarder',
