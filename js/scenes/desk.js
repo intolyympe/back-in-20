@@ -39,7 +39,7 @@ export const DESK_OBJECTS = {
   photo: {
     verb: 'Prendre',
     pickUp: true,
-    text: 'Une photo de vacances : Camille sur une plage, au coucher du soleil.',
+    text: 'Une photo de vacances : une plage au coucher du soleil, quelqu’un fait coucou. Sûrement Camille.',
     clues: [{ id: 'beach', text: 'Photo de vacances à la plage.' }],
   },
   pens: {
@@ -60,8 +60,8 @@ export const DESK_OBJECTS = {
   drawer: {
     verb: 'Ouvrir',
     opens: 'drawer',
-    text: 'Le bazar habituel… et sa carte d’anniversaire de l’an dernier. Elle l’a gardée.',
-    clues: [{ id: 'birthday-card', text: 'Vieille carte de Léa : « joyeux 29 ans ! », postée en nov. 2025.' }],
+    text: 'Le bazar habituel… et une carte d’anniversaire, encore dans son enveloppe.',
+    clues: [{ id: 'birthday-card', text: 'Carte de Léa à « Ma Cam » : joyeux 29 ans. Cachet : « 1? NOV. 2025 ».' }],
   },
   lamp: {
     toggle: 'lamp-on',
