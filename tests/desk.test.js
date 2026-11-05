@@ -2,7 +2,7 @@ import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { DESK_OBJECTS, verbFor } from '../js/scenes/desk.js';
 import { CALENDAR_CLUES } from '../js/scenes/calendar.js';
-import { PHONE, STORY_START } from '../js/data/camille.js';
+import { PHONE, PC, STORY_START } from '../js/data/camille.js';
 
 const objects = Object.entries(DESK_OBJECTS);
 
@@ -30,6 +30,7 @@ test('clue ids are unique across the desk, the calendar and the phone', () => {
     ...Object.values(CALENDAR_CLUES),
     ...PHONE.photos.map(photo => photo.clue),
     ...PHONE.threads.map(thread => thread.clue),
+    ...PC.notes.map(note => note.clue),
   ].filter(Boolean);
   const ids = clues.map(clue => clue.id);
   assert.equal(new Set(ids).size, ids.length);
@@ -40,4 +41,13 @@ test('the phone gallery is newest first and nothing is dated after today', () =>
   const dates = PHONE.photos.map(({ date: [y, m, d] }) => new Date(y, m - 1, d));
   for (let i = 1; i < dates.length; i++) assert.ok(dates[i] <= dates[i - 1], PHONE.photos[i].id);
   assert.ok(dates[0] <= STORY_START);
+});
+
+test('the PC password follows the rule in her notes and comes from the clues', () => {
+  const { password } = PC;
+  assert.ok(password.length >= 8, '8 characters');
+  assert.match(password, /[A-Z]/, 'a capital');
+  assert.match(password, /[0-9]/, 'a digit');
+  assert.match(password, /[^A-Za-z0-9]/, 'a special character');
+  assert.ok(password.startsWith('Rex') && password.includes('2019'), 'dog + year he arrived');
 });

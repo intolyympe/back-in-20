@@ -51,7 +51,10 @@ export const DESK_OBJECTS = {
     pickUp: true,
     opens: 'notepad',
     text: 'Ses notes de la réunion de mardi.',
-    clues: [{ id: 'reuses-passwords', text: 'Notes : « ne JAMAIS réutiliser ses mdp »… (oups ?)' }],
+    clues: [
+      { id: 'reuses-passwords', text: 'Notes : « ne JAMAIS réutiliser ses mdp »… (oups ?)' },
+      { id: 'pc-policy', text: 'Notes : mdp du PC = 8 caractères, 1 majuscule, 1 chiffre, 1 caractère spécial.' },
+    ],
   },
   mug: {
     verb: 'Regarder',

@@ -12,7 +12,11 @@
 //     is an animal; the puppy on the phone's wallpaper makes him her dog.
 //     The year he arrived (2019) is in the phone's photos once it is
 //     unlocked; her mum's text "déjà 7 ans" backs it up -> chapter 2
-//   - "ne JAMAIS réutiliser ses mdp (oups…)" in the notes -> chapter 3
+//   - PC password Rex2019! -> chapter 2: Rex + the year he arrived, and the
+//     company rule written in her notes (8 characters, a capital, a digit,
+//     a special character) explains the "!". Rex2019! is exactly 8.
+//   - "ne JAMAIS réutiliser ses mdp (oups…)" in the notes, and her Notes app
+//     on the PC: "Mail perso : même mdp que le PC" -> chapter 3
 
 // The round starts when Camille leaves her desk: Thursday 9 July 2026, 14:05
 // (local time). She is back 20 minutes later.
@@ -52,6 +56,7 @@ export const MEETING_NOTES = {
     { text: '– Formation cybersécu obligatoire :' },
     { text: '   « ne JAMAIS réutiliser ses mdp »' },
     { text: '                       (oups…)' },
+    { text: '   mdp PC : 8 car., 1 MAJ, 1 chiffre, 1 !?#' },
   ],
 };
 
@@ -191,6 +196,42 @@ export const PHONE = {
       ],
     },
   ],
+};
+
+// Camille's work computer. The password hint shows after a wrong try, as
+// on real systems (one more mistake of hers).
+export const PC = {
+  password: 'Rex2019!',
+  hint: 'mon bébé ❤',
+  // Notes app, newest first. Opening a note with a `clue` writes it down.
+  notes: [
+    {
+      id: 'courses',
+      title: 'Courses',
+      date: '08/07/2026',
+      lines: ['Croquettes Rex (grand sac !)', 'Tomates, feta', 'Crème solaire', 'Carte pour Julie'],
+    },
+    {
+      id: 'julie',
+      title: 'Mariage Julie 💍',
+      date: '01/07/2026',
+      lines: ['Samedi 18/07, 15h à la mairie', 'Cagnotte : 50 €', 'Robe ✓  Chaussures ✗', 'Discours : Léa s’en charge 🙏'],
+    },
+    {
+      id: 'bretagne',
+      title: 'Vacances Bretagne',
+      date: '20/06/2026',
+      lines: ['Départ vendredi 31/07', 'Rex vient ! (croquettes + gamelle)', 'Ferry pour Belle-Île à réserver', 'Retour le 15/08'],
+    },
+    {
+      id: 'codes',
+      title: 'Codes 🤫',
+      date: '12/05/2026',
+      lines: ['Digicode immeuble : 4580B', 'Wifi maison : au dos de la box', 'Mail perso : même mdp que le PC (flemme…)', 'Banque : NE PAS NOTER ICI !!'],
+      clue: { id: 'mail-same-as-pc', text: 'Note « Codes » sur le PC : « Mail perso : même mdp que le PC ».' },
+    },
+  ],
+  files: ['Budget_T3_final_v2.xlsx', 'Slides_vendredi.pres', 'Factures_Hugo (vide)', 'CV_2024.pdf'],
 };
 
 // When the player has found every clue in `from`, the notebook writes the
