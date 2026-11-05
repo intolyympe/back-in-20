@@ -9,6 +9,7 @@
   <link rel="stylesheet" href="css/base.css">
   <link rel="stylesheet" href="css/desk.css">
   <link rel="stylesheet" href="css/notebook.css">
+  <link rel="stylesheet" href="css/screens.css">
   <script type="module" src="js/main.js"></script>
 </head>
 <body>
@@ -36,6 +37,7 @@
       <button class="hotspot mug" data-hotspot="mug" aria-label="Tasse de café"></button>
       <button class="hotspot phone" data-hotspot="phone" aria-label="Téléphone de Camille"></button>
 
+      <div class="clock" id="clock" role="timer" aria-label="Temps avant le retour de Camille">20:00</div>
       <p class="toast" id="toast" role="status" aria-live="polite"></p>
     </section>
 
@@ -44,6 +46,19 @@
       <p class="notebook-empty" id="notebook-empty">Rien pour l’instant. Fouille le bureau.</p>
       <ol class="notebook-list" id="notebook-list"></ol>
     </aside>
+
+    <section class="screen" id="start-screen" aria-labelledby="game-title">
+      <h1 class="screen-title" id="game-title">Back in 20</h1>
+      <p class="screen-subtitle">De retour dans 20 minutes</p>
+      <p class="screen-text">Camille vient de quitter son bureau. Tu as 20 minutes pour prendre le contrôle de sa vie numérique.</p>
+      <button class="screen-button" id="start-button">Commencer</button>
+    </section>
+
+    <section class="screen" id="end-screen" aria-labelledby="end-title" hidden>
+      <h2 class="screen-title" id="end-title">Camille est de retour.</h2>
+      <p class="screen-text">Le temps est écoulé.</p>
+      <button class="screen-button" id="restart-button">Rejouer</button>
+    </section>
   </main>
 </body>
 </html>
