@@ -103,14 +103,18 @@
 
     <section class="screen debrief" id="end-screen" aria-labelledby="end-title" hidden>
       <h2 class="screen-title" id="end-title">Camille est de retour.</h2>
+      <p class="debrief-rank" id="end-rank"></p>
       <div class="debrief-body">
         <div class="debrief-found">
           <h3 class="debrief-heading">Ce qu’elle trouve en rentrant</h3>
           <div class="screen-text" id="end-summary"></div>
         </div>
-        <div class="debrief-lessons">
-          <h3 class="debrief-heading">Ses erreurs, et comment s’en protéger</h3>
-          <ol id="end-lessons"></ol>
+        <div class="debrief-chain">
+          <h3 class="debrief-heading">Ta partie, domino par domino</h3>
+          <ol class="dominos" id="end-dominos"></ol>
+          <div class="lesson-detail" id="end-lesson"></div>
+          <h3 class="debrief-heading">Ce que tu as manqué</h3>
+          <ul class="missed" id="end-missed"></ul>
         </div>
       </div>
       <button class="screen-button" id="restart-button">Rejouer</button>

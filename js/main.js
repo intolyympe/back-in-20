@@ -1,5 +1,5 @@
 import {
-  createState, addClue, markDone, applyDeductions, leftoverTraces, hasCracked, openBulleResetLink,
+  createState, addClue, markDone, applyDeductions, leftoverTraces, openBulleResetLink,
   ROUND_MINUTES,
 } from './state.js';
 import { createTimer, formatClock } from './timer.js';
@@ -13,7 +13,9 @@ import { createCalendarView, CALENDAR_CLUES } from './scenes/calendar.js';
 import { createNotepadView } from './scenes/notepad.js';
 import { createDrawerView } from './scenes/drawer.js';
 import { STORY_START, DEDUCTIONS, PHONE, PC, MAIL, BANK } from './data/camille.js';
-import { LESSONS } from './data/debrief.js';
+import { renderDebrief } from './debrief.js';
+import { rankFor } from './rank.js';
+import { ding } from './sound.js';
 
 const STAGE_W = 1600;
 const STAGE_H = 900;
@@ -59,7 +61,7 @@ function storyTime(ms = elapsed()) {
 let bannerTimeout;
 function showChapterBanner(number, title) {
   const banner = $('chapter-banner');
-  banner.querySelector('.chapter-number').textContent = `Chapitre ${number}`;
+  banner.querySelector('.chapter-number').textContent = typeof number === 'number' ? `Chapitre ${number}` : number;
   banner.querySelector('.chapter-title').textContent = title;
   banner.hidden = false;
   clearTimeout(bannerTimeout);
@@ -189,9 +191,15 @@ const VAULT_NOTE = {
   text: 'Coffre : une phrase de passe ET une clé physique. Celui-là résiste.',
 };
 
+
 function onVaultEvent(type) {
-  if (type === 'tried') note([VAULT_NOTE]);
-  else if (type === 'give-up') endGame('vault');
+  if (type === 'tried') {
+    note([VAULT_NOTE]);
+  } else if (type === 'give-up') {
+    // Time to go: jump to the last minute.
+    const left = timer.remaining();
+    if (left > FINALE_MS) timer.penalize(left - FINALE_MS);
+  }
 }
 
 const BULLE_NOTES = {
@@ -245,11 +253,26 @@ function inspect(id, object, button) {
   note(object.clues ?? []);
 }
 
+// The last minute: a "ding", she is on her way back. Everything must be put
+// back and the player must leave her desk before the clock runs out.
+const FINALE_MS = 60_000;
+const FINALE_NOTE = { id: 'finale', task: true, text: 'Ding ! Elle revient. Tout reposer et quitter son bureau, vite !' };
+let finale = false;
+
+function startFinale() {
+  finale = true;
+  ding();
+  stage.classList.add('finale');
+  showChapterBanner('Ding !', 'Elle revient : tout remettre en place !');
+  note([FINALE_NOTE]);
+}
+
 function tick() {
   const left = timer.remaining();
   clock.textContent = formatClock(left);
   clock.classList.toggle('urgent', left <= URGENT_MS);
   if (left === 0) return endGame();
+  if (!finale && left <= FINALE_MS) startFinale();
   requestAnimationFrame(tick);
 }
 
@@ -262,65 +285,19 @@ function startGame(event) {
   if (event.detail === 0) stage.querySelector('[data-hotspot]').focus();
 }
 
-/** What Camille finds when she sits back down. */
-function endSummary() {
-  const traces = leftoverTraces(state);
-  const lines = [];
-  if (traces.intruderPhotos) lines.push('Elle trouve ta photo dans son téléphone.');
-  if (traces.alerts === 1) lines.push('Un mail d’alerte l’attend dans sa boîte.');
-  if (traces.alerts > 1) lines.push(`${traces.alerts} mails d’alerte l’attendent dans sa boîte.`);
-  if (traces.missingEmails) lines.push('Elle remarque qu’il lui manque des mails.');
-  if (traces.openPc) lines.push('Elle retrouve sa session ouverte sur son PC.');
-  if (traces.bullePasswordChanged) lines.push('Son mot de passe Bulle ne marche plus : elle s’en rendra compte.');
-  if (traces.bankTexts) lines.push('Un SMS de sa banque l’attend : « votre code de validation… ».');
-  if (!Object.values(traces).some(Boolean)) lines.push('Elle ne remarque rien.');
-  lines.push(hasCracked(state, 'phone')
-    ? 'Tu as déverrouillé son téléphone.'
-    : 'Tu n’as pas réussi à déverrouiller son téléphone.');
-  if (hasCracked(state, 'phone') || hasCracked(state, 'pc')) {
-    lines.push(hasCracked(state, 'pc')
-      ? 'Tu es entré dans sa session sur le PC.'
-      : 'Tu n’as pas trouvé le mot de passe de son PC.');
-  }
-  if (hasCracked(state, 'mail')) lines.push('Tu es entré dans sa messagerie.');
-  if (hasCracked(state, 'bulle')) lines.push('Tu as pris son compte Bulle.');
-  if (hasCracked(state, 'bank')) lines.push('Tu es entré dans son espace bancaire, sans toucher à rien.');
-  if (state.vaultTries) lines.push('Son Coffre, lui, n’a pas cédé.');
-  return lines;
-}
-
-/** One card of the debrief: what Camille did, how to avoid it. */
-function lessonItem(lesson) {
-  const reached = lesson.device === 'vault' ? state.vaultTries > 0 : hasCracked(state, lesson.device);
-  const item = document.createElement('li');
-  item.className = `lesson ${reached ? 'reached' : ''}`;
-  const head = document.createElement('p');
-  head.className = 'lesson-title';
-  const status = lesson.device === 'vault' ? 'a tenu bon' : 'pris';
-  head.textContent = reached ? `${lesson.title} · ${status}` : lesson.title;
-  const mistake = document.createElement('p');
-  mistake.className = 'lesson-mistake';
-  mistake.textContent = lesson.mistake;
-  const fix = document.createElement('p');
-  fix.className = 'lesson-fix';
-  fix.textContent = lesson.fix;
-  item.append(head, mistake, fix);
-  return item;
-}
-
-/** `reason`: 'time' (Camille is back) or 'vault' (the player gave up on it). */
-function endGame(reason = 'time') {
+/**
+ * Camille is back. Whatever the player still holds, or sitting at her PC,
+ * gets them caught.
+ */
+function endGame() {
   playing = false;
   timer.pause();
+  const caught = overlay.isOpen();
   overlay.close();
-  $('end-title').textContent = reason === 'vault' ? 'Le Coffre a tenu bon.' : 'Camille est de retour.';
   $('chapter-banner').hidden = true;
-  $('end-summary').replaceChildren(...endSummary().map(line => {
-    const p = document.createElement('p');
-    p.textContent = line;
-    return p;
-  }));
-  $('end-lessons').replaceChildren(...LESSONS.map(lessonItem));
+  stage.classList.remove('finale');
+  const traces = leftoverTraces(state);
+  renderDebrief(state, { traces, caught, rank: rankFor(traces, caught) });
   $('end-screen').hidden = false;
   $('restart-button').focus();
 }
