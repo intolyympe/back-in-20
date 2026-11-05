@@ -1,0 +1,185 @@
+/* The desk drawer: its front on the desk, and pulled open in the foreground. */
+
+.drawer {
+  --grow: 1.03;
+  left: 480px;
+  top: 848px;
+  width: 360px;
+  height: 52px;
+  border-radius: 6px 6px 0 0;
+  background: linear-gradient(#8f6440, #7a5233);
+  box-shadow: inset 0 2px 0 #a8784f, 0 -2px 6px rgb(0 0 0 / 0.25);
+}
+
+/* Metal handle. */
+.drawer::after {
+  content: "";
+  position: absolute;
+  left: 50%;
+  top: 18px;
+  width: 90px;
+  height: 12px;
+  border-radius: 6px;
+  background: linear-gradient(#d9d9d9, #8f8f8f);
+  box-shadow: 0 2px 3px rgb(0 0 0 / 0.4);
+  transform: translateX(-50%);
+}
+
+.drawer-open {
+  position: relative;
+  width: 780px;
+  height: 440px;
+  border: 20px solid #7a5233;
+  border-radius: 8px;
+  background: linear-gradient(#4f3420, #5f4129);
+  box-shadow: inset 0 14px 20px rgb(0 0 0 / 0.5), 0 18px 40px rgb(0 0 0 / 0.45);
+}
+
+.drawer-cable {
+  position: absolute;
+  left: 20px;
+  top: 20px;
+  width: 220px;
+  height: 120px;
+}
+
+.drawer-clip {
+  position: absolute;
+  width: 14px;
+  height: 36px;
+  border: 3px solid #c0c6cf;
+  border-radius: 7px;
+}
+
+.drawer-band {
+  position: absolute;
+  width: 46px;
+  height: 46px;
+  border: 4px solid #c0503a;
+  border-radius: 50%;
+}
+
+/* The birthday card, open, lying in the drawer. */
+.bday-card {
+  position: absolute;
+  left: 22px;
+  bottom: 22px;
+  display: flex;
+  width: 540px;
+  height: 284px;
+  transform: rotate(-3deg);
+  box-shadow: 0 8px 18px rgb(0 0 0 / 0.45);
+}
+
+.bday-front {
+  flex: 0 0 42%;
+}
+
+.bday-inside {
+  flex: 1;
+}
+
+.bday-front {
+  display: grid;
+  place-items: center;
+  padding: 20px;
+  background:
+    radial-gradient(circle at 20% 25%, #f2a65a 0 6px, transparent 7px),
+    radial-gradient(circle at 75% 20%, #4d8a52 0 5px, transparent 6px),
+    radial-gradient(circle at 82% 78%, #c2477a 0 7px, transparent 8px),
+    radial-gradient(circle at 25% 80%, #2b5fa8 0 5px, transparent 6px),
+    radial-gradient(circle at 55% 88%, #f4d03f 0 4px, transparent 5px),
+    #f6ead2; /* a year in a drawer: slightly yellowed */
+  border-right: 1px solid #e3d6c3;
+}
+
+.bday-title {
+  color: var(--accent);
+  font-family: var(--font-hand);
+  font-size: 46px;
+  font-weight: 700;
+  line-height: 1;
+  text-align: center;
+  rotate: -6deg;
+}
+
+.bday-inside {
+  padding: 26px 22px;
+  background: linear-gradient(100deg, rgb(0 0 0 / 0.05), transparent 8%), #f8f0de;
+  color: #2b4f8a;
+  font-family: var(--font-hand);
+  font-size: 23px;
+  line-height: 1.25;
+  white-space: nowrap;
+}
+
+.bday-inside p {
+  margin: 0;
+}
+
+.bday-inside p:last-child {
+  margin-top: 6px;
+  text-align: right;
+}
+
+/* Last year's envelope, under the card. The day on the postmark is smudged:
+   only the month and year can be read. */
+.bday-envelope {
+  position: absolute;
+  right: 18px;
+  top: 14px;
+  width: 330px;
+  height: 200px;
+  background:
+    linear-gradient(160deg, transparent 49.5%, #d9ccb4 50%, transparent 51%) top / 100% 50% no-repeat,
+    linear-gradient(20deg, transparent 49.5%, #d9ccb4 50%, transparent 51%) top / 100% 50% no-repeat,
+    #efe4cf;
+  box-shadow: 0 6px 14px rgb(0 0 0 / 0.4);
+  rotate: 6deg;
+}
+
+.bday-address {
+  position: absolute;
+  left: 40px;
+  bottom: 36px;
+  width: 150px;
+  height: 46px;
+  background: repeating-linear-gradient(transparent 0 12px, #4a5a78 12px 14px);
+  opacity: 0.6;
+}
+
+.bday-stamp {
+  position: absolute;
+  right: 18px;
+  top: 16px;
+  width: 44px;
+  height: 54px;
+  border: 3px dotted #efe4cf;
+  background: #c2477a;
+  outline: 2px solid #fff;
+}
+
+.bday-postmark {
+  position: absolute;
+  right: 44px;
+  top: 22px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  width: 84px;
+  height: 84px;
+  border: 2px solid rgb(40 40 60 / 0.75);
+  border-radius: 50%;
+  color: rgb(40 40 60 / 0.8);
+  font-family: ui-monospace, Menlo, Consolas, monospace;
+  font-size: 13px;
+  font-weight: 700;
+  line-height: 1.15;
+  rotate: -14deg;
+}
+
+.postmark-day {
+  font-size: 15px;
+  filter: blur(1.6px); /* smudged ink */
+}

@@ -1,0 +1,101 @@
+<!doctype html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Back in 20 — De retour dans 20 minutes</title>
+  <meta name="description" content="Assieds-toi au bureau de Camille et devine ses mots de passe, indice après indice, avant son retour.">
+  <link rel="icon" href="data:,">
+  <link rel="stylesheet" href="css/base.css">
+  <link rel="stylesheet" href="css/desk.css">
+  <link rel="stylesheet" href="css/calendar.css">
+  <link rel="stylesheet" href="css/notepad.css">
+  <link rel="stylesheet" href="css/drawer.css">
+  <link rel="stylesheet" href="css/notebook.css">
+  <link rel="stylesheet" href="css/screens.css">
+  <link rel="stylesheet" href="css/overlay.css">
+  <link rel="stylesheet" href="css/closeup.css">
+  <link rel="stylesheet" href="css/phone.css">
+  <script type="module" src="js/main.js"></script>
+</head>
+<body>
+  <main class="stage" id="stage">
+    <section class="desk" aria-label="Le bureau de Camille">
+      <div class="wall"></div>
+      <button class="hotspot drawn window" data-hotspot="window" aria-label="Fenêtre">
+        <img src="assets/desk/window.svg" alt="" draggable="false">
+      </button>
+      <div class="desk-top"></div>
+
+      <button class="hotspot calendar" data-hotspot="calendar" aria-label="Calendrier"></button>
+
+      <div class="monitor">
+        <button class="hotspot monitor-screen" data-hotspot="monitor" aria-label="Écran de l'ordinateur">
+          <span class="pc-avatar">C</span>
+          <span class="pc-user">Camille</span>
+          <span class="pc-field">Mot de passe</span>
+          <span class="pc-hint">Session verrouillée</span>
+        </button>
+        <div class="monitor-neck"></div>
+        <div class="monitor-base"></div>
+      </div>
+
+      <button class="hotspot postit" data-hotspot="postit" aria-label="Post-it sur l'écran">
+        De retour<br>dans 20 min !<br><span class="postit-sign">— C.</span>
+      </button>
+
+      <button class="hotspot drawn plant" data-hotspot="plant" aria-label="Plante">
+        <img src="assets/desk/plant.svg" alt="" draggable="false">
+      </button>
+      <button class="hotspot drawn photo" data-hotspot="photo" aria-label="Photo encadrée">
+        <img src="assets/desk/photo.svg" alt="" draggable="false">
+      </button>
+
+      <img class="decor keyboard" src="assets/desk/keyboard.svg" alt="" draggable="false">
+      <img class="decor mouse" src="assets/desk/mouse.svg" alt="" draggable="false">
+      <button class="hotspot drawn pens" data-hotspot="pens" aria-label="Pot à crayons">
+        <img src="assets/desk/pens.svg" alt="" draggable="false">
+      </button>
+      <button class="hotspot drawn notepad" data-hotspot="notepad" aria-label="Bloc-notes">
+        <img src="assets/desk/notepad.svg" alt="" draggable="false">
+      </button>
+      <button class="hotspot mug" data-hotspot="mug" aria-label="Tasse de café">
+        <span class="steam"></span><span class="steam"></span><span class="steam"></span>
+      </button>
+      <button class="hotspot phone" data-hotspot="phone" aria-label="Téléphone de Camille"></button>
+      <button class="hotspot drawn lamp" data-hotspot="lamp" aria-label="Lampe de bureau" aria-pressed="false">
+        <img src="assets/desk/lamp.svg" alt="" draggable="false">
+      </button>
+      <div class="lamp-light" aria-hidden="true"></div>
+      <button class="hotspot drawer" data-hotspot="drawer" aria-label="Tiroir du bureau"></button>
+
+      <div class="clock" id="clock" role="timer" aria-label="Temps avant le retour de Camille">20:00</div>
+      <p class="toast" id="toast" role="status" aria-live="polite"></p>
+
+      <div class="overlay" id="overlay" role="dialog" aria-modal="true" aria-label="Vue rapprochée" tabindex="-1" hidden>
+        <div class="overlay-content" id="overlay-content"></div>
+        <p class="overlay-hint"><kbd>Échap</kbd> <span class="overlay-hint-action">pour reposer</span></p>
+      </div>
+    </section>
+
+    <aside class="notebook" aria-labelledby="notebook-title">
+      <h2 class="notebook-title" id="notebook-title">Carnet</h2>
+      <p class="notebook-empty" id="notebook-empty">Rien pour l’instant. Fouille le bureau.</p>
+      <ol class="notebook-list" id="notebook-list"></ol>
+    </aside>
+
+    <section class="screen" id="start-screen" aria-labelledby="game-title">
+      <h1 class="screen-title" id="game-title">Back in 20</h1>
+      <p class="screen-subtitle">De retour dans 20 minutes</p>
+      <p class="screen-text">Camille vient de quitter son bureau. Tu as 20 minutes pour prendre le contrôle de sa vie numérique.</p>
+      <button class="screen-button" id="start-button">Commencer</button>
+    </section>
+
+    <section class="screen" id="end-screen" aria-labelledby="end-title" hidden>
+      <h2 class="screen-title" id="end-title">Camille est de retour.</h2>
+      <p class="screen-text">Le temps est écoulé.</p>
+      <button class="screen-button" id="restart-button">Rejouer</button>
+    </section>
+  </main>
+</body>
+</html>

@@ -1,0 +1,86 @@
+/* Countdown clock, start screen and end screen. */
+
+.clock {
+  position: absolute;
+  left: 50%;
+  top: 24px;
+  transform: translateX(-50%);
+  z-index: 6; /* above a picked-up object, below the start/end screens */
+  padding: 6px 18px;
+  border-radius: 8px;
+  background: #111;
+  color: #ff5a3c;
+  font-family: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+  font-size: 34px;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  box-shadow: 0 4px 10px rgb(0 0 0 / 0.3);
+  font-variant-numeric: tabular-nums;
+}
+
+/* Last minute: the clock pulses. */
+.clock.urgent {
+  animation: pulse 1s ease-in-out infinite;
+}
+
+@keyframes pulse {
+  50% { transform: translateX(-50%) scale(1.08); color: #ff2d10; }
+}
+
+.screen {
+  position: absolute;
+  inset: 0;
+  z-index: 10;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 18px;
+  padding: 0 360px;
+  background: rgb(10 10 12 / 0.86);
+  color: #fff;
+  text-align: center;
+}
+
+.screen[hidden] {
+  display: none;
+}
+
+.screen-title {
+  margin: 0;
+  font-size: 88px;
+  letter-spacing: -0.02em;
+}
+
+#end-screen .screen-title {
+  font-size: 64px;
+}
+
+.screen-subtitle {
+  margin: -8px 0 0;
+  font-family: var(--font-hand);
+  font-size: 38px;
+  color: #fff59a;
+}
+
+.screen-text {
+  margin: 12px 0;
+  font-size: 24px;
+  line-height: 1.5;
+  color: #ddd;
+}
+
+.screen-button {
+  padding: 16px 44px;
+  border: 0;
+  border-radius: 999px;
+  background: var(--accent);
+  color: #fff;
+  font-size: 24px;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.screen-button:hover {
+  filter: brightness(1.1);
+}

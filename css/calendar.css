@@ -1,0 +1,239 @@
+/* Camille's wall calendar. .cal--desk is the small one on the wall,
+   .cal--large the one taken down to read. */
+
+.cal {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  color: var(--ink);
+  text-align: center;
+}
+
+.cal-month {
+  background: var(--accent);
+  color: #fff;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.cal-weekdays,
+.cal-grid {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+}
+
+.cal-weekdays {
+  color: var(--ink-soft);
+  text-transform: uppercase;
+}
+
+.cal-grid {
+  flex: 1;
+  grid-auto-rows: 1fr;
+  border-top: 1px solid #ddd;
+  border-left: 1px solid #ddd;
+}
+
+.cal-day {
+  position: relative;
+  border-right: 1px solid #ddd;
+  border-bottom: 1px solid #ddd;
+  overflow: hidden;
+}
+
+.cal-day.empty {
+  background: #f4f2ee;
+}
+
+.cal-number {
+  position: absolute;
+  font-weight: 600;
+}
+
+/* Days already gone, crossed out in pencil. */
+.cal-day.past::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(to top right,
+    transparent calc(50% - 1px), rgb(70 70 70 / 0.35) 50%, transparent calc(50% + 1px));
+}
+
+/* Hand-drawn red ring around the day that matters. */
+.cal-day.circled::before {
+  content: "";
+  position: absolute;
+  inset: 2px;
+  background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 70' preserveAspectRatio='none'%3E%3Cpath d='M55 5 C88 3 98 26 93 45 C87 66 30 68 12 53 C-3 39 9 9 50 7 C62 6 70 9 74 12' stroke='%23d9482b' stroke-width='3.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E") center / 100% 100% no-repeat;
+  pointer-events: none;
+}
+
+.cal-event {
+  font-family: var(--font-hand);
+  color: #2b4f8a;
+  line-height: 1;
+}
+
+.circled .cal-event {
+  color: var(--accent);
+  font-weight: 700;
+}
+
+/* ---- On the wall: tiny, events are only a stroke of ink ---- */
+
+.cal--desk .cal-month {
+  padding: 10px 0;
+  font-size: 16px;
+  border-radius: 4px 4px 0 0;
+}
+
+.cal--desk .cal-weekdays {
+  padding: 4px 8px 2px;
+  font-size: 6px;
+}
+
+.cal--desk .cal-grid {
+  margin: 0 8px 8px;
+}
+
+.cal--desk .cal-number {
+  top: 2px;
+  left: 3px;
+  font-size: 8px;
+}
+
+.cal--desk .cal-event {
+  position: absolute;
+  left: 4px;
+  right: 4px;
+  bottom: 5px;
+  height: 2px;
+  overflow: hidden;
+  background: currentColor;
+  font-size: 0;
+}
+
+/* ---- Taken down to read ---- */
+
+.cal-sheet {
+  position: relative;
+  width: 820px;
+  height: 590px;
+  padding-top: 18px;
+  border-radius: 6px;
+  background: #fff;
+  box-shadow: 0 18px 40px rgb(0 0 0 / 0.45);
+  transform: rotate(-1deg);
+}
+
+/* Binding rings along the top. */
+.cal-rings {
+  position: absolute;
+  top: -10px;
+  left: 60px;
+  right: 60px;
+  height: 30px;
+  background: radial-gradient(circle at 50% 70%, #fff 0 5px, transparent 6px) 0 0 / 50px 30px,
+    linear-gradient(90deg, transparent 21px, #555 21px 29px, transparent 29px) 0 0 / 50px 22px repeat-x;
+}
+
+.cal--large .cal-month {
+  padding: 14px 0;
+  font-size: 30px;
+}
+
+.cal--large .cal-weekdays {
+  padding: 8px 14px 6px;
+  font-size: 15px;
+  font-weight: 600;
+}
+
+.cal--large .cal-grid {
+  margin: 0 14px 14px;
+}
+
+.cal--large .cal-number {
+  top: 5px;
+  left: 8px;
+  font-size: 17px;
+}
+
+.cal--large .cal-event {
+  position: absolute;
+  left: 6px;
+  right: 6px;
+  top: 27px;
+  font-size: 21px;
+  line-height: 0.95;
+}
+
+/* On the big one the ring goes around the words, under the day number. */
+.cal--large .cal-day.circled::before {
+  inset: 18px 3px 1px;
+}
+
+.cal--large .circled .cal-event {
+  top: 39px;
+  font-size: 20px;
+  line-height: 0.9;
+}
+
+.cal-page {
+  height: 100%;
+}
+
+/* Turning the pages: one button on each side of the calendar. */
+.cal-turn {
+  position: absolute;
+  top: 50%;
+  width: 150px;
+  padding: 10px 0;
+  border: 0;
+  background: none;
+  color: #fff;
+  font-family: var(--font-hand);
+  font-size: 30px;
+  font-weight: 700;
+  text-shadow: 0 0 2px rgb(0 0 0 / 0.8), 0 2px 8px rgb(0 0 0 / 0.6);
+  cursor: pointer;
+  transform: translateY(-50%);
+  transition: scale 150ms;
+}
+
+.cal-turn:hover {
+  scale: 1.08;
+}
+
+.cal-turn:disabled {
+  visibility: hidden;
+}
+
+.cal-turn.prev {
+  right: calc(100% + 16px);
+  text-align: right;
+}
+
+.cal-turn.next {
+  left: calc(100% + 16px);
+  text-align: left;
+}
+
+/* A cake drawn in ink instead of words. */
+.cal-doodle {
+  position: absolute;
+  left: 50%;
+  top: 55%;
+  width: 46px;
+  height: 42px;
+  transform: translate(-50%, -50%) rotate(-4deg);
+}
+
+.cal-doodle.cake {
+  background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 44 40'%3E%3Cg fill='none' stroke='%232b4f8a' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M4 36 H40'/%3E%3Cpath d='M8 35 V22 C8 19 36 19 36 22 V35'/%3E%3Cpath d='M8 27 C13 30 17 25 22 28 C27 31 31 26 36 28'/%3E%3Cpath d='M22 19 V11'/%3E%3Cpath d='M22 4 C19 7 20 10 22 10 C24 10 25 7 22 4 Z'/%3E%3C/g%3E%3C/svg%3E") center / contain no-repeat;
+}
+
+.cal--desk .cal-doodle {
+  width: 12px;
+  height: 11px;
+}

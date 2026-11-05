@@ -1,0 +1,23 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 170 290">
+  <!-- shadow on the desk -->
+  <ellipse cx="85" cy="284" rx="52" ry="5" fill="#000" opacity="0.22"/>
+
+  <!-- snake plant leaves -->
+  <g stroke="#c8c46c" stroke-width="2" stroke-linejoin="round">
+    <path d="M62 212 C58 150, 34 110, 40 50 C46 110, 82 150, 78 212 Z" fill="#4d8a52"/>
+    <path d="M92 212 C88 150, 129 100, 135 40 C141 100, 112 150, 108 212 Z" fill="#4d8a52"/>
+    <path d="M76 212 C72 150, 76 70, 82 10 C88 70, 98 150, 94 212 Z" fill="#3f7a4a"/>
+    <path d="M81 212 C77 150, 90 120, 96 60 C102 120, 99 150, 95 212 Z" fill="#568f50"/>
+    <path d="M71 212 C67 160, 52 150, 58 90 C64 150, 89 160, 85 212 Z" fill="#5d9a5a"/>
+    <path d="M88 212 C84 160, 109 160, 115 100 C121 160, 106 160, 102 212 Z" fill="#3f7a4a"/>
+  </g>
+  <g stroke="#2f5f38" stroke-width="1.2" opacity="0.5" fill="none">
+    <path d="M70 150 l10 -6 M70 170 l12 -6 M84 110 l8 -4 M110 130 l-8 -4 M52 120 l8 -3"/>
+  </g>
+
+  <!-- pot -->
+  <path d="M46 212 H124 L114 284 H56 Z" fill="#c4683f"/>
+  <path d="M46 212 H70 L62 284 H56 Z" fill="#d9825a" opacity="0.6"/>
+  <rect x="40" y="200" width="90" height="16" rx="3" fill="#b45a34"/>
+  <ellipse cx="85" cy="203" rx="40" ry="4" fill="#4a3426"/>
+</svg>

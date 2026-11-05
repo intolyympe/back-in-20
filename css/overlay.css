@@ -1,0 +1,45 @@
+/* An object picked up from the desk, shown in the foreground. It covers the
+   desk only: the notebook stays visible. */
+
+.overlay {
+  position: absolute;
+  inset: 0;
+  z-index: 5;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 20px;
+  padding-top: 80px; /* keeps the countdown clock visible above */
+  background: rgb(10 10 12 / 0.7);
+  animation: overlay-in 180ms ease-out;
+}
+
+.overlay[hidden] {
+  display: none;
+}
+
+.overlay-content {
+  animation: pick-up 220ms ease-out;
+}
+
+.overlay-hint {
+  margin: 0;
+  color: #ccc;
+  font-size: 18px;
+}
+
+.overlay-hint kbd {
+  padding: 2px 8px;
+  border: 1px solid #888;
+  border-radius: 4px;
+  font-family: inherit;
+}
+
+@keyframes overlay-in {
+  from { opacity: 0; }
+}
+
+@keyframes pick-up {
+  from { transform: translateY(80px) scale(0.85); opacity: 0; }
+}

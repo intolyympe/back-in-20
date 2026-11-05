@@ -1,0 +1,29 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 110 132">
+  <defs>
+    <linearGradient id="sky" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#ffb877"/>
+      <stop offset="1" stop-color="#ffe2b8"/>
+    </linearGradient>
+  </defs>
+
+  <!-- shadow on the desk -->
+  <ellipse cx="55" cy="127" rx="50" ry="4" fill="#000" opacity="0.25"/>
+
+  <!-- frame and mat -->
+  <rect x="4" y="0" width="102" height="126" rx="3" fill="#5a3d2b"/>
+  <rect x="8" y="4" width="94" height="118" rx="2" fill="#6e4b35"/>
+  <rect x="13" y="9" width="84" height="108" fill="#f4efe6"/>
+
+  <!-- holiday picture: sunset on the beach -->
+  <rect x="20" y="16" width="70" height="56" fill="url(#sky)"/>
+  <circle cx="72" cy="60" r="10" fill="#fff1c9"/>
+  <rect x="20" y="66" width="70" height="14" fill="#3d86b8"/>
+  <path d="M20 70 q8 -3 16 0 t16 0 t16 0 t16 0 t6 0" stroke="#7fb6d9" stroke-width="1.5" fill="none"/>
+  <rect x="20" y="80" width="70" height="30" fill="#e7d09c"/>
+
+  <!-- Camille, waving -->
+  <circle cx="42" cy="66" r="5" fill="#6b4a3a"/>
+  <path d="M37 71 h10 v20 h-10 z" fill="#d9482b"/>
+  <path d="M47 73 l7 -9" stroke="#6b4a3a" stroke-width="3" stroke-linecap="round"/>
+  <path d="M39 91 v12 M45 91 v12" stroke="#4a3426" stroke-width="3" stroke-linecap="round"/>
+</svg>

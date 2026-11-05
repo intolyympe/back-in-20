@@ -1,0 +1,48 @@
+/* The notebook: always visible on the right, fills itself with clues. */
+
+.notebook {
+  position: relative;
+  padding: 36px 28px 28px 52px;
+  background:
+    linear-gradient(90deg, transparent 38px, #e8a5a5 38px 40px, transparent 40px),
+    repeating-linear-gradient(var(--paper) 0 35px, #c9d6e8 35px 36px);
+  background-color: var(--paper);
+  box-shadow: inset 8px 0 14px rgb(0 0 0 / 0.25);
+  font-family: var(--font-hand);
+  overflow-y: auto;
+}
+
+.notebook-title {
+  margin: 0 0 36px; /* one ruled line, so the text sits on the lines */
+  font-size: 38px;
+  line-height: 36px;
+}
+
+.notebook-empty {
+  margin: 0;
+  color: var(--ink-soft);
+  font-size: 25px;
+  line-height: 36px;
+}
+
+.notebook-list {
+  margin: 0;
+  padding: 0 0 0 20px;
+  font-size: 26px;
+  line-height: 36px;
+}
+
+.notebook-list li.new {
+  animation: clue-in 900ms ease-out;
+}
+
+@keyframes clue-in {
+  from { background: rgb(255 230 90 / 0.8); }
+  to { background: transparent; }
+}
+
+/* A conclusion the player reached by putting clues together. */
+.notebook-list li.deduction {
+  color: var(--accent);
+  font-weight: 700;
+}

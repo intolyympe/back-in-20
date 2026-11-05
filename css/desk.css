@@ -1,0 +1,379 @@
+/* Camille's desk, seen from the front. Placeholder art in CSS until the
+   final style is chosen. Coordinates are in stage px (desk area: 1260x900). */
+
+.desk {
+  position: relative;
+  overflow: hidden;
+}
+
+.wall {
+  position: absolute;
+  inset: 0 0 360px 0;
+  background: linear-gradient(#e9dfcf, #d8cbb6);
+}
+
+.desk-top {
+  position: absolute;
+  inset: 540px 0 0 0;
+  background: linear-gradient(#a8784f, #8a5f3b 30%, #7a5233);
+  box-shadow: inset 0 6px 0 #c0906a;
+}
+
+/* Every interactive object is a button so it works with the keyboard too. */
+.hotspot {
+  position: absolute;
+  padding: 0;
+  border: 0;
+  cursor: pointer;
+  transition: filter 150ms, scale 150ms;
+}
+
+/* On hover the object grows a little and a handwritten verb appears above
+   it ("Regarder", "Prendre"...). `scale` stacks with each object's own
+   rotation. Big objects grow less (--grow). */
+.hotspot:hover,
+.hotspot:focus-visible {
+  z-index: 3;
+  scale: var(--grow, 1.07);
+  filter: brightness(1.06);
+}
+
+.hotspot::before {
+  content: attr(data-verb);
+  position: absolute;
+  left: 50%;
+  bottom: calc(100% + 6px);
+  padding: 0 8px 10px;
+  transform: translate(-50%, 8px);
+  background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 10' preserveAspectRatio='none'%3E%3Cpath d='M3 6 Q25 1 50 5 T97 4' stroke='white' stroke-width='2.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E") center bottom / 100% 10px no-repeat;
+  color: #fff;
+  font-family: var(--font-hand);
+  font-size: 32px;
+  font-weight: 700;
+  line-height: 1;
+  white-space: nowrap;
+  text-shadow: 0 0 2px rgb(0 0 0 / 0.8), 0 2px 8px rgb(0 0 0 / 0.6);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 150ms, transform 150ms;
+}
+
+.hotspot:hover::before,
+.hotspot:focus-visible::before {
+  opacity: 1;
+  transform: translate(-50%, 0);
+}
+
+/* Objects drawn as SVG files in assets/desk/. */
+.hotspot.drawn {
+  background: none;
+}
+
+.hotspot.drawn img {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
+/* In the player's hand, shown in the foreground instead. */
+.hotspot.picked-up {
+  visibility: hidden;
+}
+
+.window {
+  --grow: 1.03;
+  left: 975px;
+  top: 40px;
+  width: 260px;
+  height: 330px;
+}
+
+/* Calendar on the wall */
+.calendar {
+  --grow: 1.04;
+  left: 90px;
+  top: 70px;
+  width: 210px;
+  height: 250px;
+  background: #fff;
+  border-radius: 4px;
+  box-shadow: 0 4px 10px rgb(0 0 0 / 0.2);
+  display: flex;
+  flex-direction: column;
+}
+
+/* Monitor */
+.monitor {
+  position: absolute;
+  left: 400px;
+  top: 150px;
+  width: 520px;
+  height: 405px;
+}
+
+.monitor-screen {
+  --grow: 1.03;
+  left: 0;
+  top: 0;
+  width: 520px;
+  height: 320px;
+  border: 14px solid #222;
+  border-radius: 10px;
+  /* Lock screen wallpaper, dimmed so the login box stands out. */
+  background:
+    radial-gradient(circle at 30% 20%, rgb(255 255 255 / 0.08), transparent 50%),
+    linear-gradient(rgb(10 16 30 / 0.35), rgb(10 16 30 / 0.55)),
+    url("../assets/wallpapers/pc-fjord.jpg") center / cover;
+  text-shadow: 0 1px 4px rgb(0 0 0 / 0.5);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  color: #fff;
+}
+
+/* The computer's lock screen (fictional OS). */
+.pc-avatar {
+  display: grid;
+  place-items: center;
+  width: 64px;
+  height: 64px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #f2a65a, #c2477a);
+  font-size: 30px;
+  font-weight: 600;
+}
+
+.pc-user {
+  font-size: 20px;
+  font-weight: 600;
+}
+
+.pc-field {
+  width: 190px;
+  padding: 7px 12px;
+  border-radius: 6px;
+  background: rgb(12 18 32 / 0.6);
+  box-shadow: inset 0 0 0 1px rgb(255 255 255 / 0.18);
+  color: rgb(255 255 255 / 0.75);
+  font-size: 14px;
+  text-align: left;
+}
+
+.pc-hint {
+  font-size: 12px;
+  color: rgb(255 255 255 / 0.8);
+}
+
+.monitor-neck {
+  position: absolute;
+  left: 230px;
+  top: 320px;
+  width: 60px;
+  height: 70px;
+  background: linear-gradient(90deg, #333, #555, #333);
+}
+
+.monitor-base {
+  position: absolute;
+  left: 170px;
+  top: 385px;
+  width: 180px;
+  height: 20px;
+  border-radius: 10px 10px 4px 4px;
+  background: #3a3a3a;
+}
+
+/* The post-it that gives the game its name */
+/* Stuck on the screen: it must stay above it, even while the screen is
+   hovered and grows, or it can no longer be reached. */
+.hotspot.postit {
+  z-index: 4;
+}
+
+.postit {
+  left: 770px;
+  top: 172px;
+  width: 140px;
+  height: 130px;
+  padding: 14px 10px;
+  background: linear-gradient(#fff59a, #f7e46b);
+  box-shadow: 2px 4px 8px rgb(0 0 0 / 0.25);
+  transform: rotate(4deg);
+  font-family: var(--font-hand);
+  font-size: 25px;
+  line-height: 1.25;
+  text-align: left;
+}
+
+.postit-sign {
+  display: block;
+  margin-top: 6px;
+  text-align: right;
+}
+
+.plant {
+  left: 28px;
+  top: 300px;
+  width: 170px;
+  height: 290px;
+}
+
+.photo {
+  left: 300px;
+  top: 428px;
+  width: 110px;
+  height: 132px;
+}
+
+.keyboard {
+  left: 470px;
+  top: 600px;
+  width: 380px;
+  height: 86px;
+  filter: drop-shadow(0 6px 5px rgb(0 0 0 / 0.3));
+}
+
+/* Scenery that does nothing when clicked. */
+.decor {
+  position: absolute;
+  pointer-events: none;
+}
+
+.mouse {
+  left: 878px;
+  top: 640px;
+  width: 64px;
+  height: 100px;
+  transform: rotate(6deg);
+}
+
+.pens {
+  left: 870px;
+  top: 470px;
+  width: 70px;
+  height: 130px;
+}
+
+.notepad {
+  left: 70px;
+  top: 730px;
+  width: 260px;
+  height: 160px;
+  transform: rotate(-5deg);
+}
+
+.mug {
+  left: 220px;
+  top: 600px;
+  width: 80px;
+  height: 95px;
+  border-radius: 6px 6px 18px 18px;
+  background: linear-gradient(90deg, #e5e1d8, #fff 40%, #d6d0c4);
+}
+
+.mug::after {
+  content: "";
+  position: absolute;
+  right: -26px;
+  top: 22px;
+  width: 30px;
+  height: 40px;
+  border: 9px solid #e5e1d8;
+  border-left: 0;
+  border-radius: 0 20px 20px 0;
+}
+
+/* The coffee is still hot: Camille has only just left. */
+.steam {
+  position: absolute;
+  bottom: 100px;
+  width: 14px;
+  height: 46px;
+  border-left: 3px solid rgb(255 255 255 / 0.7);
+  border-radius: 50%;
+  opacity: 0;
+  animation: steam 3s ease-out infinite;
+}
+
+.steam:nth-child(1) { left: 18px; }
+.steam:nth-child(2) { left: 36px; animation-delay: 1s; }
+.steam:nth-child(3) { left: 52px; animation-delay: 2s; }
+
+@keyframes steam {
+  0% { transform: translateY(10px) scaleY(0.6); opacity: 0; }
+  30% { opacity: 0.8; }
+  100% { transform: translateY(-30px) scaleY(1.1) skewX(-8deg); opacity: 0; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .steam { animation: none; opacity: 0.5; }
+}
+
+.phone {
+  left: 960px;
+  top: 640px;
+  width: 92px;
+  height: 172px;
+  border-radius: 16px;
+  background: #15151a;
+  box-shadow: inset 0 0 0 4px #2b2b33, 0 6px 10px rgb(0 0 0 / 0.35);
+  transform: rotate(-12deg);
+}
+
+.lamp {
+  left: 1040px;
+  top: 330px;
+  width: 200px;
+  height: 270px;
+}
+
+/* Warm pool of light under the lamp, shown when it is switched on. */
+.lamp-light {
+  position: absolute;
+  left: 700px;
+  top: 380px;
+  width: 760px;
+  height: 520px;
+  background:
+    radial-gradient(circle at 377px 92px, rgb(255 244 210 / 0.95) 0 10px, transparent 40px),
+    radial-gradient(ellipse 300px 220px at 360px 300px, rgb(255 196 120 / 0.42), transparent);
+  mix-blend-mode: screen;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 250ms;
+}
+
+.desk.lamp-on .lamp-light {
+  opacity: 1;
+}
+
+/* "Noté dans le carnet" message, next to the notebook it points at. */
+.toast {
+  position: absolute;
+  z-index: 7; /* above an object seen up close */
+  right: 24px;
+  bottom: 28px;
+  margin: 0;
+  padding: 12px 20px;
+  white-space: nowrap;
+  border-radius: 10px;
+  background: rgb(20 18 16 / 0.88);
+  color: #fff;
+  font-size: 20px;
+  line-height: 1.4;
+  transform: translateX(16px);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 200ms, transform 200ms;
+}
+
+.toast::after {
+  content: " →";
+}
+
+.toast.visible {
+  opacity: 1;
+  transform: none;
+}
