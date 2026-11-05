@@ -12,7 +12,8 @@ export const LOCKOUT_MS = 60_000;
 export function createState({ photos = [] } = {}) {
   return {
     clues: [],           // {id, text, deduction?, done?}, in the order found
-    unlocked: new Set(), // device or account ids
+    unlocked: new Set(), // devices or accounts open right now
+    cracked: new Set(),  // devices or accounts the player got into at least once
     attempts: {},        // device id -> wrong tries since the last lockout
     lockedUntil: {},     // device id -> time the lockout ends
     photos: [...photos], // phone gallery, newest first
@@ -29,10 +30,14 @@ export function addClue(state, clue) {
 }
 
 /** Ticks off a notebook entry (a task done). Returns false if nothing changed. */
-export function markDone(state, clueId) {
+/**
+ * Ticks a notebook entry off (or back on, with done = false). Returns
+ * whether it changed.
+ */
+export function markDone(state, clueId, done = true) {
   const clue = state.clues.find(c => c.id === clueId);
-  if (!clue || clue.done) return false;
-  clue.done = true;
+  if (!clue || Boolean(clue.done) === done) return false;
+  clue.done = done;
   return true;
 }
 
@@ -70,11 +75,22 @@ export function lockRemaining(state, deviceId, now) {
 
 export function unlock(state, deviceId) {
   state.unlocked.add(deviceId);
+  state.cracked.add(deviceId);
   state.attempts[deviceId] = 0;
+}
+
+/** Locks a device again (the player's way of tidying up). */
+export function relock(state, deviceId) {
+  return state.unlocked.delete(deviceId);
 }
 
 export function isUnlocked(state, deviceId) {
   return state.unlocked.has(deviceId);
+}
+
+/** Did the player get into it at least once, even if it is locked again? */
+export function hasCracked(state, deviceId) {
+  return state.cracked.has(deviceId);
 }
 
 /**
@@ -107,5 +123,6 @@ export function leftoverTraces(state) {
   return {
     intruderPhotos: [...state.photos, ...state.trash].filter(p => p.intruder).length,
     alerts: state.alerts.length,
+    openPc: state.unlocked.has('pc'), // she would find her session open
   };
 }

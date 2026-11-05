@@ -15,13 +15,13 @@ npm test           # game logic and password analyzer tests
 
 `index.html?seconds=10` shortens the round for testing.
 
-Controls: mouse to inspect objects, keyboard to type codes, Enter to submit, Escape to put an object down.
+Controls: mouse to inspect objects, keyboard to type codes, Enter to submit, Space (or Escape) to put an object down.
 
 ## Layout
 
 ```
 index.html        the 1600x900 stage, scaled to the window
-css/              one file per part (desk, notebook, screens, overlay, phone)
+css/              one file per part (desk, notebook, screens, overlay, phone, pc…)
 js/main.js        startup, clock, keyboard
 js/state.js       clues, unlocked devices, attempts (no DOM, tested)
 js/timer.js       countdown (no DOM, tested)

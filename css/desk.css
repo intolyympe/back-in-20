@@ -166,6 +166,31 @@
   color: rgb(255 255 255 / 0.8);
 }
 
+/* Session left open: her desktop shows on the monitor, plain to see. */
+.desk.pc-open .monitor-screen {
+  /* Desktop icons, tiny at this distance, over the wallpaper. */
+  background:
+    linear-gradient(#e0a830 0 0) 12px 12px / 24px 24px no-repeat,
+    linear-gradient(#2b5fa8 0 0) 12px 44px / 24px 24px no-repeat,
+    linear-gradient(#4f7aa8 0 0) 12px 76px / 24px 24px no-repeat,
+    linear-gradient(#6b7079 0 0) 12px 108px / 24px 24px no-repeat,
+    url("../assets/wallpapers/pc-fjord.jpg") center / cover;
+}
+
+.desk.pc-open .monitor-screen > * {
+  visibility: hidden;
+}
+
+.desk.pc-open .monitor-screen::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 20px;
+  background: rgb(12 15 22 / 0.8);
+}
+
 .monitor-neck {
   position: absolute;
   left: 230px;

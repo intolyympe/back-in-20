@@ -1,5 +1,5 @@
 import {
-  createState, addClue, markDone, applyDeductions, leftoverTraces, isUnlocked, ROUND_MINUTES,
+  createState, addClue, markDone, applyDeductions, leftoverTraces, hasCracked, ROUND_MINUTES,
 } from './state.js';
 import { createTimer, formatClock } from './timer.js';
 import { createNotebook } from './notebook.js';
@@ -7,10 +7,11 @@ import { createOverlay } from './overlay.js';
 import { createCloseUp, withThought } from './closeup.js';
 import { setupDesk, verbFor } from './scenes/desk.js';
 import { createPhoneView } from './scenes/phone.js';
+import { createPcView } from './scenes/pc.js';
 import { createCalendarView, CALENDAR_CLUES } from './scenes/calendar.js';
 import { createNotepadView } from './scenes/notepad.js';
 import { createDrawerView } from './scenes/drawer.js';
-import { STORY_START, DEDUCTIONS, PHONE } from './data/camille.js';
+import { STORY_START, DEDUCTIONS, PHONE, PC } from './data/camille.js';
 
 const STAGE_W = 1600;
 const STAGE_H = 900;
@@ -99,8 +100,34 @@ function note(clues) {
   else showToast(found.length > 1 ? `${found.length} indices notés dans le carnet.` : 'Noté dans le carnet.');
 }
 
+const PC_NOTES = {
+  unlocked: { id: 'pc-unlocked', text: `PC déverrouillé avec ${PC.password}` },
+  relock: { id: 'pc-relock', task: true, text: 'Reverrouiller le PC avant son retour.' },
+};
+
+function onPcEvent(type, data) {
+  const desk = document.querySelector('.desk');
+  if (type === 'unlock') {
+    desk.classList.add('pc-open');
+    const first = !state.clues.some(clue => clue.id === PC_NOTES.unlocked.id);
+    note([PC_NOTES.unlocked, PC_NOTES.relock]);
+    // Opened again after locking it: the task is back.
+    if (markDone(state, PC_NOTES.relock.id, false)) notebook.render(state.clues);
+    if (first) showChapterBanner(2, 'La session du PC · terminé');
+  } else if (type === 'lock') {
+    desk.classList.remove('pc-open');
+    if (markDone(state, PC_NOTES.relock.id)) {
+      notebook.render(state.clues);
+      showToast('PC reverrouillé.');
+    }
+  } else if (type === 'note-viewed' && data.note.clue) {
+    note([data.note.clue]);
+  }
+}
+
 const VIEWS = {
   phone: () => createPhoneView({ state, now: elapsed, storyTime, onEvent: onPhoneEvent }),
+  pc: () => createPcView({ state, now: elapsed, storyTime, onEvent: onPcEvent }),
   calendar: () => createCalendarView({
     onPage: month => { if (CALENDAR_CLUES[month]) note([CALENDAR_CLUES[month]]); },
   }),
@@ -144,10 +171,16 @@ function endSummary() {
   const lines = [];
   if (traces.intruderPhotos) lines.push('Elle trouve ta photo dans son téléphone.');
   if (traces.alerts) lines.push('Un mail l’attend : « Tentative d’accès à votre téléphone ».');
-  if (!traces.intruderPhotos && !traces.alerts) lines.push('Elle ne remarque rien.');
-  lines.push(isUnlocked(state, 'phone')
+  if (traces.openPc) lines.push('Elle retrouve sa session ouverte sur son PC.');
+  if (!traces.intruderPhotos && !traces.alerts && !traces.openPc) lines.push('Elle ne remarque rien.');
+  lines.push(hasCracked(state, 'phone')
     ? 'Tu as déverrouillé son téléphone.'
     : 'Tu n’as pas réussi à déverrouiller son téléphone.');
+  if (hasCracked(state, 'phone') || hasCracked(state, 'pc')) {
+    lines.push(hasCracked(state, 'pc')
+      ? 'Tu es entré dans sa session sur le PC.'
+      : 'Tu n’as pas trouvé le mot de passe de son PC.');
+  }
   return lines;
 }
 
