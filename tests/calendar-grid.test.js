@@ -1,7 +1,9 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { monthGrid } from '../js/calendar-grid.js';
-import { CALENDAR, STORY_START } from '../js/data/camille.js';
+import { CALENDAR, STORY_START, DEDUCTIONS } from '../js/data/camille.js';
+import { DESK_OBJECTS } from '../js/scenes/desk.js';
+import { CALENDAR_CLUES } from '../js/scenes/calendar.js';
 
 test('November 2026 starts on a Sunday and has 30 days', () => {
   const weeks = monthGrid(2026, 11);
@@ -23,10 +25,25 @@ test('every week has 7 cells', () => {
   }
 });
 
-test('the story data is consistent with the calendar', () => {
+test('the story day is the day showing on the wall calendar', () => {
   assert.equal(STORY_START.getFullYear(), CALENDAR.year);
   assert.equal(STORY_START.getMonth() + 1, CALENDAR.month);
   assert.equal(STORY_START.getDate(), CALENDAR.today);
-  const days = monthGrid(CALENDAR.year, CALENDAR.month).flat();
-  for (const event of CALENDAR.events) assert.ok(days.includes(event.day), `day ${event.day}`);
+});
+
+test('every calendar event falls on a real day of its month', () => {
+  for (const [month, events] of Object.entries(CALENDAR.events)) {
+    const days = monthGrid(CALENDAR.year, Number(month)).flat();
+    for (const event of events) assert.ok(days.includes(event.day), `${event.day}/${month}`);
+  }
+});
+
+test('every deduction can be reached from clues the game hands out', () => {
+  const handedOut = new Set([
+    ...Object.values(DESK_OBJECTS).flatMap(object => (object.clues ?? []).map(clue => clue.id)),
+    ...Object.values(CALENDAR_CLUES).map(clue => clue.id),
+  ]);
+  for (const deduction of DEDUCTIONS) {
+    for (const id of deduction.from) assert.ok(handedOut.has(id), `${deduction.id} needs ${id}`);
+  }
 });

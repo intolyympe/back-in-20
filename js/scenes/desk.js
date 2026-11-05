@@ -20,11 +20,8 @@ export const DESK_OBJECTS = {
     verb: 'Regarder',
     pickUp: true,
     opens: 'calendar',
-    text: 'Les jours passés sont barrés. Le 14 est entouré en rouge.',
-    clues: [
-      { id: 'birthday', text: 'Son anniv : le 14 novembre (entouré en rouge).' },
-      { id: 'dog-name', text: 'Son chien s’appelle Rex (véto le 6/11).' },
-    ],
+    text: 'Juillet. On peut tourner les pages…',
+    clues: [{ id: 'dog-name', text: 'Son chien s’appelle Rex (véto le 3/07).' }],
   },
   window: {
     verb: 'Regarder',
@@ -54,11 +51,17 @@ export const DESK_OBJECTS = {
     pickUp: true,
     opens: 'notepad',
     text: 'Ses notes de la réunion de mardi.',
-    clues: [{ id: 'same-password', text: 'Mdp messagerie : elle remet « le même qu’avant » ?' }],
+    clues: [{ id: 'reuses-passwords', text: 'Notes : « ne JAMAIS réutiliser ses mdp »… (oups ?)' }],
   },
   mug: {
     verb: 'Regarder',
     text: 'Le café est encore chaud. Elle ne va pas tarder.',
+  },
+  drawer: {
+    verb: 'Ouvrir',
+    opens: 'drawer',
+    text: 'Le bazar habituel… et une carte d’anniversaire.',
+    clues: [{ id: 'birthday-card', text: 'Carte de Léa : « Joyeux anniversaire ma Cam ! »' }],
   },
   lamp: {
     toggle: 'lamp-on',

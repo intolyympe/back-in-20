@@ -1,13 +1,14 @@
-import { createState, addClue, ROUND_MINUTES } from './state.js';
+import { createState, addClue, applyDeductions, ROUND_MINUTES } from './state.js';
 import { createTimer, formatClock } from './timer.js';
 import { createNotebook } from './notebook.js';
 import { createOverlay } from './overlay.js';
 import { createCloseUp, withThought } from './closeup.js';
 import { setupDesk, verbFor } from './scenes/desk.js';
 import { createPhoneView } from './scenes/phone.js';
-import { createCalendarView } from './scenes/calendar.js';
+import { createCalendarView, CALENDAR_CLUES } from './scenes/calendar.js';
 import { createNotepadView } from './scenes/notepad.js';
-import { STORY_START } from './data/camille.js';
+import { createDrawerView } from './scenes/drawer.js';
+import { STORY_START, DEDUCTIONS } from './data/camille.js';
 
 const STAGE_W = 1600;
 const STAGE_H = 900;
@@ -47,10 +48,23 @@ function storyTime() {
   return new Date(STORY_START.getTime() + roundMs - timer.remaining());
 }
 
+/** Writes new clues in the notebook, then any conclusion they lead to. */
+function note(clues) {
+  const found = clues.filter(clue => addClue(state, clue));
+  if (!found.length) return;
+  const deduced = applyDeductions(state, DEDUCTIONS);
+  notebook.render(state.clues);
+  if (deduced.length) showToast('Je crois que j’ai compris quelque chose…');
+  else showToast(found.length > 1 ? `${found.length} indices notés dans le carnet.` : 'Noté dans le carnet.');
+}
+
 const VIEWS = {
   phone: () => createPhoneView(storyTime()),
-  calendar: createCalendarView,
+  calendar: () => createCalendarView({
+    onPage: month => { if (CALENDAR_CLUES[month]) note([CALENDAR_CLUES[month]]); },
+  }),
   notepad: createNotepadView,
+  drawer: createDrawerView,
 };
 
 function inspect(id, object, button) {
@@ -63,11 +77,7 @@ function inspect(id, object, button) {
     const view = object.opens ? VIEWS[object.opens]() : createCloseUp(button);
     overlay.open(withThought(view, object.text), button, { pickUp: object.pickUp });
   }
-  const found = (object.clues ?? []).filter(clue => addClue(state, clue));
-  if (found.length) {
-    notebook.render(state.clues);
-    showToast(found.length > 1 ? `${found.length} indices notés dans le carnet.` : 'Noté dans le carnet.');
-  }
+  note(object.clues ?? []);
 }
 
 function tick() {
