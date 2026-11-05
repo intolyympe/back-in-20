@@ -1,0 +1,10 @@
+{
+  "name": "back-in-20",
+  "private": true,
+  "type": "module",
+  "description": "Browser game: guess a stranger's passwords one clue at a time, then learn how to defend against it. Vanilla JS, no dependencies.",
+  "scripts": {
+    "test": "node --test tests/*.test.js",
+    "start": "npx --yes serve ."
+  }
+}
