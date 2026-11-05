@@ -1,3 +1,5 @@
+import { createState, addClue } from './state.js';
+import { createNotebook } from './notebook.js';
 import { setupDesk } from './scenes/desk.js';
 
 const STAGE_W = 1600;
@@ -6,6 +8,12 @@ const TOAST_MS = 3500;
 
 const stage = document.getElementById('stage');
 const toast = document.getElementById('toast');
+
+const state = createState();
+const notebook = createNotebook(
+  document.getElementById('notebook-list'),
+  document.getElementById('notebook-empty'),
+);
 
 function fitStage() {
   const scale = Math.min(window.innerWidth / STAGE_W, window.innerHeight / STAGE_H);
@@ -20,7 +28,12 @@ function showToast(text) {
   toastTimeout = setTimeout(() => toast.classList.remove('visible'), TOAST_MS);
 }
 
+function inspect(id, object) {
+  showToast(object.text);
+  if (object.clue && addClue(state, object.clue)) notebook.render(state.clues);
+}
+
 fitStage();
 window.addEventListener('resize', fitStage);
 
-setupDesk(stage, (id, object) => showToast(object.text));
+setupDesk(stage, inspect);

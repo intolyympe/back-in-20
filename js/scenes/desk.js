@@ -1,9 +1,11 @@
-// The desk scene: what each object says when the player inspects it.
+// The desk scene: what each object says when the player inspects it, and
+// the clue it adds to the notebook, if any.
 // Chapter content (the circled date, the phone lock screen...) comes later.
 
 export const DESK_OBJECTS = {
   postit: {
     text: '« De retour dans 20 minutes. — C. » Camille vient de partir.',
+    clue: { id: 'back-in-20', text: 'Camille revient dans 20 minutes.' },
   },
   calendar: {
     text: 'Le calendrier de Camille, ouvert sur novembre.',

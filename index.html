@@ -5,8 +5,10 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Back in 20 — De retour dans 20 minutes</title>
   <meta name="description" content="Assieds-toi au bureau de Camille et devine ses mots de passe, indice après indice, avant son retour.">
+  <link rel="icon" href="data:,">
   <link rel="stylesheet" href="css/base.css">
   <link rel="stylesheet" href="css/desk.css">
+  <link rel="stylesheet" href="css/notebook.css">
   <script type="module" src="js/main.js"></script>
 </head>
 <body>
@@ -36,6 +38,12 @@
 
       <p class="toast" id="toast" role="status" aria-live="polite"></p>
     </section>
+
+    <aside class="notebook" aria-labelledby="notebook-title">
+      <h2 class="notebook-title" id="notebook-title">Carnet</h2>
+      <p class="notebook-empty" id="notebook-empty">Rien pour l’instant. Fouille le bureau.</p>
+      <ol class="notebook-list" id="notebook-list"></ol>
+    </aside>
   </main>
 </body>
 </html>
