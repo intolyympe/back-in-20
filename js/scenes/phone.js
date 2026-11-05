@@ -9,7 +9,7 @@
 import { PHONE } from '../data/camille.js';
 import {
   recordFailedAttempt, lockRemaining, unlock, isUnlocked,
-  takeIntruderPhoto, deletePhoto, emptyTrash,
+  takeIntruderPhoto, deletePhoto, emptyTrash, leftoverTraces,
 } from '../state.js';
 
 const DATE_FORMAT = new Intl.DateTimeFormat('fr-FR', { weekday: 'long', day: 'numeric', month: 'long' });
@@ -165,7 +165,8 @@ export function createPhoneView({ state, now, storyTime, onEvent = () => {} }) {
   function lockScreen() {
     const time = storyTime(now());
     const parts = [el('div', 'lock-time', hhmm(time)), el('div', 'lock-date', DATE_FORMAT.format(time))];
-    if (state.alerts.length) parts.push(alertNotification());
+    // The notification goes once the intruder photo is erased.
+    if (leftoverTraces(state).intruderPhotos) parts.push(alertNotification());
 
     const bottom = el('div', 'lock-bottom');
     const wait = lockRemaining(state, 'phone', now());
@@ -201,7 +202,8 @@ export function createPhoneView({ state, now, storyTime, onEvent = () => {} }) {
 
   function homeScreen() {
     const parts = [statusBar()];
-    if (state.alerts.length) {
+    // Mail notification while an alert e-mail sits in her inbox.
+    if (state.inbox.some(email => email.alert)) {
       const mail = el('div', 'phone-notification');
       mail.append(
         el('strong', '', 'Mail · Alerte de sécurité'),
