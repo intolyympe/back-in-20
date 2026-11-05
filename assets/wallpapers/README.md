@@ -8,3 +8,4 @@ not required but given here). Cropped and resized via
 | File | Used on | Photo | Author |
 | --- | --- | --- | --- |
 | `phone-dog.jpg` | Camille's phone lock screen | [Black puppy](https://unsplash.com/photos/8wTPqxlnKM4) | André Spieker |
+| `pc-fjord.jpg` | Camille's computer lock screen | [Fjord seen from a cliff](https://unsplash.com/photos/-oWyJoSqBRM) | Alexey Topolyanskiy |
