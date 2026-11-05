@@ -23,7 +23,11 @@
 //     reset link lands in the mailbox the player already holds
 //   - on her private Bulle account: a post from her 29th birthday, "dans la
 //     ville où tout a commencé", tagged Annecy, and a chat with Léa: her bank
-//     falls back on a secret question, "la ville où je suis née" -> chapter 5
+//     falls back on a secret question, "la ville où je suis née" -> chapter 5,
+//     the answer is Annecy, then the bank texts a code to the phone the
+//     player is holding
+//   - in her bank operations: a USB security key and a Coffre subscription
+//     -> the final boss resists (passphrase + physical key)
 
 // The round starts when Camille leaves her desk: Thursday 9 July 2026, 14:05
 // (local time). She is back 20 minutes later.
@@ -404,6 +408,15 @@ export const MAIL = {
       // A button in the e-mail: the mailbox sends this event when pressed.
       action: { label: 'Choisir un nouveau mot de passe', event: 'reset-link' },
     },
+    'bank-login': {
+      from: 'Banque Nébula',
+      subject: 'Nouvelle connexion à votre espace client',
+      body: [
+        'Bonjour Madame,',
+        'Une connexion à votre espace client a eu lieu aujourd’hui, après validation par SMS.',
+        'Si ce n’était pas vous, contactez votre conseiller.',
+      ],
+    },
     'bulle-changed': {
       from: 'Bulle',
       subject: 'Votre mot de passe a été modifié',
@@ -447,6 +460,32 @@ export const BULLE = {
       { text: 'Heureusement il y a la question secrète : la ville où je suis née. Trop facile', me: true },
     ],
     clue: { id: 'bank-question', text: 'Bulle, à Léa : code de banque oublié → « la question secrète : la ville où je suis née ».' },
+  },
+};
+
+// Her bank, Banque Nébula (made up). She forgets her code, so she goes
+// through the secret question, whose answer is on her Bulle account, then a
+// code texted to her phone.
+export const BANK = {
+  client: '•••• 4821',
+  question: 'Dans quelle ville êtes-vous née ?',
+  answer: 'Annecy',
+  phone: '06 •• •• •• 17',
+  text: code => `Nébula : votre code de validation est ${code}. Ne le communiquez jamais, même à un conseiller.`,
+  balance: '1 284,52 €',
+  // Newest first, in line with the rest of her life (ferry, rent, café).
+  operations: [
+    { date: '08/07', label: 'Boulangerie', amount: '−3,40 €' },
+    { date: '06/07', label: 'Café du coin', amount: '−7,80 €' },
+    { date: '02/07', label: 'Compagnie des Îles · ferry', amount: '−64,00 €' },
+    { date: '01/07', label: 'Salaire', amount: '+2 140,00 €' },
+    { date: '26/06', label: 'Loyer', amount: '−720,00 €' },
+    { date: '15/06', label: 'Clé de sécurité USB', amount: '−29,00 €' },
+    { date: '15/06', label: 'Coffre · abonnement annuel', amount: '−24,00 €' },
+  ],
+  clue: {
+    id: 'security-key',
+    text: 'Banque, 15/06 : « Clé de sécurité USB » et « Coffre · abonnement ». Son coffre à mots de passe a une clé physique.',
   },
 };
 

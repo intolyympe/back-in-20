@@ -2,7 +2,7 @@ import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { DESK_OBJECTS, verbFor } from '../js/scenes/desk.js';
 import { CALENDAR_CLUES } from '../js/scenes/calendar.js';
-import { PHONE, PC, MAIL, BULLE, STORY_START } from '../js/data/camille.js';
+import { PHONE, PC, MAIL, BULLE, BANK, STORY_START } from '../js/data/camille.js';
 
 const objects = Object.entries(DESK_OBJECTS);
 
@@ -35,6 +35,7 @@ test('clue ids are unique across the desk, the calendar and the phone', () => {
     ...MAIL.emails.map(email => email.clue),
     ...BULLE.posts.map(post => post.clue),
     BULLE.chat.clue,
+    BANK.clue,
   ].filter(Boolean);
   const ids = clues.map(clue => clue.id);
   assert.equal(new Set(ids).size, ids.length);
@@ -59,4 +60,10 @@ test('the PC password follows the rule in her notes and comes from the clues', (
 test('her mailbox password is the PC one: that is the mistake', () => {
   assert.equal(MAIL.password, PC.password);
   assert.ok(PC.notes.some(note => note.lines.some(line => line.includes('même mdp que le PC'))));
+});
+
+test('the answer to her bank question is on her Bulle account', () => {
+  const birthday = BULLE.posts.find(post => post.clue?.id === 'born-annecy');
+  assert.equal(birthday.place, BANK.answer);
+  assert.match(BULLE.chat.messages.map(m => m.text).join(' '), /ville où je suis née/);
 });
