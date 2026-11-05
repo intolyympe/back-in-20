@@ -1,0 +1,433 @@
+/* Camille's work computer, seen up close. Fictional OS: no copy of any real
+   system's look. */
+
+.pc-monitor {
+  width: 1100px;
+  height: 640px;
+  padding: 18px 18px 30px;
+  border-radius: 14px;
+  background: #1b1c20;
+  box-shadow: inset 0 0 0 2px #2c2d33, 0 24px 60px rgb(0 0 0 / 0.55);
+}
+
+.pc-screen {
+  position: relative;
+  height: 100%;
+  overflow: hidden;
+  border-radius: 4px;
+  background: url("../assets/wallpapers/pc-fjord.jpg") center / cover;
+  color: #fff;
+  font-family: var(--font-ui);
+}
+
+.pc-screen button {
+  border: 0;
+  background: none;
+  color: inherit;
+  font: inherit;
+  cursor: pointer;
+}
+
+.pc-password {
+  width: 100%;
+  padding: 10px 14px;
+  border: 1px solid rgb(255 255 255 / 0.35);
+  border-radius: 8px;
+  background: rgb(15 18 26 / 0.7);
+  color: #fff;
+  font: inherit;
+  font-size: 16px;
+}
+
+.pc-password:focus {
+  outline: 2px solid #8fbaff;
+  outline-offset: 1px;
+}
+
+.pc-password:disabled {
+  opacity: 0.5;
+}
+
+/* ---- Lock screen ---- */
+
+.pc-login {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.pc-login::before {
+  /* Blur the wallpaper behind the login card. */
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: rgb(8 12 20 / 0.35);
+  backdrop-filter: blur(6px);
+}
+
+.pc-login > * {
+  position: relative;
+}
+
+.pc-lock-time {
+  margin-top: 60px;
+  font-size: 72px;
+  font-weight: 300;
+  line-height: 1;
+}
+
+.pc-lock-date {
+  margin-top: 6px;
+  font-size: 20px;
+}
+
+.pc-login-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 320px;
+  margin-top: 46px;
+}
+
+.pc-login-card.shake {
+  animation: pc-shake 400ms;
+}
+
+@keyframes pc-shake {
+  20%, 60% { translate: -10px 0; }
+  40%, 80% { translate: 10px 0; }
+}
+
+.pc-login-avatar {
+  display: grid;
+  place-items: center;
+  width: 84px;
+  height: 84px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #f2a65a, #c2477a); /* same as on the desk */
+  font-size: 40px;
+  font-weight: 600;
+}
+
+.pc-login-name {
+  margin: 10px 0 16px;
+  font-size: 22px;
+}
+
+.pc-login-form {
+  display: flex;
+  gap: 6px;
+  width: 100%;
+}
+
+.pc-login-go {
+  flex: none;
+  width: 44px;
+  border-radius: 8px !important;
+  background: rgb(255 255 255 / 0.2) !important;
+  font-size: 20px !important;
+}
+
+.pc-login-go:disabled {
+  opacity: 0.5;
+  cursor: default !important;
+}
+
+.pc-login-message,
+.pc-login-hint {
+  min-height: 20px;
+  margin: 10px 0 0;
+  font-size: 15px;
+  text-align: center;
+}
+
+.pc-login-message {
+  color: #ffd2c8;
+}
+
+.pc-login-hint {
+  margin-top: 4px;
+  color: #d8e3f5;
+}
+
+.pc-thought,
+.pc-desktop-thought {
+  min-height: 34px;
+  margin: 12px 0 0;
+  color: #ffe3a3;
+  font-family: var(--font-hand);
+  font-size: 30px;
+  text-align: center;
+  text-shadow: 0 1px 6px rgb(0 0 0 / 0.6);
+}
+
+/* ---- Desktop ---- */
+
+.pc-icons {
+  position: absolute;
+  top: 18px;
+  left: 18px;
+  display: grid;
+  gap: 14px;
+}
+
+.pc-icon {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  width: 92px;
+  padding: 6px 0 !important;
+  border-radius: 8px;
+  text-shadow: 0 1px 4px rgb(0 0 0 / 0.7);
+}
+
+.pc-icon:hover {
+  background: rgb(255 255 255 / 0.15) !important;
+}
+
+.pc-icon-glyph {
+  display: grid;
+  place-items: center;
+  width: 52px;
+  height: 52px;
+  border-radius: 12px;
+  font-size: 26px;
+  box-shadow: 0 3px 8px rgb(0 0 0 / 0.35);
+}
+
+.pc-icon-name {
+  font-size: 14px;
+}
+
+.pc-taskbar {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  display: flex;
+  align-items: center;
+  gap: 18px;
+  height: 44px;
+  padding: 0 14px;
+  background: rgb(12 15 22 / 0.8);
+  backdrop-filter: blur(8px);
+  font-size: 15px;
+}
+
+.pc-taskbar-user {
+  font-weight: 600;
+}
+
+.pc-taskbar-time {
+  margin-left: auto;
+}
+
+.pc-lock {
+  padding: 6px 12px !important;
+  border-radius: 6px;
+  background: rgb(255 255 255 / 0.15) !important;
+}
+
+.pc-lock:hover {
+  background: rgb(255 255 255 / 0.28) !important;
+}
+
+.pc-desktop-thought {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 54px;
+  margin: 0;
+}
+
+.pc-desktop-thought.show {
+  animation: pc-thought-in 300ms ease-out;
+}
+
+@keyframes pc-thought-in {
+  from { opacity: 0; translate: 0 6px; }
+}
+
+/* ---- Windows ---- */
+
+.pc-window {
+  position: absolute;
+  top: 40px;
+  left: 150px;
+  right: 60px;
+  bottom: 100px;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  border-radius: 10px;
+  background: #f6f6f4;
+  color: #22252b;
+  box-shadow: 0 18px 50px rgb(0 0 0 / 0.5);
+}
+
+.pc-window-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  height: 38px;
+  padding: 0 6px 0 16px;
+  background: #e2e3e6;
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.pc-window-close {
+  width: 30px;
+  height: 30px;
+  border-radius: 6px;
+  font-size: 22px !important;
+  line-height: 1;
+}
+
+.pc-window-close:hover {
+  background: #d9482b !important;
+  color: #fff !important;
+}
+
+/* Notes */
+
+.pc-notes {
+  display: flex;
+  flex: 1;
+  min-height: 0;
+}
+
+.pc-notes-list {
+  flex: none;
+  width: 240px;
+  overflow-y: auto;
+  border-right: 1px solid #dcdcd8;
+  background: #ecebe6;
+}
+
+.pc-note-item {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  width: 100%;
+  padding: 12px 16px !important;
+  border-bottom: 1px solid #dcdcd8 !important;
+  text-align: left;
+  font-size: 14px !important;
+}
+
+.pc-note-item span {
+  color: #7a7d84;
+  font-size: 12px;
+}
+
+.pc-note-item:hover {
+  background: #e2e1db !important;
+}
+
+.pc-note-item.selected {
+  background: #f6e3a6 !important;
+}
+
+.pc-note-page {
+  flex: 1;
+  padding: 22px 30px;
+  overflow-y: auto;
+  font-size: 17px;
+  line-height: 1.6;
+}
+
+.pc-note-page h3 {
+  margin: 0;
+  font-size: 24px;
+}
+
+.pc-note-page p {
+  margin: 0;
+}
+
+.pc-note-page .pc-note-date {
+  margin-bottom: 14px;
+  color: #7a7d84;
+  font-size: 13px;
+}
+
+/* Mail */
+
+.pc-mail {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 340px;
+  margin: 40px auto 0;
+  text-align: center;
+}
+
+.pc-mail .pc-password {
+  border-color: #c9cbd0;
+  background: #fff;
+  color: #22252b;
+}
+
+.pc-mail-logo {
+  display: grid;
+  place-items: center;
+  width: 64px;
+  height: 64px;
+  border-radius: 18px;
+  background: #2b5fa8;
+  color: #fff;
+  font-size: 32px;
+}
+
+.pc-mail-title {
+  margin: 14px 0 4px;
+  font-size: 20px;
+  font-weight: 700;
+}
+
+.pc-mail-text {
+  margin: 0 0 18px;
+  color: #6b6f78;
+  font-size: 15px;
+}
+
+.pc-mail-go {
+  width: 100%;
+  margin-top: 10px;
+  padding: 10px !important;
+  border-radius: 8px;
+  background: #2b5fa8 !important;
+  color: #fff !important;
+}
+
+/* Documents and Corbeille */
+
+.pc-files {
+  display: flex;
+  flex-direction: column;
+  padding: 10px;
+}
+
+.pc-file {
+  padding: 10px 14px !important;
+  border-radius: 6px;
+  text-align: left;
+  font-size: 15px !important;
+}
+
+.pc-file::before {
+  content: "▤  ";
+  color: #4f7aa8;
+}
+
+.pc-file:hover {
+  background: #e4e7ee !important;
+}
+
+.pc-empty {
+  margin: 60px 0 0;
+  color: #7a7d84;
+  text-align: center;
+}
