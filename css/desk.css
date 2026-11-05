@@ -178,6 +178,39 @@
   box-shadow: 0 6px 0 #1b1b1b;
 }
 
+/* Scenery that does nothing when clicked. */
+.decor {
+  position: absolute;
+  pointer-events: none;
+}
+
+.mouse {
+  left: 878px;
+  top: 640px;
+  width: 64px;
+  height: 100px;
+  transform: rotate(6deg);
+}
+
+.pens {
+  left: 870px;
+  top: 470px;
+  width: 70px;
+  height: 130px;
+}
+
+.notepad {
+  left: 70px;
+  top: 730px;
+  width: 260px;
+  height: 160px;
+  transform: rotate(-5deg);
+}
+
+.notepad:hover {
+  transform: rotate(-5deg) translateY(-3px);
+}
+
 .mug {
   left: 220px;
   top: 600px;

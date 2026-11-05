@@ -1,0 +1,32 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 260 160">
+  <!-- shadow -->
+  <rect x="8" y="12" width="236" height="144" rx="4" fill="#000" opacity="0.2"/>
+  <!-- pad -->
+  <rect x="4" y="6" width="236" height="144" rx="4" fill="#fdfaf2"/>
+  <rect x="4" y="6" width="236" height="22" rx="4" fill="#2f4a6b"/>
+  <g fill="#c9c9c9">
+    <circle cx="24" cy="17" r="4"/><circle cx="48" cy="17" r="4"/><circle cx="72" cy="17" r="4"/>
+    <circle cx="96" cy="17" r="4"/><circle cx="120" cy="17" r="4"/><circle cx="144" cy="17" r="4"/>
+    <circle cx="168" cy="17" r="4"/><circle cx="192" cy="17" r="4"/><circle cx="216" cy="17" r="4"/>
+  </g>
+  <g stroke="#cfdbe8" stroke-width="1">
+    <line x1="10" y1="48" x2="234" y2="48"/><line x1="10" y1="68" x2="234" y2="68"/>
+    <line x1="10" y1="88" x2="234" y2="88"/><line x1="10" y1="108" x2="234" y2="108"/>
+    <line x1="10" y1="128" x2="234" y2="128"/>
+  </g>
+  <!-- scribbled meeting notes -->
+  <g stroke="#34495e" stroke-width="2" fill="none" stroke-linecap="round">
+    <path d="M18 43 q6 -6 10 0 t10 0 t10 0 t10 0 t10 0 t10 0"/>
+    <path d="M18 63 q5 -5 9 0 t9 0 t9 0 t9 0 M80 63 q5 -5 9 0 t9 0 t9 0 t9 0 t9 0"/>
+    <path d="M18 83 h4 M28 83 q5 -5 9 0 t9 0 t9 0 t9 0 t9 0 t9 0 t9 0"/>
+    <path d="M18 103 h4 M28 103 q5 -5 9 0 t9 0 t9 0 t9 0"/>
+  </g>
+  <rect x="140" y="76" width="70" height="12" fill="#f4d03f" opacity="0.45"/>
+
+  <!-- pen lying on the pad -->
+  <g transform="rotate(-18 190 120)">
+    <rect x="130" y="114" width="110" height="9" rx="4" fill="#2b5fa8"/>
+    <path d="M240 114 l12 4.5 l-12 4.5 Z" fill="#e7d3a8"/>
+    <rect x="140" y="111" width="30" height="3" rx="1.5" fill="#c0c6cf"/>
+  </g>
+</svg>

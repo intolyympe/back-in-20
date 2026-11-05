@@ -22,6 +22,12 @@ export const DESK_OBJECTS = {
   photo: {
     text: 'Une photo de vacances : Camille sur une plage, au coucher du soleil.',
   },
+  pens: {
+    text: 'Des stylos, un surligneur, une règle. Rien de caché dedans.',
+  },
+  notepad: {
+    text: 'Des notes de réunion griffonnées. Rien d’utile… pour l’instant.',
+  },
   mug: {
     text: 'Le café est encore chaud. Elle ne va pas tarder.',
   },
