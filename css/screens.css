@@ -92,8 +92,8 @@
 /* "Chapitre 1 · Le téléphone · terminé", shown for a few seconds. */
 .chapter-banner {
   position: absolute;
-  left: 40px; /* left of a phone held in the foreground */
-  top: 360px;
+  left: 40px; /* bottom left: clear of the phone and the PC screen */
+  bottom: 24px;
   z-index: 8;
   display: flex;
   flex-direction: column;
