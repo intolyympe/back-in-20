@@ -2,7 +2,7 @@ import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { DESK_OBJECTS, verbFor } from '../js/scenes/desk.js';
 import { CALENDAR_CLUES } from '../js/scenes/calendar.js';
-import { PHONE } from '../js/data/camille.js';
+import { PHONE, STORY_START } from '../js/data/camille.js';
 
 const objects = Object.entries(DESK_OBJECTS);
 
@@ -34,4 +34,10 @@ test('clue ids are unique across the desk, the calendar and the phone', () => {
   const ids = clues.map(clue => clue.id);
   assert.equal(new Set(ids).size, ids.length);
   for (const clue of clues) assert.ok(clue.text.trim(), clue.id);
+});
+
+test('the phone gallery is newest first and nothing is dated after today', () => {
+  const dates = PHONE.photos.map(({ date: [y, m, d] }) => new Date(y, m - 1, d));
+  for (let i = 1; i < dates.length; i++) assert.ok(dates[i] <= dates[i - 1], PHONE.photos[i].id);
+  assert.ok(dates[0] <= STORY_START);
 });
