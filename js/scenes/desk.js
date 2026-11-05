@@ -21,7 +21,7 @@ export const DESK_OBJECTS = {
     pickUp: true,
     opens: 'calendar',
     text: 'Juillet. On peut tourner les pages…',
-    clues: [{ id: 'dog-name', text: 'Son chien s’appelle Rex (véto le 3/07).' }],
+    clues: [{ id: 'vet-rex', text: 'Calendrier, 3 juillet : « Véto Rex ». Rex… un animal ?' }],
   },
   window: {
     verb: 'Regarder',

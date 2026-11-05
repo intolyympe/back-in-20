@@ -8,7 +8,9 @@
 //     "Anniv Léa" is written in March). The drawer holds last year's
 //     birthday card, kept in its envelope: the postmark is smudged, only
 //     "NOV. 2025" can be read. Card + cake = 14/11.
-//   - the dog's name (Rex), on the calendar in July, and the year he arrived
+//   - the dog's name (Rex): "Véto Rex" on the calendar in July only says Rex
+//     is an animal; the puppy on the phone's wallpaper makes him her dog.
+//     The year he arrived
 //     (2019), in the phone's photos once it is unlocked (her mum's text
 //     "déjà 7 ans" backs it up) -> chapter 2
 //   - "ne JAMAIS réutiliser ses mdp (oups…)" in the notes -> chapter 3
@@ -136,5 +138,10 @@ export const DEDUCTIONS = [
     id: 'birthday',
     from: ['cake-1411', 'birthday-card'],
     text: '→ Son anniv, c’est le 14 novembre !',
+  },
+  {
+    id: 'dog-rex',
+    from: ['vet-rex', 'dog-wallpaper'],
+    text: '→ Rex, c’est son chien : le chiot du fond d’écran !',
   },
 ];
