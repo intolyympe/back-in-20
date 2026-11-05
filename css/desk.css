@@ -151,6 +151,20 @@
   text-align: right;
 }
 
+.plant {
+  left: 28px;
+  top: 300px;
+  width: 170px;
+  height: 290px;
+}
+
+.photo {
+  left: 300px;
+  top: 428px;
+  width: 110px;
+  height: 132px;
+}
+
 .keyboard {
   position: absolute;
   left: 470px;

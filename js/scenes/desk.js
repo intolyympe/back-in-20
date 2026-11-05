@@ -16,6 +16,12 @@ export const DESK_OBJECTS = {
   monitor: {
     text: 'L’ordinateur est verrouillé.',
   },
+  plant: {
+    text: 'Une sansevieria. Elle survit à tout, même aux oublis d’arrosage.',
+  },
+  photo: {
+    text: 'Une photo de vacances : Camille sur une plage, au coucher du soleil.',
+  },
   mug: {
     text: 'Le café est encore chaud. Elle ne va pas tarder.',
   },
