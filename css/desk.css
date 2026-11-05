@@ -32,6 +32,11 @@
   filter: brightness(1.08);
 }
 
+/* In the player's hand, shown in the foreground instead. */
+.hotspot.picked-up {
+  visibility: hidden;
+}
+
 /* Calendar on the wall */
 .calendar {
   left: 90px;

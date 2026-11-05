@@ -1,7 +1,9 @@
 import { createState, addClue, ROUND_MINUTES } from './state.js';
 import { createTimer, formatClock } from './timer.js';
 import { createNotebook } from './notebook.js';
+import { createOverlay } from './overlay.js';
 import { setupDesk } from './scenes/desk.js';
+import { createPhoneView } from './scenes/phone.js';
 
 const STAGE_W = 1600;
 const STAGE_H = 900;
@@ -20,6 +22,7 @@ const roundMs = seconds > 0 ? seconds * 1000 : ROUND_MINUTES * 60_000;
 const state = createState();
 const timer = createTimer(roundMs);
 const notebook = createNotebook($('notebook-list'), $('notebook-empty'));
+const overlay = createOverlay($('overlay'), $('overlay-content'));
 let playing = false;
 
 function fitStage() {
@@ -35,9 +38,17 @@ function showToast(text) {
   toastTimeout = setTimeout(() => toast.classList.remove('visible'), TOAST_MS);
 }
 
-function inspect(id, object) {
+const VIEWS = {
+  phone: createPhoneView,
+};
+
+function inspect(id, object, button) {
   if (!playing) return;
-  showToast(object.text);
+  if (object.opens) {
+    overlay.open(VIEWS[object.opens](), button);
+  } else {
+    showToast(object.text);
+  }
   if (object.clue && addClue(state, object.clue)) notebook.render(state.clues);
 }
 
@@ -60,6 +71,7 @@ function startGame() {
 function endGame() {
   playing = false;
   timer.pause();
+  overlay.close();
   $('end-screen').hidden = false;
   $('restart-button').focus();
 }
@@ -69,6 +81,10 @@ document.addEventListener('visibilitychange', () => {
   if (!playing) return;
   if (document.hidden) timer.pause();
   else timer.start();
+});
+
+document.addEventListener('keydown', event => {
+  if (event.key === 'Escape') overlay.close();
 });
 
 fitStage();

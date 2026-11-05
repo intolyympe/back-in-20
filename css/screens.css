@@ -5,6 +5,7 @@
   left: 50%;
   top: 24px;
   transform: translateX(-50%);
+  z-index: 6; /* above a picked-up object, below the start/end screens */
   padding: 6px 18px;
   border-radius: 8px;
   background: #111;

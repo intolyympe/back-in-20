@@ -18,15 +18,16 @@ export const DESK_OBJECTS = {
   },
   phone: {
     text: 'Le téléphone de Camille. Elle l’a oublié sur le bureau.',
+    opens: 'phone',
   },
 };
 
 /**
- * Wires every [data-hotspot] button in `root` to onInspect(id, object).
+ * Wires every [data-hotspot] button in `root` to onInspect(id, object, button).
  */
 export function setupDesk(root, onInspect) {
   for (const button of root.querySelectorAll('[data-hotspot]')) {
     const id = button.dataset.hotspot;
-    button.addEventListener('click', () => onInspect(id, DESK_OBJECTS[id]));
+    button.addEventListener('click', () => onInspect(id, DESK_OBJECTS[id], button));
   }
 }
