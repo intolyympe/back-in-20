@@ -2,10 +2,15 @@ import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { readFileSync, readdirSync } from 'node:fs';
 import { join } from 'node:path';
+import { PHONE, PC, MAIL, BULLE, BANK, DEDUCTIONS } from '../js/data/camille.js';
+import { CALENDAR_CLUES } from '../js/scenes/calendar.js';
+import { DESK_OBJECTS } from '../js/scenes/desk.js';
 
-// No emoji anywhere in the game: they look different on every system and
-// cheapen the fake interfaces. Icons are drawn in js/icons.js instead.
+// No emoji in the game's own interface (icons are drawn in js/icons.js) nor
+// in the player's notebook. Camille and her friends do use emoji in what
+// they write (texts, posts, notes): that lives in js/data/camille.js.
 const EMOJI = /\p{Extended_Pictographic}/u;
+const CHARACTERS_WRITE_HERE = join('js', 'data', 'camille.js');
 
 function files(dir, ext) {
   return readdirSync(dir, { withFileTypes: true }).flatMap(entry => {
@@ -15,10 +20,25 @@ function files(dir, ext) {
   });
 }
 
-test('no emoji in the game', () => {
-  for (const file of [...files('js', '.js'), ...files('css', '.css'), 'index.html']) {
+test('no emoji in the interface', () => {
+  const sources = [...files('js', '.js'), ...files('css', '.css'), 'index.html']
+    .filter(file => file !== CHARACTERS_WRITE_HERE);
+  for (const file of sources) {
     readFileSync(file, 'utf8').split('\n').forEach((line, i) => {
       assert.doesNotMatch(line, EMOJI, `${file}:${i + 1}`);
     });
   }
+});
+
+test('no emoji in the notebook: the player writes plainly', () => {
+  const clues = [
+    ...Object.values(DESK_OBJECTS).flatMap(object => object.clues ?? []),
+    ...Object.values(CALENDAR_CLUES),
+    ...[...PHONE.photos, ...PHONE.threads, ...PHONE.notes, ...PC.notes, ...MAIL.emails, ...BULLE.posts]
+      .map(item => item.clue),
+    BULLE.chat.clue,
+    BANK.clue,
+    ...DEDUCTIONS,
+  ].filter(Boolean);
+  for (const clue of clues) assert.doesNotMatch(clue.text, EMOJI, clue.id);
 });
