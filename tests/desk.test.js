@@ -30,6 +30,7 @@ test('clue ids are unique across the desk, the calendar and the phone', () => {
     ...Object.values(CALENDAR_CLUES),
     ...PHONE.photos.map(photo => photo.clue),
     ...PHONE.threads.map(thread => thread.clue),
+    ...PHONE.notes.map(note => note.clue),
     ...PC.notes.map(note => note.clue),
     ...MAIL.emails.map(email => email.clue),
   ].filter(Boolean);

@@ -117,6 +117,53 @@ export const PHONE = {
       clue: { id: 'rex-2019', text: 'Photo : « Bienvenue à la maison, Rex ! », 12 mars 2019.' },
     },
   ],
+  // Notes app on the phone (the PC has its own), newest first.
+  notes: [
+    {
+      id: 'cadeaux',
+      title: 'Cadeaux 🎁',
+      date: '05/07/2026',
+      lines: ['Julie : cagnotte + un petit mot', 'Papa : le livre sur le Tour de France', 'Léa (21/03) : raté cette année… l’an prochain !'],
+    },
+    {
+      id: 'sac-bretagne',
+      title: 'Sac Bretagne',
+      date: '03/07/2026',
+      lines: ['Maillot, crème, lunettes', 'Laisse + gamelle + croquettes Rex', 'Chargeur !!'],
+    },
+    {
+      id: 'velo',
+      title: 'Vélo',
+      date: '14/04/2026',
+      lines: ['Cadenas : 2103 (l’anniv de Léa, facile à retenir)', 'Révision avant l’été'],
+      // Her habit: dates of people she loves as codes.
+      clue: { id: 'bike-lock', text: 'Note du téléphone : cadenas du vélo = 2103, l’anniversaire de Léa.' },
+    },
+    {
+      id: 'a-voir',
+      title: 'À regarder',
+      date: '02/02/2026',
+      lines: ['Le docu sur les fjords', 'La série que Hugo conseille (?)', 'Un film qui ne fait PAS pleurer'],
+    },
+  ],
+  // Plans app: saved places, placed on a drawn map (x, y in %).
+  places: [
+    { id: 'home', name: 'Domicile', detail: 'Croix-Rousse, Lyon', x: 36, y: 26, icon: '⌂' },
+    { id: 'park', name: 'Parc (balades de Rex)', detail: 'Presque tous les soirs', x: 66, y: 16, icon: '❀' },
+    { id: 'work', name: 'Bureau', detail: 'Part-Dieu, Lyon', x: 64, y: 54, icon: '▣' },
+    { id: 'vet', name: 'Clinique vétérinaire', detail: 'Dernière visite : 3 juillet', x: 26, y: 62, icon: '✚' },
+    { id: 'mum', name: 'Chez Maman', detail: 'Villeurbanne · le dimanche', x: 86, y: 40, icon: '♥' },
+  ],
+  // Musique app.
+  music: {
+    playing: { title: 'Lumière du Nord', artist: 'Les Aurores' },
+    playlists: [
+      { name: 'Balade avec Rex 🐶', count: 42 },
+      { name: 'Road trip Norvège', count: 67 },
+      { name: 'Concentration bureau', count: 120 },
+      { name: 'Mariage Julie 💃', count: 18 },
+    ],
+  },
   // Messages app, most recent first. `me: true` is Camille writing, `day`
   // starts a new day in the conversation, `scam` is a link not to touch.
   threads: [
