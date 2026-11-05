@@ -355,9 +355,9 @@
   z-index: 7; /* above an object seen up close */
   right: 24px;
   bottom: 28px;
-  max-width: 420px;
   margin: 0;
   padding: 12px 20px;
+  white-space: nowrap;
   border-radius: 10px;
   background: rgb(20 18 16 / 0.88);
   color: #fff;
