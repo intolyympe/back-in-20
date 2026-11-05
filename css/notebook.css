@@ -14,21 +14,21 @@
 
 .notebook-title {
   margin: 0 0 36px; /* one ruled line, so the text sits on the lines */
-  font-size: 30px;
+  font-size: 38px;
   line-height: 36px;
 }
 
 .notebook-empty {
   margin: 0;
   color: var(--ink-soft);
-  font-size: 19px;
+  font-size: 25px;
   line-height: 36px;
 }
 
 .notebook-list {
   margin: 0;
   padding: 0 0 0 20px;
-  font-size: 20px;
+  font-size: 26px;
   line-height: 36px;
 }
 
