@@ -7,6 +7,7 @@ import { setupDesk, verbFor } from './scenes/desk.js';
 import { createPhoneView } from './scenes/phone.js';
 import { createCalendarView } from './scenes/calendar.js';
 import { createNotepadView } from './scenes/notepad.js';
+import { STORY_START } from './data/camille.js';
 
 const STAGE_W = 1600;
 const STAGE_H = 900;
@@ -41,8 +42,13 @@ function showToast(text) {
   toastTimeout = setTimeout(() => toast.classList.remove('visible'), TOAST_MS);
 }
 
+/** Time in the story: Camille left at STORY_START, the clock runs with the round. */
+function storyTime() {
+  return new Date(STORY_START.getTime() + roundMs - timer.remaining());
+}
+
 const VIEWS = {
-  phone: createPhoneView,
+  phone: () => createPhoneView(storyTime()),
   calendar: createCalendarView,
   notepad: createNotepadView,
 };

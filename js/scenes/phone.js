@@ -3,7 +3,8 @@
 
 const DATE_FORMAT = new Intl.DateTimeFormat('fr-FR', { weekday: 'long', day: 'numeric', month: 'long' });
 
-export function createPhoneView(now = new Date()) {
+/** @param {Date} now the time shown on the lock screen (story time) */
+export function createPhoneView(now) {
   const handset = document.createElement('div');
   handset.className = 'handset';
   handset.innerHTML = `
