@@ -8,6 +8,7 @@
 
 import { PHONE } from '../data/camille.js';
 import { createMailbox } from './mailbox.js';
+import { MORE_APPS, moreAppScreens } from './phone-apps.js';
 import {
   recordFailedAttempt, lockRemaining, unlock, isUnlocked,
   takeIntruderPhoto, deletePhoto, emptyTrash, leftoverTraces,
@@ -74,13 +75,18 @@ const SETTINGS = [
   },
 ];
 
-const APPS = [
+// The dock at the bottom of the home screen, and the grid above it.
+const DOCK = [
   { id: 'photos', name: 'Photos', glyph: '✿', color: '#f2a65a' },
   { id: 'messages', name: 'Messages', glyph: '…', color: '#4d8a52' },
   { id: 'mail', name: 'Mail', glyph: '✉', color: '#2b5fa8' },
   { id: 'camera', name: 'Caméra', glyph: '◉', color: '#555b66' },
+];
+const GRID = [
+  ...MORE_APPS.slice(0, 4), // Plans, Calendrier, Notes, Musique
   { id: 'weather', name: 'Météo', glyph: '☀', color: '#e0a830' },
   { id: 'settings', name: 'Réglages', glyph: '⚙', color: '#6b7079' },
+  ...MORE_APPS.slice(4),    // Bulle, Nébula, Coffre
 ];
 
 /**
@@ -90,7 +96,7 @@ const APPS = [
  * @param {(ms: number) => Date} options.storyTime  story clock at that time
  * @param {(type: string, data?: object) => void} options.onEvent
  *   'unlock', 'lockout', 'photo-viewed' {photo}, 'thread-viewed' {thread},
- *   'photo-deleted', 'trash-emptied'
+ *   'note-viewed' {note}, 'photo-deleted', 'trash-emptied'
  * @param {(type: string, data?: object) => void} options.onMailEvent
  *   events of the Mail app (see mailbox.js)
  */
@@ -194,15 +200,18 @@ export function createPhoneView({ state, now, storyTime, onEvent = () => {}, onM
       );
       parts.push(mail);
     }
-    const grid = el('div', 'app-grid');
-    for (const app of APPS) {
+    const appButton = app => {
       const b = button('app', '', () => go(app.id));
       const icon = el('span', 'app-icon', app.glyph);
       icon.style.background = app.color;
       b.append(icon, el('span', 'app-name', app.name));
-      grid.append(b);
-    }
-    parts.push(grid);
+      return b;
+    };
+    const grid = el('div', 'app-grid');
+    grid.append(...GRID.map(appButton));
+    const dock = el('div', 'app-dock');
+    dock.append(...DOCK.map(appButton));
+    parts.push(grid, dock);
     return parts;
   }
 
@@ -395,6 +404,7 @@ export function createPhoneView({ state, now, storyTime, onEvent = () => {}, onM
     photos: photosScreen, photo: photoScreen, trash: trashScreen,
     messages: messagesScreen, thread: threadScreen, mail: mailScreen,
     camera: cameraScreen, weather: weatherScreen, settings: settingsScreen, setting: settingScreen,
+    ...moreAppScreens({ go, header, think, thoughtLine: notNowLine, onEvent }),
   };
 
   function render() {

@@ -85,6 +85,8 @@ function onPhoneEvent(type, data) {
     note([data.photo.clue]);
   } else if (type === 'thread-viewed' && data.thread.clue) {
     note([data.thread.clue]);
+  } else if (type === 'note-viewed' && data.note.clue) {
+    note([data.note.clue]);
   } else if (type === 'trash-emptied' && leftoverTraces(state).intruderPhotos === 0) {
     if (markDone(state, PHONE_NOTES.erasePhoto.id)) {
       notebook.render(state.clues);
