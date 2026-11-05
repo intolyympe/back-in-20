@@ -20,6 +20,7 @@
   <link rel="stylesheet" href="css/mailbox.css">
   <link rel="stylesheet" href="css/bulle.css">
   <link rel="stylesheet" href="css/bank.css">
+  <link rel="stylesheet" href="css/vault.css">
   <script type="module" src="js/main.js"></script>
 </head>
 <body>
@@ -100,9 +101,18 @@
       <button class="screen-button" id="start-button">Commencer</button>
     </section>
 
-    <section class="screen" id="end-screen" aria-labelledby="end-title" hidden>
+    <section class="screen debrief" id="end-screen" aria-labelledby="end-title" hidden>
       <h2 class="screen-title" id="end-title">Camille est de retour.</h2>
-      <div class="screen-text" id="end-summary"></div>
+      <div class="debrief-body">
+        <div class="debrief-found">
+          <h3 class="debrief-heading">Ce qu’elle trouve en rentrant</h3>
+          <div class="screen-text" id="end-summary"></div>
+        </div>
+        <div class="debrief-lessons">
+          <h3 class="debrief-heading">Ses erreurs, et comment s’en protéger</h3>
+          <ol id="end-lessons"></ol>
+        </div>
+      </div>
       <button class="screen-button" id="restart-button">Rejouer</button>
     </section>
   </main>

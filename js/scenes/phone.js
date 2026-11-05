@@ -11,6 +11,7 @@ import { createMailbox } from './mailbox.js';
 import { MORE_APPS, moreAppScreens } from './phone-apps.js';
 import { createBulle } from './bulle.js';
 import { createBank } from './bank.js';
+import { createVault } from './vault.js';
 import {
   recordFailedAttempt, lockRemaining, unlock, isUnlocked,
   takeIntruderPhoto, deletePhoto, emptyTrash, leftoverTraces, deleteBankTexts,
@@ -105,10 +106,12 @@ const GRID = [
  *   events of the Bulle app (see bulle.js)
  * @param {(type: string, data?: object) => void} options.onBankEvent
  *   events of the bank app (see bank.js)
+ * @param {(type: string) => void} options.onVaultEvent
+ *   events of Coffre (see vault.js)
  */
 export function createPhoneView({
   state, now, storyTime, onEvent = () => {}, onMailEvent = () => {}, onBulleEvent = () => {},
-  onBankEvent = () => {},
+  onBankEvent = () => {}, onVaultEvent = () => {},
 }) {
   const handset = el('div', 'handset');
   const screen = el('div', 'handset-screen');
@@ -453,6 +456,7 @@ export function createPhoneView({
     ...moreAppScreens({ go, header, think, thoughtLine: notNowLine, onEvent }),
     bulle: bulleScreen,
     bank: bankScreen,
+    vault: () => [header('Coffre', 'home'), createVault({ state, variant: 'phone', onEvent: onVaultEvent })],
     'bank-texts': bankTextsScreen,
   };
 

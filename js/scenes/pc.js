@@ -7,6 +7,7 @@
 import { PC } from '../data/camille.js';
 import { createMailbox } from './mailbox.js';
 import { createBulle } from './bulle.js';
+import { createVault } from './vault.js';
 import { recordFailedAttempt, lockRemaining, unlock, relock, isUnlocked } from '../state.js';
 import { el, button, hhmm, mss } from '../dom.js';
 
@@ -21,6 +22,7 @@ const APPS = [
   { id: 'notes', name: 'Notes', glyph: '✎', color: '#e0a830' },
   { id: 'mail', name: 'Mail', glyph: '✉', color: '#2b5fa8' },
   { id: 'bulle', name: 'Bulle', glyph: '◍', color: '#ff7a59' },
+  { id: 'vault', name: 'Coffre', glyph: '⚿', color: '#2d2f36' },
   { id: 'files', name: 'Documents', glyph: '▤', color: '#4f7aa8' },
   { id: 'trash', name: 'Corbeille', glyph: '♲', color: '#6b7079' },
 ];
@@ -39,9 +41,12 @@ const loose = text => text.toLowerCase().replace(/[^a-z0-9]/g, '');
  *   events of the Mail window (see mailbox.js)
  * @param {(type: string, data?: object) => void} options.onBulleEvent
  *   events of the Bulle window (see bulle.js)
+ * @param {(type: string) => void} options.onVaultEvent
+ *   events of the Coffre window (see vault.js)
  */
 export function createPcView({
   state, now, storyTime, onEvent = () => {}, onMailEvent = () => {}, onBulleEvent = () => {},
+  onVaultEvent = () => {},
 }) {
   const monitor = el('div', 'pc-monitor');
   const screen = el('div', 'pc-screen');
@@ -178,7 +183,12 @@ export function createPcView({
     return windowFrame('Corbeille', el('p', 'pc-empty', 'La corbeille est vide.'));
   }
 
-  const WINDOWS = { notes: notesWindow, mail: mailWindow, bulle: bulleWindow, files: filesWindow, trash: trashWindow };
+  const vaultWindow = () => windowFrame('Coffre', createVault({ state, variant: 'pc', onEvent: onVaultEvent }));
+
+  const WINDOWS = {
+    notes: notesWindow, mail: mailWindow, bulle: bulleWindow, vault: vaultWindow,
+    files: filesWindow, trash: trashWindow,
+  };
 
   function desktopScreen() {
     const icons = el('div', 'pc-icons');
