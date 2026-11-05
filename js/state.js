@@ -33,6 +33,7 @@ export function createState({ photos = [], emails = [] } = {}) {
     // Her bank: the secret question, then a code sent by text to her phone.
     bank: { answered: false, code: null },
     texts: [],           // texts received during the round ({id, code, sentAt})
+    vaultTries: 0,       // passphrases tried on her password manager
   };
 }
 
@@ -188,6 +189,15 @@ export function verifyBankCode(state, code, now) {
 /** Deletes the bank's texts from her Messages app. */
 export function deleteBankTexts(state) {
   state.texts = [];
+}
+
+/**
+ * Her password manager, Coffre: a random passphrase AND a physical key she
+ * carries with her. Nothing the player can guess opens it: always false.
+ */
+export function tryVault(state) {
+  state.vaultTries += 1;
+  return false;
 }
 
 /** Moves an e-mail from the inbox to the mailbox's "Corbeille". */

@@ -165,10 +165,10 @@
 
 .pc-icons {
   position: absolute;
-  top: 18px;
+  top: 14px;
   left: 18px;
   display: grid;
-  gap: 14px;
+  gap: 6px;
 }
 
 .pc-icon {
@@ -189,10 +189,10 @@
 .pc-icon-glyph {
   display: grid;
   place-items: center;
-  width: 52px;
-  height: 52px;
+  width: 46px;
+  height: 46px;
   border-radius: 12px;
-  font-size: 26px;
+  font-size: 23px;
   box-shadow: 0 3px 8px rgb(0 0 0 / 0.35);
 }
 

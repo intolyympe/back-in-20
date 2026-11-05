@@ -4,7 +4,7 @@ import {
   createState, addClue, markDone, applyDeductions, recordFailedAttempt, lockRemaining,
   unlock, relock, isUnlocked, hasCracked, takeIntruderPhoto, deletePhoto, emptyTrash, leftoverTraces,
   sendAlert, deleteEmail, emptyMailTrash, requestBulleReset, openBulleResetLink, changeBullePassword,
-  answerSecretQuestion, sendBankCode, verifyBankCode, deleteBankTexts,
+  answerSecretQuestion, sendBankCode, verifyBankCode, deleteBankTexts, tryVault,
   MAX_ATTEMPTS, LOCKOUT_MS,
 } from '../js/state.js';
 
@@ -183,4 +183,12 @@ test('her bank: the secret question, then the code texted to her phone', () => {
 test('accents do not matter in the secret answer', () => {
   const state = createState();
   assert.equal(answerSecretQuestion(state, 'ANNÉCY', 'Annecy'), true);
+});
+
+test('her password manager resists whatever the player tries', () => {
+  const state = createState();
+  for (const guess of ['Rex2019!', 'Annecy1411', 'rex-moka-norvege-julie']) {
+    assert.equal(tryVault(state, guess), false);
+  }
+  assert.equal(state.vaultTries, 3);
 });

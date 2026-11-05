@@ -1,6 +1,5 @@
-// More apps on Camille's phone: Notes, Plans, Musique, Calendrier, and the
-// password manager of the final boss (Coffre), shown locked. Bulle and the
-// bank have their own modules (bulle.js, bank.js). Each app can be looked at; anything that would leave a trace is
+// More apps on Camille's phone: Notes, Plans, Musique, Calendrier. Bulle, the
+// bank and Coffre have their own modules (bulle.js, bank.js, vault.js). Each app can be looked at; anything that would leave a trace is
 // refused with a thought.
 
 import { PHONE, CALENDAR } from '../data/camille.js';
@@ -20,7 +19,6 @@ const THOUGHTS = {
   trace: 'Surtout pas : elle le verrait.',
   search: 'Surtout pas : la recherche resterait dans son historique.',
   play: 'Surtout pas : la musique partirait à fond dans le bureau !',
-  vault: 'Une phrase de passe ET une clé physique… Celui-là va résister.',
 };
 
 const DAY = new Intl.DateTimeFormat('fr-FR', { weekday: 'short', day: 'numeric', month: 'short' });
@@ -141,16 +139,5 @@ export function moreAppScreens({ go, header, think, thoughtLine, onEvent }) {
     return form;
   }
 
-  function vault() {
-    return [
-      header('', 'home'),
-      login({
-        title: 'Coffre', logo: '⚿', color: '#2d2f36', account: 'Clé de sécurité : non détectée',
-        fieldLabel: 'Phrase de passe', onTry: think(THOUGHTS.vault),
-      }),
-      thoughtLine(),
-    ];
-  }
-
-  return { notes, note, maps, music, calendar, vault };
+  return { notes, note, maps, music, calendar };
 }
