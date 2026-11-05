@@ -156,11 +156,11 @@ export const PHONE = {
   ],
   // Plans app: saved places, placed on a drawn map (x, y in %).
   places: [
-    { id: 'home', name: 'Domicile', detail: 'Croix-Rousse, Lyon', x: 36, y: 26, icon: '⌂' },
-    { id: 'park', name: 'Parc (balades de Rex)', detail: 'Presque tous les soirs', x: 66, y: 16, icon: '❀' },
-    { id: 'work', name: 'Bureau', detail: 'Part-Dieu, Lyon', x: 64, y: 54, icon: '▣' },
-    { id: 'vet', name: 'Clinique vétérinaire', detail: 'Dernière visite : 3 juillet', x: 26, y: 62, icon: '✚' },
-    { id: 'mum', name: 'Chez Maman', detail: 'Villeurbanne · le dimanche', x: 86, y: 40, icon: '♥' },
+    { id: 'home', name: 'Domicile', detail: 'Croix-Rousse, Lyon', x: 36, y: 26 },
+    { id: 'park', name: 'Parc (balades de Rex)', detail: 'Presque tous les soirs', x: 66, y: 16 },
+    { id: 'work', name: 'Bureau', detail: 'Part-Dieu, Lyon', x: 64, y: 54 },
+    { id: 'vet', name: 'Clinique vétérinaire', detail: 'Dernière visite : 3 juillet', x: 26, y: 62 },
+    { id: 'mum', name: 'Chez Maman', detail: 'Villeurbanne · le dimanche', x: 86, y: 40 },
   ],
   // Musique app.
   music: {
@@ -445,7 +445,7 @@ export const BULLE = {
       text: '29 ans aujourd’hui, fêtés dans la ville où tout a commencé 💛',
       place: 'Annecy',
       likes: 31,
-      clue: { id: 'born-annecy', text: 'Bulle, 14/11/2025 : « 29 ans, fêtés dans la ville où tout a commencé », 📍 Annecy.' },
+      clue: { id: 'born-annecy', text: 'Bulle, 14/11/2025 : « 29 ans, fêtés dans la ville où tout a commencé », à Annecy.' },
     },
     { id: 'post-norway', src: 'assets/photos/norway-falls.jpg', date: '20 août 2025', text: 'Norvège, on y retourne quand ? 🌈', likes: 27 },
     { id: 'post-rex', src: 'assets/photos/rex-arrival.jpg', date: '12 mars 2019', text: 'Bienvenue à la maison, Rex ! 🐶', likes: 58 },

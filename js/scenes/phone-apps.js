@@ -4,15 +4,16 @@
 
 import { PHONE, CALENDAR } from '../data/camille.js';
 import { el, button } from '../dom.js';
+import { icon } from '../icons.js';
 
 export const MORE_APPS = [
-  { id: 'maps', name: 'Plans', glyph: '⌖', color: '#3f8f6b' },
-  { id: 'calendar', name: 'Calendrier', glyph: '▦', color: '#d9482b' },
-  { id: 'notes', name: 'Notes', glyph: '✎', color: '#e0a830' },
-  { id: 'music', name: 'Musique', glyph: '♫', color: '#c2477a' },
-  { id: 'bulle', name: 'Bulle', glyph: '◍', color: '#ff7a59' },
-  { id: 'bank', name: 'Nébula', glyph: '◈', color: '#3b3f8f' },
-  { id: 'vault', name: 'Coffre', glyph: '⚿', color: '#2d2f36' },
+  { id: 'maps', name: 'Plans', icon: 'maps', color: '#3f8f6b' },
+  { id: 'calendar', name: 'Calendrier', icon: 'calendar', color: '#d9482b' },
+  { id: 'notes', name: 'Notes', icon: 'notes', color: '#e0a830' },
+  { id: 'music', name: 'Musique', icon: 'music', color: '#c2477a' },
+  { id: 'bulle', name: 'Bulle', icon: 'bulle', color: '#ff7a59' },
+  { id: 'bank', name: 'Nébula', icon: 'bank', color: '#3b3f8f' },
+  { id: 'vault', name: 'Coffre', icon: 'vault', color: '#2d2f36' },
 ];
 
 const THOUGHTS = {
@@ -60,7 +61,7 @@ export function moreAppScreens({ go, header, think, thoughtLine, onEvent }) {
     const map = el('div', 'map');
     map.append(el('div', 'map-river'));
     for (const place of PHONE.places) {
-      const pin = el('span', 'map-pin', place.icon);
+      const pin = el('span', 'map-pin');
       pin.style.left = `${place.x}%`;
       pin.style.top = `${place.y}%`;
       pin.title = place.name;
@@ -70,7 +71,7 @@ export function moreAppScreens({ go, header, think, thoughtLine, onEvent }) {
     for (const place of PHONE.places) {
       const row = el('div', 'settings-row');
       const text = el('span', 'place-text');
-      text.append(el('strong', '', `${place.icon}  ${place.name}`), el('span', 'settings-value', place.detail));
+      text.append(el('strong', '', place.name), el('span', 'settings-value', place.detail));
       row.append(text);
       list.append(row);
     }
@@ -87,10 +88,11 @@ export function moreAppScreens({ go, header, think, thoughtLine, onEvent }) {
   function music() {
     const { playing, playlists } = PHONE.music;
     const card = el('div', 'now-playing');
-    const cover = el('span', 'now-cover', '♫');
+    const cover = icon('music', 'now-cover');
     const text = el('span', 'now-text');
     text.append(el('strong', '', playing.title), el('span', '', playing.artist));
-    const play = button('now-play', '▶', think(THOUGHTS.play));
+    const play = button('now-play', '', think(THOUGHTS.play));
+    play.append(icon('play'));
     play.setAttribute('aria-label', 'Lecture');
     card.append(cover, text, play);
 

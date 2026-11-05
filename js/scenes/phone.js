@@ -17,6 +17,7 @@ import {
   takeIntruderPhoto, deletePhoto, emptyTrash, leftoverTraces, deleteBankTexts,
 } from '../state.js';
 import { el, button, hhmm, mss } from '../dom.js';
+import { icon } from '../icons.js';
 
 const DATE_FORMAT = new Intl.DateTimeFormat('fr-FR', { weekday: 'long', day: 'numeric', month: 'long' });
 const PHOTO_DATE = new Intl.DateTimeFormat('fr-FR', { day: 'numeric', month: 'long', year: 'numeric' });
@@ -31,9 +32,9 @@ const THOUGHTS = {
   scam: 'Payer 1,99 € par un lien inconnu ? C’est du hameçonnage.',
 };
 
-const HOURLY = [['14h', '☀', 31], ['15h', '☀', 32], ['16h', '☀', 33], ['17h', '⛅', 32], ['18h', '⛅', 30]];
+const HOURLY = [['14h', 'sun', 31], ['15h', 'sun', 32], ['16h', 'sun', 33], ['17h', 'sun-cloud', 32], ['18h', 'sun-cloud', 30]];
 const FORECAST = [
-  ['Ven.', '☀', 32], ['Sam.', '⛅', 29], ['Dim.', '☁', 26], ['Lun.', '☀', 30], ['Mar.', '☀', 31],
+  ['Ven.', 'sun', 32], ['Sam.', 'sun-cloud', 29], ['Dim.', 'cloud', 26], ['Lun.', 'sun', 30], ['Mar.', 'sun', 31],
 ];
 
 // Settings: each row opens a page. Rows of a `readOnly` page are only
@@ -42,7 +43,7 @@ const SETTINGS = [
   {
     name: 'Wi-Fi',
     value: 'Bureau-Invités',
-    rows: [['Wi-Fi', 'Activé'], ['Bureau-Invités', 'Connecté ✓'], ['Bureau-Pro', '🔒'], ['Imprimante-2e', '🔒']],
+    rows: [['Wi-Fi', 'Activé'], ['Bureau-Invités', 'Connecté'], ['Bureau-Pro', 'Protégé'], ['Imprimante-2e', 'Protégé']],
   },
   {
     name: 'Bluetooth',
@@ -80,15 +81,15 @@ const SETTINGS = [
 
 // The dock at the bottom of the home screen, and the grid above it.
 const DOCK = [
-  { id: 'photos', name: 'Photos', glyph: '✿', color: '#f2a65a' },
-  { id: 'messages', name: 'Messages', glyph: '…', color: '#4d8a52' },
-  { id: 'mail', name: 'Mail', glyph: '✉', color: '#2b5fa8' },
-  { id: 'camera', name: 'Caméra', glyph: '◉', color: '#555b66' },
+  { id: 'photos', name: 'Photos', icon: 'photos', color: '#f2a65a' },
+  { id: 'messages', name: 'Messages', icon: 'messages', color: '#4d8a52' },
+  { id: 'mail', name: 'Mail', icon: 'mail', color: '#2b5fa8' },
+  { id: 'camera', name: 'Caméra', icon: 'camera', color: '#555b66' },
 ];
 const GRID = [
   ...MORE_APPS.slice(0, 4), // Plans, Calendrier, Notes, Musique
-  { id: 'weather', name: 'Météo', glyph: '☀', color: '#e0a830' },
-  { id: 'settings', name: 'Réglages', glyph: '⚙', color: '#6b7079' },
+  { id: 'weather', name: 'Météo', icon: 'sun', color: '#e0a830' },
+  { id: 'settings', name: 'Réglages', icon: 'settings', color: '#6b7079' },
   ...MORE_APPS.slice(4),    // Bulle, Nébula, Coffre
 ];
 
@@ -144,7 +145,7 @@ export function createPhoneView({
 
   function statusBar() {
     const bar = el('div', 'phone-status');
-    bar.append(el('span', 'phone-status-time', hhmm(storyTime(now()))), el('span', '', '●●● ▮'));
+    bar.append(el('span', 'phone-status-time', hhmm(storyTime(now()))), el('span', '', '4G   62 %'));
     return bar;
   }
 
@@ -185,10 +186,9 @@ export function createPhoneView({
     for (let i = 0; i < PIN_LENGTH; i++) dots.append(el('span', i < entered.length ? 'filled' : ''));
 
     const pad = el('div', 'pin-pad');
-    for (const key of ['1', '2', '3', '4', '5', '6', '7', '8', '9', '', '0', '⌫']) {
+    for (const key of ['1', '2', '3', '4', '5', '6', '7', '8', '9', '', '0', 'erase']) {
       if (!key) { pad.append(el('span')); continue; }
-      const b = button(key === '⌫' ? 'pin-key erase' : 'pin-key', key, () => press(key));
-      if (key === '⌫') b.setAttribute('aria-label', 'Effacer');
+      const b = button(key === 'erase' ? 'pin-key erase' : 'pin-key', key === 'erase' ? 'Effacer' : key, () => press(key));
       pad.append(b);
     }
 
@@ -219,9 +219,10 @@ export function createPhoneView({
     }
     const appButton = app => {
       const b = button('app', '', () => go(app.id));
-      const icon = el('span', 'app-icon', app.glyph);
-      icon.style.background = app.color;
-      b.append(icon, el('span', 'app-name', app.name));
+      const tile = el('span', 'app-icon');
+      tile.style.background = app.color;
+      tile.append(icon(app.icon));
+      b.append(tile, el('span', 'app-name', app.name));
       return b;
     };
     const grid = el('div', 'app-grid');
@@ -253,7 +254,7 @@ export function createPhoneView({
       const b = button('thread-row', '', () => go('bank-texts'));
       const text = el('span', 'thread-text');
       text.append(el('strong', '', 'Nébula'), el('span', 'thread-last', BANK.text(state.texts[0].code)));
-      b.append(el('span', 'thread-avatar bank-avatar', '◈'), text, el('span', 'thread-time', hhmm(storyTime(state.texts[0].sentAt))));
+      b.append(el('span', 'thread-avatar bank-avatar', 'N'), text, el('span', 'thread-time', hhmm(storyTime(state.texts[0].sentAt))));
       list.append(b);
     }
     for (const thread of PHONE.threads) {
@@ -324,9 +325,9 @@ export function createPhoneView({
 
   function forecastRow(entries) {
     const row = el('div', 'forecast');
-    for (const [label, glyph, temp] of entries) {
+    for (const [label, sky, temp] of entries) {
       const cell = el('div', 'forecast-day');
-      cell.append(el('span', '', label), el('span', 'forecast-glyph', glyph), el('span', '', `${temp}°`));
+      cell.append(el('span', '', label), icon(sky, 'forecast-glyph'), el('span', '', `${temp}°`));
       row.append(cell);
     }
     return row;
@@ -475,7 +476,7 @@ export function createPhoneView({
 
   function press(key) {
     if (view !== 'pin') return;
-    if (key === '⌫') entered = entered.slice(0, -1);
+    if (key === 'erase') entered = entered.slice(0, -1);
     else if (entered.length < PIN_LENGTH) entered += key;
     message = '';
     if (entered.length === PIN_LENGTH) return submit();
@@ -512,7 +513,7 @@ export function createPhoneView({
     if (view === 'lock' && digit && lockRemaining(state, 'phone', now()) === 0) go('pin');
     if (view !== 'pin') return;
     if (digit) press(event.key);
-    else if (event.key === 'Backspace') press('⌫');
+    else if (event.key === 'Backspace') press('erase');
     else return;
     event.preventDefault();
   });

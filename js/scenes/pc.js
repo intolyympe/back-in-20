@@ -10,6 +10,7 @@ import { createBulle } from './bulle.js';
 import { createVault } from './vault.js';
 import { recordFailedAttempt, lockRemaining, unlock, relock, isUnlocked } from '../state.js';
 import { el, button, hhmm, mss } from '../dom.js';
+import { icon } from '../icons.js';
 
 const DATE_FORMAT = new Intl.DateTimeFormat('fr-FR', { weekday: 'long', day: 'numeric', month: 'long' });
 
@@ -19,12 +20,12 @@ const THOUGHTS = {
 };
 
 const APPS = [
-  { id: 'notes', name: 'Notes', glyph: '✎', color: '#e0a830' },
-  { id: 'mail', name: 'Mail', glyph: '✉', color: '#2b5fa8' },
-  { id: 'bulle', name: 'Bulle', glyph: '◍', color: '#ff7a59' },
-  { id: 'vault', name: 'Coffre', glyph: '⚿', color: '#2d2f36' },
-  { id: 'files', name: 'Documents', glyph: '▤', color: '#4f7aa8' },
-  { id: 'trash', name: 'Corbeille', glyph: '♲', color: '#6b7079' },
+  { id: 'notes', name: 'Notes', icon: 'notes', color: '#e0a830' },
+  { id: 'mail', name: 'Mail', icon: 'mail', color: '#2b5fa8' },
+  { id: 'bulle', name: 'Bulle', icon: 'bulle', color: '#ff7a59' },
+  { id: 'vault', name: 'Coffre', icon: 'vault', color: '#2d2f36' },
+  { id: 'files', name: 'Documents', icon: 'files', color: '#4f7aa8' },
+  { id: 'trash', name: 'Corbeille', icon: 'trash', color: '#6b7079' },
 ];
 
 // "rex2019" and "Rex2019!" are the same guess, give or take the rule.
@@ -194,14 +195,14 @@ export function createPcView({
     const icons = el('div', 'pc-icons');
     for (const a of APPS) {
       const b = button('pc-icon', '', () => openApp(a.id));
-      const glyph = el('span', 'pc-icon-glyph', a.glyph);
-      glyph.style.background = a.color;
-      b.append(glyph, el('span', 'pc-icon-name', a.name));
+      const tile = icon(a.icon, 'pc-icon-glyph');
+      tile.style.background = a.color;
+      b.append(tile, el('span', 'pc-icon-name', a.name));
       icons.append(b);
     }
 
     const taskbar = el('div', 'pc-taskbar');
-    const lock = button('pc-lock', '🔒 Verrouiller', () => {
+    const lock = button('pc-lock', 'Verrouiller', () => {
       relock(state, 'pc');
       app = null;
       showHint = false;
