@@ -5,6 +5,7 @@
 
 import { tryVault } from '../state.js';
 import { el, button } from '../dom.js';
+import { icon } from '../icons.js';
 
 export const GIVE_UP_AFTER = 3;
 
@@ -62,11 +63,11 @@ export function createVault({ state, variant, onEvent = () => {} }) {
     });
 
     const key = el('div', 'vault-key');
-    key.append(el('span', 'vault-key-icon', '🔑'), el('span', '', 'Clé de sécurité : aucune clé détectée'));
+    key.append(icon('key', 'vault-key-icon'), el('span', '', 'Clé de sécurité : aucune clé détectée'));
     const insert = button('vault-link', 'Insérer la clé', think(THOUGHTS.key));
 
     const parts = [
-      el('span', 'vault-logo', '⚿'),
+      icon('vault', 'vault-logo'),
       el('p', 'vault-title', 'Coffre de Camille'),
       el('p', 'vault-text', '142 identifiants protégés'),
       form,

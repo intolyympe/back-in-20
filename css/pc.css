@@ -368,11 +368,6 @@
   font-size: 15px !important;
 }
 
-.pc-file::before {
-  content: "▤  ";
-  color: #4f7aa8;
-}
-
 .pc-file:hover {
   background: #e4e7ee !important;
 }

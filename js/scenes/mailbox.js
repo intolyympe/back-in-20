@@ -8,6 +8,7 @@ import {
   sendAlert, deleteEmail, emptyMailTrash,
 } from '../state.js';
 import { el, button, hhmm, mss } from '../dom.js';
+import { icon } from '../icons.js';
 
 const INTRUDER_SRC = 'assets/photos/intruder.svg';
 
@@ -72,7 +73,7 @@ export function createMailbox({ state, now, storyTime, variant, onEvent = () => 
     input.disabled = submit.disabled = wait > 0;
 
     form.append(
-      el('span', 'mail-logo', '✉'),
+      icon('mail', 'mail-logo'),
       el('p', 'mail-login-title', 'Session expirée'),
       el('p', 'mail-login-text', 'Reconnectez-vous pour voir les e-mails de Camille.'),
       input,
@@ -118,7 +119,7 @@ export function createMailbox({ state, now, storyTime, variant, onEvent = () => 
   function inboxView() {
     const bar = el('div', 'mail-bar');
     const small = variant === 'phone';
-    const compose = button('mail-compose', small ? '✎' : '✎ Écrire', () => think(THOUGHTS.send));
+    const compose = button('mail-compose', 'Écrire', () => think(THOUGHTS.send));
     compose.setAttribute('aria-label', 'Écrire un e-mail');
     bar.append(
       el('span', 'mail-bar-title', small ? 'Réception' : 'Boîte de réception'),

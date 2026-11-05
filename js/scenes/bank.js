@@ -9,6 +9,7 @@ import {
   answerSecretQuestion, sendBankCode, verifyBankCode,
 } from '../state.js';
 import { el, button, mss } from '../dom.js';
+import { icon } from '../icons.js';
 
 const THOUGHTS = {
   transfer: 'Surtout pas : je ne suis pas là pour voler.',
@@ -80,7 +81,7 @@ export function createBank({ state, now, onEvent = () => {} }) {
 
   function brand(...children) {
     const box = el('div', 'bank-card');
-    box.append(el('span', 'bank-logo', '◈'), el('p', 'bank-brand', 'Banque Nébula'), ...children);
+    box.append(icon('bank', 'bank-logo'), el('p', 'bank-brand', 'Banque Nébula'), ...children);
     return box;
   }
 

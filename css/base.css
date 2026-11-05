@@ -66,3 +66,50 @@ button {
     animation-duration: 0s !important;
   }
 }
+
+/* Line icons (js/icons.js): sized by their holder. */
+.icon,
+.forecast-glyph,
+.now-cover,
+.pc-icon-glyph,
+.bulle-logo,
+.bank-logo,
+.vault-logo,
+.vault-key-icon,
+.mail-logo {
+  display: inline-grid;
+  place-items: center;
+}
+
+.icon svg,
+.forecast-glyph svg,
+.now-cover svg,
+.pc-icon-glyph svg,
+.bulle-logo svg,
+.bank-logo svg,
+.vault-logo svg,
+.vault-key-icon svg,
+.mail-logo svg {
+  width: 55%;
+  height: 55%;
+}
+
+.forecast-glyph {
+  width: 24px;
+  height: 24px;
+}
+
+.forecast-glyph svg {
+  width: 100%;
+  height: 100%;
+}
+
+.vault-key-icon {
+  width: 18px;
+  height: 18px;
+}
+
+.vault-key-icon svg {
+  width: 100%;
+  height: 100%;
+}

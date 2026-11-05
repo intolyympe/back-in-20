@@ -8,6 +8,7 @@ import {
   recordFailedAttempt, lockRemaining, isUnlocked, requestBulleReset, changeBullePassword,
 } from '../state.js';
 import { el, button, mss } from '../dom.js';
+import { icon } from '../icons.js';
 
 const MIN_LENGTH = 8;
 
@@ -61,7 +62,7 @@ export function createBulle({ state, now, variant, onEvent = () => {} }) {
 
   function card(...children) {
     const box = el('div', 'bulle-card');
-    const logo = el('span', 'bulle-logo', '◍');
+    const logo = icon('bulle', 'bulle-logo');
     box.append(logo, el('p', 'bulle-brand', 'Bulle'), ...children);
     return box;
   }
@@ -108,7 +109,7 @@ export function createBulle({ state, now, variant, onEvent = () => {} }) {
 
   function sentView() {
     return [card(
-      el('p', 'bulle-title', 'E-mail envoyé ✓'),
+      el('p', 'bulle-title', 'E-mail envoyé'),
       el('p', 'bulle-text', 'Ouvrez le lien reçu dans votre boîte mail pour choisir un nouveau mot de passe.'),
       // Sending it again is one more e-mail in her inbox.
       button('bulle-link', 'Renvoyer le lien', () => {
@@ -162,7 +163,7 @@ export function createBulle({ state, now, variant, onEvent = () => {} }) {
       el('strong', '', BULLE.name),
       el('span', 'bulle-handle', BULLE.handle),
       el('span', '', BULLE.bio),
-      el('span', 'bulle-private', `🔒 Compte privé · ${BULLE.followers} abonnés`),
+      el('span', 'bulle-private', `Compte privé · ${BULLE.followers} abonnés`),
     );
     head.append(el('span', 'bulle-avatar', BULLE.name[0]), text);
     return head;
@@ -179,7 +180,7 @@ export function createBulle({ state, now, variant, onEvent = () => {} }) {
       item.classList.add('text-only');
     }
     item.append(el('span', 'bulle-post-text', post.text));
-    const meta = [post.date, post.place && `📍 ${post.place}`, `♥ ${post.likes}`].filter(Boolean).join(' · ');
+    const meta = [post.date, post.place && `à ${post.place}`, `${post.likes} j’aime`].filter(Boolean).join(' · ');
     item.append(el('span', 'bulle-post-meta', meta));
     return item;
   }
@@ -198,7 +199,7 @@ export function createBulle({ state, now, variant, onEvent = () => {} }) {
   function postView() {
     const actions = el('div', 'bulle-actions');
     actions.append(
-      button('bulle-secondary', '♥ J’aime', think(THOUGHTS.like)),
+      button('bulle-secondary', 'J’aime', think(THOUGHTS.like)),
       button('bulle-secondary', 'Commenter', think(THOUGHTS.trace)),
     );
     return [
