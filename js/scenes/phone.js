@@ -7,6 +7,7 @@
 // lives in js/state.js, and main.js turns events into notebook entries.
 
 import { PHONE } from '../data/camille.js';
+import { createMailbox } from './mailbox.js';
 import {
   recordFailedAttempt, lockRemaining, unlock, isUnlocked,
   takeIntruderPhoto, deletePhoto, emptyTrash, leftoverTraces,
@@ -23,7 +24,6 @@ const THOUGHTS = {
   reply: 'Surtout pas : elle verrait le message.',
   photo: 'Surtout pas : la photo resterait dans sa galerie.',
   scam: 'Payer 1,99 € par un lien inconnu ? C’est du hameçonnage.',
-  mail: 'Il me faudrait son mot de passe…',
 };
 
 const HOURLY = [['14h', '☀', 31], ['15h', '☀', 32], ['16h', '☀', 33], ['17h', '⛅', 32], ['18h', '⛅', 30]];
@@ -110,8 +110,10 @@ const mss = ms => {
  * @param {(type: string, data?: object) => void} options.onEvent
  *   'unlock', 'lockout', 'photo-viewed' {photo}, 'thread-viewed' {thread},
  *   'photo-deleted', 'trash-emptied'
+ * @param {(type: string, data?: object) => void} options.onMailEvent
+ *   events of the Mail app (see mailbox.js)
  */
-export function createPhoneView({ state, now, storyTime, onEvent = () => {} }) {
+export function createPhoneView({ state, now, storyTime, onEvent = () => {}, onMailEvent = () => {} }) {
   const handset = el('div', 'handset');
   const screen = el('div', 'handset-screen');
   handset.append(screen);
@@ -266,15 +268,7 @@ export function createPhoneView({ state, now, storyTime, onEvent = () => {} }) {
   }
 
   function mailScreen() {
-    const box = el('div', 'mail-login');
-    box.append(
-      el('span', 'mail-logo', '✉'),
-      el('p', 'mail-title', 'Session expirée'),
-      el('p', 'mail-text', 'Saisissez le mot de passe du compte de Camille pour voir vos e-mails.'),
-      button('mail-field', 'Mot de passe', think(THOUGHTS.mail)),
-      button('mail-login-button', 'Se connecter', think(THOUGHTS.mail)),
-    );
-    return [header('Mail', 'home'), box, notNowLine()];
+    return [header('Mail', 'home'), createMailbox({ state, now, storyTime, variant: 'phone', onEvent: onMailEvent })];
   }
 
   function cameraScreen() {
@@ -428,8 +422,9 @@ export function createPhoneView({ state, now, storyTime, onEvent = () => {} }) {
     // A conversation opens on its latest messages.
     const bubbles = screen.querySelector('.bubbles');
     if (bubbles) bubbles.scrollTop = bubbles.scrollHeight;
-    // Keep the keyboard working: focus the first control of the new screen.
-    screen.querySelector('button:not(:disabled)')?.focus();
+    // Keep the keyboard working: a field to type in (Mail), else the first
+    // control of the new screen.
+    (screen.querySelector('input:not(:disabled)') ?? screen.querySelector('button:not(:disabled)'))?.focus();
   }
 
   // ---- PIN ----

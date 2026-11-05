@@ -5,6 +5,7 @@
 // into notebook entries.
 
 import { PC } from '../data/camille.js';
+import { createMailbox } from './mailbox.js';
 import { recordFailedAttempt, lockRemaining, unlock, relock, isUnlocked } from '../state.js';
 
 const DATE_FORMAT = new Intl.DateTimeFormat('fr-FR', { weekday: 'long', day: 'numeric', month: 'long' });
@@ -12,7 +13,6 @@ const DATE_FORMAT = new Intl.DateTimeFormat('fr-FR', { weekday: 'long', day: 'nu
 const THOUGHTS = {
   close: 'Si près… Il manque quelque chose ?',
   file: 'Rien d’utile là-dedans.',
-  mail: 'Sa messagerie… La suite au chapitre 3 (bientôt).',
 };
 
 const APPS = [
@@ -51,8 +51,10 @@ const loose = text => text.toLowerCase().replace(/[^a-z0-9]/g, '');
  * @param {(ms: number) => Date} options.storyTime  story clock at that time
  * @param {(type: string, data?: object) => void} options.onEvent
  *   'unlock', 'lock', 'note-viewed' {note}
+ * @param {(type: string, data?: object) => void} options.onMailEvent
+ *   events of the Mail window (see mailbox.js)
  */
-export function createPcView({ state, now, storyTime, onEvent = () => {} }) {
+export function createPcView({ state, now, storyTime, onEvent = () => {}, onMailEvent = () => {} }) {
   const monitor = el('div', 'pc-monitor');
   const screen = el('div', 'pc-screen');
   monitor.append(screen);
@@ -166,26 +168,7 @@ export function createPcView({ state, now, storyTime, onEvent = () => {} }) {
   }
 
   function mailWindow() {
-    const body = el('form', 'pc-mail');
-    const input = el('input', 'pc-password');
-    input.type = 'password';
-    input.placeholder = 'Mot de passe';
-    input.autocomplete = 'off';
-    input.setAttribute('aria-label', 'Mot de passe de la messagerie');
-    const go = el('button', 'pc-mail-go', 'Se connecter');
-    go.type = 'submit';
-    body.append(
-      el('span', 'pc-mail-logo', '✉'),
-      el('p', 'pc-mail-title', 'Session expirée'),
-      el('p', 'pc-mail-text', 'Reconnectez-vous pour voir les e-mails de Camille.'),
-      input,
-      go,
-    );
-    body.addEventListener('submit', event => {
-      event.preventDefault();
-      think(THOUGHTS.mail);
-    });
-    return windowFrame('Mail', body);
+    return windowFrame('Mail', createMailbox({ state, now, storyTime, variant: 'pc', onEvent: onMailEvent }));
   }
 
   function filesWindow() {
@@ -234,8 +217,12 @@ export function createPcView({ state, now, storyTime, onEvent = () => {} }) {
     const open = isUnlocked(state, 'pc');
     screen.className = `pc-screen ${open ? 'pc-desktop' : 'pc-login'}`;
     screen.replaceChildren(...(open ? desktopScreen() : loginScreen()));
-    // Keep the keyboard working: the password field, or the first control.
-    screen.querySelector('input:not(:disabled), button')?.focus();
+    // Keep the keyboard working: a field to type in first (the login, or the
+    // Mail window's), else the open window's first control, else the first.
+    const target = screen.querySelector('input:not(:disabled)')
+      ?? screen.querySelector('.pc-window button')
+      ?? screen.querySelector('button');
+    target?.focus();
   }
 
   // Clocks and the lockout countdown keep running while the player sits here.

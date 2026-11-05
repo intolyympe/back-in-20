@@ -540,8 +540,7 @@
   background: #3f7f4a;
 }
 
-.reply-field,
-.mail-field {
+.reply-field {
   width: calc(100% - 24px);
   margin: 0 12px 24px;
   padding: 9px 14px !important;
@@ -550,54 +549,6 @@
   color: #7d828c !important;
   font-size: 14px !important;
   text-align: left;
-}
-
-/* Mail */
-
-.mail-login {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  width: 100%;
-  padding: 40px 22px 0;
-  text-align: center;
-}
-
-.mail-logo {
-  display: grid;
-  place-items: center;
-  width: 64px;
-  height: 64px;
-  border-radius: 18px;
-  background: #2b5fa8;
-  font-size: 32px;
-}
-
-.mail-title {
-  margin: 16px 0 6px;
-  font-size: 19px;
-  font-weight: 700;
-}
-
-.mail-text {
-  margin: 0 0 22px;
-  color: #9aa0ab;
-  font-size: 14px;
-  line-height: 1.4;
-}
-
-.mail-login .mail-field {
-  width: 100%;
-  margin: 0 0 12px;
-  border-radius: 10px;
-}
-
-.mail-login-button {
-  width: 100%;
-  padding: 10px !important;
-  border-radius: 10px;
-  background: #2b5fa8 !important;
-  font-size: 15px !important;
 }
 
 /* Camera */
