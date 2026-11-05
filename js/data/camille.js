@@ -10,9 +10,8 @@
 //     "NOV. 2025" can be read. Card + cake = 14/11.
 //   - the dog's name (Rex): "Véto Rex" on the calendar in July only says Rex
 //     is an animal; the puppy on the phone's wallpaper makes him her dog.
-//     The year he arrived
-//     (2019), in the phone's photos once it is unlocked (her mum's text
-//     "déjà 7 ans" backs it up) -> chapter 2
+//     The year he arrived (2019) is in the phone's photos once it is
+//     unlocked; her mum's text "déjà 7 ans" backs it up -> chapter 2
 //   - "ne JAMAIS réutiliser ses mdp (oups…)" in the notes -> chapter 3
 
 // The round starts when Camille leaves her desk: Thursday 9 July 2026, 14:05
@@ -75,8 +74,9 @@ export const BIRTHDAY_CARD = {
 export const PHONE = {
   pin: '1411',
   photos: [
-    { id: 'rex-floor', src: 'assets/photos/rex-floor.jpg', date: [2026, 6, 28], caption: 'Monsieur attend sa promenade' },
     { id: 'fjord', src: 'assets/wallpapers/pc-fjord.jpg', date: [2025, 8, 14], caption: 'Norvège ❤' },
+    // Rex is 7 now: the puppy pictures all date from the week he arrived.
+    { id: 'rex-floor', src: 'assets/photos/rex-floor.jpg', date: [2019, 3, 28], caption: 'Monsieur attend sa promenade' },
     { id: 'rex-face', src: 'assets/photos/rex-face.jpg', date: [2019, 3, 20], caption: 'Ce regard…' },
     {
       id: 'rex-arrival',
@@ -102,8 +102,8 @@ export const PHONE = {
       name: 'Hugo (boulot)',
       time: '11:48',
       messages: [
-        { text: 'Tu m’envoies les factures avant vendredi ?' },
-        { text: 'Oui oui, je regarde ça après la pause', me: true },
+        { text: 'Hugo, il me manque toujours tes factures du T2 🙏', me: true },
+        { text: 'Oui oui, je te les envoie avant vendredi, promis' },
       ],
     },
     {
@@ -116,7 +116,7 @@ export const PHONE = {
         { text: 'Déjà 7 ans que tu as ce chien, le temps passe vite…' },
         { text: 'Ne m’en parle pas 😭', me: true },
       ],
-      clue: { id: 'rex-7-years', text: 'Maman, par SMS : « déjà 7 ans que tu as ce chien ».' },
+      clue: { id: 'rex-7-years', text: 'SMS de sa mère : « Tu passes dimanche avec Rex ? […] Déjà 7 ans que tu as ce chien ».' },
     },
     {
       id: 'lea',
@@ -142,6 +142,6 @@ export const DEDUCTIONS = [
   {
     id: 'dog-rex',
     from: ['vet-rex', 'dog-wallpaper'],
-    text: '→ Rex, c’est son chien : le chiot du fond d’écran !',
+    text: '→ Rex, c’est son chien (sûrement le chiot du fond d’écran) !',
   },
 ];
