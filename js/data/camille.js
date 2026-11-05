@@ -19,7 +19,11 @@
 //     on the PC: "Mail perso : même mdp que le PC" -> chapter 3, her mailbox
 //     opens with Rex2019! too
 //   - in her mailbox, an e-mail from Bulle (social network) sent to the
-//     address tied to her account: "mot de passe oublié ?" -> chapter 4
+//     address tied to her account: "mot de passe oublié ?" -> chapter 4, the
+//     reset link lands in the mailbox the player already holds
+//   - on her private Bulle account: a post from her 29th birthday, "dans la
+//     ville où tout a commencé", tagged Annecy, and a chat with Léa: her bank
+//     falls back on a secret question, "la ville où je suis née" -> chapter 5
 
 // The round starts when Camille leaves her desk: Thursday 9 July 2026, 14:05
 // (local time). She is back 20 minutes later.
@@ -389,6 +393,60 @@ export const MAIL = {
         'Si ce n’était pas vous, changez votre mot de passe.',
       ],
     },
+    'bulle-reset': {
+      from: 'Bulle',
+      subject: 'Réinitialisez votre mot de passe',
+      body: [
+        'Bonjour Camille,',
+        'Vous avez demandé à réinitialiser le mot de passe de votre compte @cam.et.rex.',
+        'Si ce n’était pas vous, ignorez cet e-mail.',
+      ],
+      // A button in the e-mail: the mailbox sends this event when pressed.
+      action: { label: 'Choisir un nouveau mot de passe', event: 'reset-link' },
+    },
+    'bulle-changed': {
+      from: 'Bulle',
+      subject: 'Votre mot de passe a été modifié',
+      body: [
+        'Le mot de passe de votre compte @cam.et.rex vient d’être modifié.',
+        'Si ce n’était pas vous, sécurisez votre compte immédiatement.',
+      ],
+    },
+  },
+};
+
+// Her account on Bulle, a made-up social network. Private: only her
+// followers see her posts, so the player has to get in.
+export const BULLE = {
+  handle: '@cam.et.rex',
+  name: 'Camille',
+  bio: 'Lyon · ☕ · 🐶 Rex · 🏔',
+  followers: 214,
+  // Newest first. `src` is a photo, else the post is text only.
+  posts: [
+    { id: 'post-walk', src: 'assets/photos/rex-walk.jpg', date: '8 juil.', text: 'Balade du soir avec Rex 🌙', likes: 3 },
+    { id: 'post-coffee', src: 'assets/photos/coffee.jpg', date: '6 juil.', text: 'Pause café avec Léa ☕', likes: 12 },
+    {
+      id: 'post-birthday',
+      date: '14 nov. 2025',
+      text: '29 ans aujourd’hui, fêtés dans la ville où tout a commencé 💛',
+      place: 'Annecy',
+      likes: 31,
+      clue: { id: 'born-annecy', text: 'Bulle, 14/11/2025 : « 29 ans, fêtés dans la ville où tout a commencé », 📍 Annecy.' },
+    },
+    { id: 'post-norway', src: 'assets/photos/norway-falls.jpg', date: '20 août 2025', text: 'Norvège, on y retourne quand ? 🌈', likes: 27 },
+    { id: 'post-rex', src: 'assets/photos/rex-arrival.jpg', date: '12 mars 2019', text: 'Bienvenue à la maison, Rex ! 🐶', likes: 58 },
+  ],
+  // Private messages on Bulle.
+  chat: {
+    name: 'Léa',
+    messages: [
+      { text: 'Alors, t’as pu payer le ferry ?' },
+      { text: 'Oui ! J’avais encore oublié mon code Nébula 🙈', me: true },
+      { text: 'Encore ?? 😂' },
+      { text: 'Heureusement il y a la question secrète : la ville où je suis née. Trop facile', me: true },
+    ],
+    clue: { id: 'bank-question', text: 'Bulle, à Léa : code de banque oublié → « la question secrète : la ville où je suis née ».' },
   },
 };
 
