@@ -38,6 +38,7 @@ Vanilla HTML/CSS/JS, no dependencies, no build step: the folder is published as 
 
 - Password analyzer inspired by [zxcvbn](https://github.com/dropbox/zxcvbn) (MIT).
 - [EFF large wordlist](https://www.eff.org/dice) (CC BY 3.0 US).
+- [Caveat](https://github.com/googlefonts/caveat) handwriting font (SIL OFL 1.1, `assets/fonts/OFL.txt`).
 
 ## License
 
