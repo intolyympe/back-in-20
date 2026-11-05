@@ -8,7 +8,8 @@
 //     "Anniv Léa" is written in March). The drawer holds last year's
 //     birthday card, kept in its envelope: the postmark is smudged, only
 //     "NOV. 2025" can be read. Card + cake = 14/11.
-//   - the dog's name (Rex), on the calendar in July -> chapter 2
+//   - the dog's name (Rex), on the calendar in July, and the year he arrived
+//     (2019), in the phone's photos once it is unlocked -> chapter 2
 //   - "ne JAMAIS réutiliser ses mdp (oups…)" in the notes -> chapter 3
 
 // The round starts when Camille leaves her desk: Thursday 9 July 2026, 14:05
@@ -63,6 +64,24 @@ export const BIRTHDAY_CARD = {
     'mes chaussures) !',
     'Gros bisous,',
     'Léa',
+  ],
+};
+
+// Camille's phone. The gallery is newest first; a photo with a `clue` adds it
+// to the notebook when the player opens it.
+export const PHONE = {
+  pin: '1411',
+  photos: [
+    { id: 'rex-floor', src: 'assets/photos/rex-floor.jpg', date: [2026, 6, 28], caption: 'Monsieur attend sa promenade' },
+    { id: 'fjord', src: 'assets/wallpapers/pc-fjord.jpg', date: [2025, 8, 14], caption: 'Norvège ❤' },
+    { id: 'rex-face', src: 'assets/photos/rex-face.jpg', date: [2019, 3, 20], caption: 'Ce regard…' },
+    {
+      id: 'rex-arrival',
+      src: 'assets/photos/rex-arrival.jpg',
+      date: [2019, 3, 12],
+      caption: 'Bienvenue à la maison, Rex !',
+      clue: { id: 'rex-2019', text: 'Photo : « Bienvenue à la maison, Rex ! », 12 mars 2019.' },
+    },
   ],
 };
 
