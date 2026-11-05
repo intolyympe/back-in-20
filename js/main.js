@@ -12,7 +12,7 @@ import { createPcView } from './scenes/pc.js';
 import { createCalendarView, CALENDAR_CLUES } from './scenes/calendar.js';
 import { createNotepadView } from './scenes/notepad.js';
 import { createDrawerView } from './scenes/drawer.js';
-import { STORY_START, DEDUCTIONS, PHONE, PC, MAIL } from './data/camille.js';
+import { STORY_START, DEDUCTIONS, PHONE, PC, MAIL, BANK } from './data/camille.js';
 
 const STAGE_W = 1600;
 const STAGE_H = 900;
@@ -88,6 +88,9 @@ function onPhoneEvent(type, data) {
     note([data.thread.clue]);
   } else if (type === 'note-viewed' && data.note.clue) {
     note([data.note.clue]);
+  } else if (type === 'texts-deleted' && markDone(state, BANK_NOTES.eraseText.id)) {
+    notebook.render(state.clues);
+    showToast('SMS de la banque effacé.');
   } else if (type === 'trash-emptied' && leftoverTraces(state).intruderPhotos === 0) {
     if (markDone(state, PHONE_NOTES.erasePhoto.id)) {
       notebook.render(state.clues);
@@ -161,6 +164,25 @@ function onMailEvent(type, data) {
   }
 }
 
+const BANK_NOTES = {
+  codeSent: { id: 'bank-code-sent', text: 'Nébula : bonne réponse ! Le code de validation arrive par SMS… sur ce téléphone.' },
+  opened: { id: 'bank-opened', text: 'Espace bancaire ouvert. Je ne touche à rien.' },
+  eraseText: { id: 'erase-bank-text', task: true, text: 'Effacer le SMS de Nébula dans Messages.' },
+};
+
+function onBankEvent(type) {
+  if (type === 'code-sent') {
+    note([BANK_NOTES.codeSent, BANK_NOTES.eraseText]);
+    if (markDone(state, BANK_NOTES.eraseText.id, false)) notebook.render(state.clues);
+  } else if (type === 'unlock') {
+    note([BANK_NOTES.opened]);
+    alertToErase();
+    showChapterBanner(5, 'La banque · terminé');
+  } else if (type === 'account-viewed') {
+    note([BANK.clue]);
+  }
+}
+
 const BULLE_NOTES = {
   resetSent: { id: 'bulle-reset-sent', text: 'Bulle : lien de réinitialisation envoyé… dans sa boîte mail.' },
   taken: { id: 'bulle-taken', text: 'Compte Bulle repris avec un nouveau mot de passe. Elle ne pourra plus s’y connecter…' },
@@ -188,7 +210,9 @@ function onBulleEvent(type, data) {
 }
 
 const VIEWS = {
-  phone: () => createPhoneView({ state, now: elapsed, storyTime, onEvent: onPhoneEvent, onMailEvent, onBulleEvent }),
+  phone: () => createPhoneView({
+    state, now: elapsed, storyTime, onEvent: onPhoneEvent, onMailEvent, onBulleEvent, onBankEvent,
+  }),
   pc: () => createPcView({ state, now: elapsed, storyTime, onEvent: onPcEvent, onMailEvent, onBulleEvent }),
   calendar: () => createCalendarView({
     onPage: month => { if (CALENDAR_CLUES[month]) note([CALENDAR_CLUES[month]]); },
@@ -237,6 +261,7 @@ function endSummary() {
   if (traces.missingEmails) lines.push('Elle remarque qu’il lui manque des mails.');
   if (traces.openPc) lines.push('Elle retrouve sa session ouverte sur son PC.');
   if (traces.bullePasswordChanged) lines.push('Son mot de passe Bulle ne marche plus : elle s’en rendra compte.');
+  if (traces.bankTexts) lines.push('Un SMS de sa banque l’attend : « votre code de validation… ».');
   if (!Object.values(traces).some(Boolean)) lines.push('Elle ne remarque rien.');
   lines.push(hasCracked(state, 'phone')
     ? 'Tu as déverrouillé son téléphone.'
@@ -248,6 +273,7 @@ function endSummary() {
   }
   if (hasCracked(state, 'mail')) lines.push('Tu es entré dans sa messagerie.');
   if (hasCracked(state, 'bulle')) lines.push('Tu as pris son compte Bulle.');
+  if (hasCracked(state, 'bank')) lines.push('Tu es entré dans son espace bancaire, sans toucher à rien.');
   return lines;
 }
 
