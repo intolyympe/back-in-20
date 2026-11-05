@@ -214,6 +214,33 @@
   transform: rotate(-12deg) translateY(-4px);
 }
 
+.lamp {
+  left: 1040px;
+  top: 330px;
+  width: 200px;
+  height: 270px;
+}
+
+/* Warm pool of light under the lamp, shown when it is switched on. */
+.lamp-light {
+  position: absolute;
+  left: 700px;
+  top: 380px;
+  width: 760px;
+  height: 520px;
+  background:
+    radial-gradient(circle at 377px 92px, rgb(255 244 210 / 0.95) 0 10px, transparent 40px),
+    radial-gradient(ellipse 300px 220px at 360px 300px, rgb(255 196 120 / 0.42), transparent);
+  mix-blend-mode: screen;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 250ms;
+}
+
+.desk.lamp-on .lamp-light {
+  opacity: 1;
+}
+
 /* Short description shown when an object is inspected */
 .toast {
   position: absolute;

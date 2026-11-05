@@ -44,7 +44,10 @@ const VIEWS = {
 
 function inspect(id, object, button) {
   if (!playing) return;
-  if (object.opens) {
+  if (object.toggle) {
+    const on = button.closest('.desk').classList.toggle(object.toggle);
+    button.setAttribute('aria-pressed', on);
+  } else if (object.opens) {
     overlay.open(VIEWS[object.opens](), button);
   } else {
     showToast(object.text);

@@ -1,5 +1,5 @@
-// The desk scene: what each object says when the player inspects it, and
-// the clue it adds to the notebook, if any.
+// The desk scene: what each object says when the player inspects it, the
+// clue it adds to the notebook, the view it opens or the state it toggles.
 // Chapter content (the circled date, the phone lock screen...) comes later.
 
 export const DESK_OBJECTS = {
@@ -24,6 +24,9 @@ export const DESK_OBJECTS = {
   },
   mug: {
     text: 'Le café est encore chaud. Elle ne va pas tarder.',
+  },
+  lamp: {
+    toggle: 'lamp-on', // class switched on the desk, no description
   },
   phone: {
     text: 'Le téléphone de Camille. Elle l’a oublié sur le bureau.',
