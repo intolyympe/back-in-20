@@ -2,7 +2,7 @@ import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import {
   createState, addClue, markDone, applyDeductions, recordFailedAttempt, lockRemaining,
-  unlock, isUnlocked, takeIntruderPhoto, deletePhoto, emptyTrash, leftoverTraces,
+  unlock, relock, isUnlocked, hasCracked, takeIntruderPhoto, deletePhoto, emptyTrash, leftoverTraces,
   MAX_ATTEMPTS, LOCKOUT_MS,
 } from '../js/state.js';
 
@@ -27,6 +27,8 @@ test('a notebook entry is ticked off once', () => {
   assert.equal(markDone(state, 'task'), false);
   assert.equal(markDone(state, 'unknown'), false);
   assert.equal(state.clues[0].done, true);
+  assert.equal(markDone(state, 'task', false), true, 'and back on');
+  assert.equal(state.clues[0].done, false);
 });
 
 test('a deduction is written once all its clues are found', () => {
@@ -79,6 +81,16 @@ test('unlocking is tracked per device', () => {
   assert.equal(isUnlocked(state, 'laptop'), false);
 });
 
+test('a device locked again stays cracked, and an open PC is a trace', () => {
+  const state = createState();
+  unlock(state, 'pc');
+  assert.equal(leftoverTraces(state).openPc, true);
+  assert.equal(relock(state, 'pc'), true);
+  assert.equal(isUnlocked(state, 'pc'), false);
+  assert.equal(hasCracked(state, 'pc'), true);
+  assert.equal(leftoverTraces(state).openPc, false);
+});
+
 test('an intruder photo lands first in the gallery and sends an alert', () => {
   const state = createState({ photos: [{ id: 'rex' }] });
   const photo = takeIntruderPhoto(state, 5000);
@@ -91,15 +103,15 @@ test('an intruder photo lands first in the gallery and sends an alert', () => {
 test('a deleted photo waits in "Supprimés récemment" until it is emptied', () => {
   const state = createState({ photos: [{ id: 'rex' }] });
   takeIntruderPhoto(state, 0);
-  assert.deepEqual(leftoverTraces(state), { intruderPhotos: 1, alerts: 1 });
+  assert.deepEqual(leftoverTraces(state), { intruderPhotos: 1, alerts: 1, openPc: false });
 
   assert.equal(deletePhoto(state, 'intruder-1'), true);
   assert.deepEqual(state.photos.map(p => p.id), ['rex']);
   assert.deepEqual(state.trash.map(p => p.id), ['intruder-1']);
-  assert.deepEqual(leftoverTraces(state), { intruderPhotos: 1, alerts: 1 }, 'still on the phone');
+  assert.deepEqual(leftoverTraces(state), { intruderPhotos: 1, alerts: 1, openPc: false }, 'still on the phone');
 
   emptyTrash(state);
-  assert.deepEqual(leftoverTraces(state), { intruderPhotos: 0, alerts: 1 }, 'the e-mail is still there');
+  assert.deepEqual(leftoverTraces(state), { intruderPhotos: 0, alerts: 1, openPc: false }, 'the e-mail is still there');
   assert.equal(deletePhoto(state, 'intruder-1'), false);
 });
 
