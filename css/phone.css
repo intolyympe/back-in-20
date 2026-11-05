@@ -278,6 +278,7 @@
 .screen-calendar,
 .screen-bulle,
 .screen-bank,
+.screen-bank-texts,
 .screen-vault {
   background: #111216;
   text-shadow: none;
@@ -506,6 +507,10 @@
   border-radius: 50%;
   background: #4d8a52;
   font-weight: 700;
+}
+
+.thread-avatar.bank-avatar {
+  background: #3b3f8f;
 }
 
 .thread-text {

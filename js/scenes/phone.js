@@ -6,13 +6,14 @@
 // The view only draws and reacts; the game state (attempts, lockout, photos)
 // lives in js/state.js, and main.js turns events into notebook entries.
 
-import { PHONE, MAIL } from '../data/camille.js';
+import { PHONE, MAIL, BANK } from '../data/camille.js';
 import { createMailbox } from './mailbox.js';
 import { MORE_APPS, moreAppScreens } from './phone-apps.js';
 import { createBulle } from './bulle.js';
+import { createBank } from './bank.js';
 import {
   recordFailedAttempt, lockRemaining, unlock, isUnlocked,
-  takeIntruderPhoto, deletePhoto, emptyTrash, leftoverTraces,
+  takeIntruderPhoto, deletePhoto, emptyTrash, leftoverTraces, deleteBankTexts,
 } from '../state.js';
 import { el, button, hhmm, mss } from '../dom.js';
 
@@ -97,14 +98,17 @@ const GRID = [
  * @param {(ms: number) => Date} options.storyTime  story clock at that time
  * @param {(type: string, data?: object) => void} options.onEvent
  *   'unlock', 'lockout', 'photo-viewed' {photo}, 'thread-viewed' {thread},
- *   'note-viewed' {note}, 'photo-deleted', 'trash-emptied'
+ *   'note-viewed' {note}, 'photo-deleted', 'trash-emptied', 'texts-deleted'
  * @param {(type: string, data?: object) => void} options.onMailEvent
  *   events of the Mail app (see mailbox.js)
  * @param {(type: string, data?: object) => void} options.onBulleEvent
  *   events of the Bulle app (see bulle.js)
+ * @param {(type: string, data?: object) => void} options.onBankEvent
+ *   events of the bank app (see bank.js)
  */
 export function createPhoneView({
   state, now, storyTime, onEvent = () => {}, onMailEvent = () => {}, onBulleEvent = () => {},
+  onBankEvent = () => {},
 }) {
   const handset = el('div', 'handset');
   const screen = el('div', 'handset-screen');
@@ -196,6 +200,12 @@ export function createPhoneView({
 
   function homeScreen() {
     const parts = [statusBar()];
+    // The bank's text, while it is on the phone.
+    if (state.texts.length) {
+      const text = el('div', 'phone-notification');
+      text.append(el('strong', '', 'Messages · Nébula'), el('span', '', BANK.text(state.texts[0].code)));
+      parts.push(text);
+    }
     // Mail notification while an alert e-mail sits in her inbox: the latest.
     const alert = state.inbox.find(email => email.alert);
     if (alert) {
@@ -235,6 +245,14 @@ export function createPhoneView({
 
   function messagesScreen() {
     const list = el('div', 'thread-list');
+    // Texts from her bank, received during the round, come first.
+    if (state.texts.length) {
+      const b = button('thread-row', '', () => go('bank-texts'));
+      const text = el('span', 'thread-text');
+      text.append(el('strong', '', 'Nébula'), el('span', 'thread-last', BANK.text(state.texts[0].code)));
+      b.append(el('span', 'thread-avatar bank-avatar', '◈'), text, el('span', 'thread-time', hhmm(storyTime(state.texts[0].sentAt))));
+      list.append(b);
+    }
     for (const thread of PHONE.threads) {
       const b = button('thread-row', '', () => {
         go('thread', { openThread: thread });
@@ -259,6 +277,21 @@ export function createPhoneView({
     }
     const reply = button('reply-field', 'Message', think(THOUGHTS.reply));
     return [header(thread.name, 'messages'), bubbles, notNowLine(), reply];
+  }
+
+  function bankTextsScreen() {
+    const bubbles = el('div', 'bubbles');
+    for (const text of [...state.texts].reverse()) bubbles.append(el('p', 'bubble', BANK.text(text.code)));
+    const remove = button('photo-delete', 'Supprimer la conversation', () => {
+      deleteBankTexts(state);
+      onEvent('texts-deleted');
+      go('messages');
+    });
+    return [header('Nébula', 'messages'), bubbles, notNowLine(), remove];
+  }
+
+  function bankScreen() {
+    return [header('Nébula', 'home'), createBank({ state, now, onEvent: onBankEvent })];
   }
 
   function mailScreen() {
@@ -419,6 +452,8 @@ export function createPhoneView({
     camera: cameraScreen, weather: weatherScreen, settings: settingsScreen, setting: settingScreen,
     ...moreAppScreens({ go, header, think, thoughtLine: notNowLine, onEvent }),
     bulle: bulleScreen,
+    bank: bankScreen,
+    'bank-texts': bankTextsScreen,
   };
 
   function render() {

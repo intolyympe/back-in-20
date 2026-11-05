@@ -1,6 +1,6 @@
 // More apps on Camille's phone: Notes, Plans, Musique, Calendrier, and the
-// accounts of the chapters to come (Nébula, Coffre), shown locked for now.
-// Bulle has its own module (bulle.js). Each app can be looked at; anything that would leave a trace is
+// password manager of the final boss (Coffre), shown locked. Bulle and the
+// bank have their own modules (bulle.js, bank.js). Each app can be looked at; anything that would leave a trace is
 // refused with a thought.
 
 import { PHONE, CALENDAR } from '../data/camille.js';
@@ -20,7 +20,6 @@ const THOUGHTS = {
   trace: 'Surtout pas : elle le verrait.',
   search: 'Surtout pas : la recherche resterait dans son historique.',
   play: 'Surtout pas : la musique partirait à fond dans le bureau !',
-  bank: 'Sa banque… La suite au chapitre 5 (bientôt).',
   vault: 'Une phrase de passe ET une clé physique… Celui-là va résister.',
 };
 
@@ -142,17 +141,6 @@ export function moreAppScreens({ go, header, think, thoughtLine, onEvent }) {
     return form;
   }
 
-  function bank() {
-    return [
-      header('', 'home'),
-      login({
-        title: 'Banque Nébula', logo: '◈', color: '#3b3f8f', account: 'Identifiant client : •••• 4821',
-        fieldLabel: 'Code secret', onTry: think(THOUGHTS.bank),
-      }),
-      thoughtLine(),
-    ];
-  }
-
   function vault() {
     return [
       header('', 'home'),
@@ -164,5 +152,5 @@ export function moreAppScreens({ go, header, think, thoughtLine, onEvent }) {
     ];
   }
 
-  return { notes, note, maps, music, calendar, bank, vault };
+  return { notes, note, maps, music, calendar, vault };
 }

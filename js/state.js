@@ -30,6 +30,9 @@ export function createState({ photos = [], emails = [] } = {}) {
     alertCount: 0,
     // Her Bulle account, taken over through her mailbox.
     bulle: { linkOpened: false, passwordChanged: false },
+    // Her bank: the secret question, then a code sent by text to her phone.
+    bank: { answered: false, code: null },
+    texts: [],           // texts received during the round ({id, code, sentAt})
   };
 }
 
@@ -119,7 +122,8 @@ export function takeIntruderPhoto(state, now) {
 /**
  * A security e-mail lands in Camille's inbox: 'phone' (too many wrong PIN
  * codes), 'login' (too many wrong mailbox passwords), 'bulle-reset' (a
- * password reset link) or 'bulle-changed' (her Bulle password was changed).
+ * password reset link), 'bulle-changed' (her Bulle password was changed) or
+ * 'bank-login' (someone signed in to her bank).
  * Returns it.
  */
 export function sendAlert(state, kind, now) {
@@ -149,6 +153,41 @@ export function changeBullePassword(state, now) {
   unlock(state, 'bulle');
   sendAlert(state, 'bulle-changed', now);
   return true;
+}
+
+// Accents and case do not matter in an answer: "annecy" is "Annecy".
+const plain = text => text.normalize('NFD').replace(/[\u0300-\u036f]/g, '').trim().toLowerCase();
+
+/** Her bank's secret question. Returns whether the answer is right. */
+export function answerSecretQuestion(state, answer, expected) {
+  if (plain(answer) !== plain(expected)) return false;
+  state.bank.answered = true;
+  return true;
+}
+
+/**
+ * Once the question is answered, the bank texts a code to her phone.
+ * Returns the text, or null if the question was not answered.
+ */
+export function sendBankCode(state, now, code) {
+  if (!state.bank.answered) return null;
+  state.bank.code = code;
+  const text = { id: `text-${state.texts.length + 1}-${now}`, code, sentAt: now };
+  state.texts.unshift(text);
+  return text;
+}
+
+/** The code from the text opens her account, and the bank e-mails her. */
+export function verifyBankCode(state, code, now) {
+  if (!state.bank.code || code.trim() !== state.bank.code) return false;
+  unlock(state, 'bank');
+  sendAlert(state, 'bank-login', now);
+  return true;
+}
+
+/** Deletes the bank's texts from her Messages app. */
+export function deleteBankTexts(state) {
+  state.texts = [];
 }
 
 /** Moves an e-mail from the inbox to the mailbox's "Corbeille". */
@@ -188,5 +227,6 @@ export function leftoverTraces(state) {
     openPc: state.unlocked.has('pc'), // she would find her session open
     // Her old Bulle password no longer works: nothing can hide that.
     bullePasswordChanged: state.bulle.passwordChanged,
+    bankTexts: state.texts.length,
   };
 }
