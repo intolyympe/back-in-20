@@ -19,9 +19,14 @@
   flex-direction: column;
   align-items: center;
   padding-top: 90px;
-  background: linear-gradient(160deg, #f2a65a, #c2477a 55%, #4b2a7b);
+  /* Camille's wallpaper: her dog. Darkened at the top and bottom so the
+     clock and status stay readable. */
+  background:
+    linear-gradient(rgb(0 0 0 / 0.35), transparent 35%, transparent 75%, rgb(0 0 0 / 0.45)),
+    url("../assets/wallpapers/phone-dog.jpg") center / cover;
   color: #fff;
   font-family: var(--font-ui);
+  text-shadow: 0 1px 6px rgb(0 0 0 / 0.5);
 }
 
 .lock-time {
