@@ -7,6 +7,7 @@
 import { PC } from '../data/camille.js';
 import { createMailbox } from './mailbox.js';
 import { recordFailedAttempt, lockRemaining, unlock, relock, isUnlocked } from '../state.js';
+import { el, button, hhmm, mss } from '../dom.js';
 
 const DATE_FORMAT = new Intl.DateTimeFormat('fr-FR', { weekday: 'long', day: 'numeric', month: 'long' });
 
@@ -22,25 +23,6 @@ const APPS = [
   { id: 'trash', name: 'Corbeille', glyph: '♲', color: '#6b7079' },
 ];
 
-function el(tag, className, text) {
-  const node = document.createElement(tag);
-  if (className) node.className = className;
-  if (text !== undefined) node.textContent = text;
-  return node;
-}
-
-function button(className, text, onClick) {
-  const b = el('button', className, text);
-  b.type = 'button';
-  b.addEventListener('click', onClick);
-  return b;
-}
-
-const hhmm = date => `${String(date.getHours()).padStart(2, '0')}:${String(date.getMinutes()).padStart(2, '0')}`;
-const mss = ms => {
-  const s = Math.ceil(ms / 1000);
-  return `${Math.floor(s / 60)}:${String(s % 60).padStart(2, '0')}`;
-};
 // "rex2019" and "Rex2019!" are the same guess, give or take the rule.
 const loose = text => text.toLowerCase().replace(/[^a-z0-9]/g, '');
 

@@ -7,6 +7,7 @@ import {
   recordFailedAttempt, lockRemaining, unlock, isUnlocked,
   sendAlert, deleteEmail, emptyMailTrash,
 } from '../state.js';
+import { el, button, hhmm, mss } from '../dom.js';
 
 const INTRUDER_SRC = 'assets/photos/intruder.svg';
 
@@ -14,26 +15,6 @@ const THOUGHTS = {
   send: 'Surtout pas : elle verrait le mail envoyé.',
   scam: 'Ce lien ne mène pas chez Bulle… C’est du hameçonnage.',
   missing: 'Hmm… elle risque de remarquer qu’il manque un mail.',
-};
-
-function el(tag, className, text) {
-  const node = document.createElement(tag);
-  if (className) node.className = className;
-  if (text !== undefined) node.textContent = text;
-  return node;
-}
-
-function button(className, text, onClick) {
-  const b = el('button', className, text);
-  b.type = 'button';
-  b.addEventListener('click', onClick);
-  return b;
-}
-
-const hhmm = date => `${String(date.getHours()).padStart(2, '0')}:${String(date.getMinutes()).padStart(2, '0')}`;
-const mss = ms => {
-  const s = Math.ceil(ms / 1000);
-  return `${Math.floor(s / 60)}:${String(s % 60).padStart(2, '0')}`;
 };
 
 /**

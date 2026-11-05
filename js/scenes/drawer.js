@@ -2,13 +2,7 @@
 // from Léa with its envelope (postmark smudged).
 
 import { BIRTHDAY_CARD } from '../data/camille.js';
-
-function el(tag, className, text) {
-  const node = document.createElement(tag);
-  node.className = className;
-  if (text !== undefined) node.textContent = text;
-  return node;
-}
+import { el } from '../dom.js';
 
 export function createDrawerView() {
   const drawer = el('div', 'drawer-open');

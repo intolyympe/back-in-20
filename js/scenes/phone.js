@@ -12,6 +12,7 @@ import {
   recordFailedAttempt, lockRemaining, unlock, isUnlocked,
   takeIntruderPhoto, deletePhoto, emptyTrash, leftoverTraces,
 } from '../state.js';
+import { el, button, hhmm, mss } from '../dom.js';
 
 const DATE_FORMAT = new Intl.DateTimeFormat('fr-FR', { weekday: 'long', day: 'numeric', month: 'long' });
 const PHOTO_DATE = new Intl.DateTimeFormat('fr-FR', { day: 'numeric', month: 'long', year: 'numeric' });
@@ -81,26 +82,6 @@ const APPS = [
   { id: 'weather', name: 'Météo', glyph: '☀', color: '#e0a830' },
   { id: 'settings', name: 'Réglages', glyph: '⚙', color: '#6b7079' },
 ];
-
-function el(tag, className, text) {
-  const node = document.createElement(tag);
-  if (className) node.className = className;
-  if (text !== undefined) node.textContent = text;
-  return node;
-}
-
-function button(className, text, onClick) {
-  const b = el('button', className, text);
-  b.type = 'button';
-  b.addEventListener('click', onClick);
-  return b;
-}
-
-const hhmm = date => `${String(date.getHours()).padStart(2, '0')}:${String(date.getMinutes()).padStart(2, '0')}`;
-const mss = ms => {
-  const s = Math.ceil(ms / 1000);
-  return `${Math.floor(s / 60)}:${String(s % 60).padStart(2, '0')}`;
-};
 
 /**
  * @param {object} options
