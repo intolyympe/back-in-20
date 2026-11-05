@@ -3,7 +3,8 @@
 
 .desk {
   position: relative;
-  overflow: hidden;
+  /* clip, not hidden: nothing (a focus, a big view) can scroll the desk. */
+  overflow: clip;
 }
 
 .wall {
