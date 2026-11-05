@@ -270,6 +270,16 @@
   color: var(--mail-accent);
 }
 
+.mailbox .mail-action {
+  display: block;
+  margin: 6px 0 12px;
+  padding: 9px 18px;
+  border-radius: 8px;
+  background: #ff7a59;
+  color: #fff;
+  font-weight: 600;
+}
+
 .mail-actions {
   display: flex;
   justify-content: center;
