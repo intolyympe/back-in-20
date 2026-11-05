@@ -28,8 +28,8 @@ export const DESK_OBJECTS = {
     text: 'Dehors, la ville. Personne dans la rue ne regarde par ici.',
   },
   monitor: {
-    verb: 'Regarder',
-    text: 'L’ordinateur est verrouillé.',
+    verb: 'S’asseoir',
+    opens: 'pc', // no thought: the screen needs the room
     clues: [{ id: 'pc-locked', text: 'PC : session « Camille », mot de passe demandé.' }],
   },
   plant: {
