@@ -2,7 +2,8 @@
 // Space, Escape or a click on the backdrop puts it back. While it is open, the rest
 // of the desk is inert, so Tab cannot reach the objects behind it.
 
-export function createOverlay(overlayEl, contentEl) {
+/** `onClose` is called each time the object is put back. */
+export function createOverlay(overlayEl, contentEl, { onClose = () => {} } = {}) {
   const hint = overlayEl.querySelector('.overlay-hint-action');
   let opener = null;
   const behind = () => [...overlayEl.parentElement.children].filter(el => el !== overlayEl);
@@ -16,6 +17,7 @@ export function createOverlay(overlayEl, contentEl) {
       opener.classList.remove('picked-up');
       opener.focus();
     }
+    onClose();
   };
 
   overlayEl.addEventListener('click', event => {

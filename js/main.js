@@ -20,6 +20,7 @@ import { ding } from './sound.js';
 import { createDefence } from './scenes/defend.js';
 import { MISSION } from './data/mission.js';
 import { classify } from './data/photos.js';
+import { STEPS, READY_TEXT, nextStep, TUTORIAL_OBJECT } from './tutorial.js';
 import { icon } from './icons.js';
 
 const STAGE_W = 1600;
@@ -32,15 +33,64 @@ const stage = $('stage');
 const toast = $('toast');
 const clock = $('clock');
 
-// Dev shortcut: index.html?seconds=10 for a short round.
-const seconds = Number(new URLSearchParams(location.search).get('seconds'));
+// Dev shortcuts: index.html?seconds=10 for a short round, ?tutorial=off to
+// go straight to the desk.
+const params = new URLSearchParams(location.search);
+const seconds = Number(params.get('seconds'));
+const withTutorial = params.get('tutorial') !== 'off';
 const roundMs = seconds > 0 ? seconds * 1000 : ROUND_MINUTES * 60_000;
 
 const state = createState({ photos: PHONE.photos, emails: MAIL.emails });
 const timer = createTimer(roundMs);
 const notebook = createNotebook($('notebook-list'), $('notebook-empty'));
-const overlay = createOverlay($('overlay'), $('overlay-content'));
+const overlay = createOverlay($('overlay'), $('overlay-content'), { onClose: () => tutorialEvent('close') });
 let playing = false;
+let clockRunning = false;
+
+// ---- Tutorial: the post-it teaches the four gestures before the clock starts.
+
+const TUTORIAL_DONE_KEY = 'back-in-20:tutorial-done';
+const READY_MS = 3500;
+let tutorialStep = null; // index in STEPS, or null when no tutorial runs
+
+function tutorialDoneBefore() {
+  try {
+    return localStorage.getItem(TUTORIAL_DONE_KEY) === 'yes';
+  } catch {
+    return false;
+  }
+}
+
+function showTutorialStep() {
+  const done = tutorialStep >= STEPS.length;
+  $('tutorial-step').textContent = done ? 'C’est parti' : `Tutoriel · ${tutorialStep + 1} sur ${STEPS.length}`;
+  $('tutorial-text').textContent = done ? READY_TEXT : STEPS[tutorialStep].text;
+  document.querySelector(`[data-hotspot=${TUTORIAL_OBJECT}]`).classList.toggle('tuto-target', tutorialStep === 0);
+  if (done) endTutorial();
+}
+
+/** The player did something: the tutorial moves on if it was the awaited gesture. */
+function tutorialEvent(event) {
+  if (tutorialStep === null) return;
+  const next = nextStep(tutorialStep, event);
+  if (next === tutorialStep) return;
+  tutorialStep = next;
+  showTutorialStep();
+}
+
+function endTutorial({ skipped = false } = {}) {
+  tutorialStep = null;
+  $('tutorial-skip').hidden = true;
+  document.querySelector(`[data-hotspot=${TUTORIAL_OBJECT}]`).classList.remove('tuto-target');
+  try {
+    localStorage.setItem(TUTORIAL_DONE_KEY, 'yes');
+  } catch {
+    // Private mode: the tutorial will simply be offered again.
+  }
+  if (skipped) $('tutorial').hidden = true;
+  else setTimeout(() => { $('tutorial').hidden = true; }, READY_MS);
+  startClock();
+}
 
 function fitStage() {
   const scale = Math.min(window.innerWidth / STAGE_W, window.innerHeight / STAGE_H);
@@ -87,6 +137,7 @@ function photograph() {
   void $('overlay').offsetWidth; // restart the flash
   $('overlay').classList.add('flash');
   const result = recordPhoto(state, shot.kind, shot.id);
+  tutorialEvent('photo');
   if (result === 'useless') {
     const times = state.shots.filter(s => s.id === shot.id).length;
     // « de un téléphone » → « d’un téléphone »
@@ -257,6 +308,10 @@ const VIEWS = {
 
 function inspect(id, object, button) {
   if (!playing) return;
+  if (tutorialStep !== null && id !== TUTORIAL_OBJECT) {
+    showToast('D’abord le post-it.');
+    return;
+  }
   if (object.toggle) {
     const on = button.closest('.desk').classList.toggle(object.toggle);
     button.setAttribute('aria-pressed', on);
@@ -268,11 +323,15 @@ function inspect(id, object, button) {
     // What a photo would show, unless the view says more precisely.
     view.dataset.subject ??= id;
     overlay.open(withThought(view, object.text), button, { pickUp: object.pickUp });
+    tutorialEvent('open');
   }
 }
 
 // The player clicked a detail: it goes in the notebook.
-document.addEventListener('note-clue', event => note([event.detail.clue]));
+document.addEventListener('note-clue', event => {
+  note([event.detail.clue]);
+  tutorialEvent('note');
+});
 
 // The last minute: a "ding", she is on her way back. Everything must be put
 // back and the player must leave her desk before the clock runs out.
@@ -297,13 +356,23 @@ function tick() {
   requestAnimationFrame(tick);
 }
 
+function startClock() {
+  clockRunning = true;
+  timer.start();
+  requestAnimationFrame(tick);
+}
+
+/** "J'accepte la mission": the tutorial first, then the clock. */
 function startGame(event) {
   $('start-screen').hidden = true;
   playing = true;
-  timer.start();
-  requestAnimationFrame(tick);
+  if (!withTutorial) return startClock();
+  tutorialStep = 0;
+  $('tutorial').hidden = false;
+  $('tutorial-skip').hidden = !tutorialDoneBefore();
+  showTutorialStep();
   // Started with the keyboard (no mouse click): keep the focus on the desk.
-  if (event.detail === 0) stage.querySelector('[data-hotspot]').focus();
+  if (event.detail === 0) document.querySelector(`[data-hotspot=${TUTORIAL_OBJECT}]`).focus();
 }
 
 /**
@@ -325,7 +394,7 @@ function endGame() {
 
 // The clock stops while the tab is hidden, so leaving the game is not a penalty.
 document.addEventListener('visibilitychange', () => {
-  if (!playing) return;
+  if (!playing || !clockRunning) return;
   if (document.hidden) timer.pause();
   else timer.start();
 });
@@ -364,6 +433,7 @@ setupDesk(stage, inspect);
 $('photo-button').prepend(icon('camera'));
 $('photo-button').addEventListener('click', photograph);
 $('start-button').addEventListener('click', startGame);
+$('tutorial-skip').addEventListener('click', () => endTutorial({ skipped: true }));
 // The mission letter on the start screen.
 $('mission').append(
   Object.assign(document.createElement('p'), { className: 'mission-from', textContent: MISSION.from }),
