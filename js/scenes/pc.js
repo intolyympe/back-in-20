@@ -15,7 +15,7 @@ import { icon } from '../icons.js';
 const DATE_FORMAT = new Intl.DateTimeFormat('fr-FR', { weekday: 'long', day: 'numeric', month: 'long' });
 
 const THOUGHTS = {
-  close: 'Si près… Il manque quelque chose ?',
+  close: 'Si près… Il manque quelque chose. Une règle à respecter, peut-être ?',
   file: 'Rien d’utile là-dedans.',
 };
 

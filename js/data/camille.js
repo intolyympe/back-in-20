@@ -67,7 +67,7 @@ export const MEETING_NOTES = {
     { text: '– Formation cybersécu obligatoire :' },
     { text: '   « ne JAMAIS réutiliser ses mdp »' },
     { text: '                       (oups…)' },
-    { text: '   mdp PC : 8 car., 1 MAJ, 1 chiffre, 1 !?#' },
+    { text: '   mdp PC : 8 car., 1 MAJ, 1 chiffre, 1 !?#', highlight: true },
   ],
 };
 
