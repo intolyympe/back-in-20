@@ -4,7 +4,7 @@ import {
   createState, addClue, markDone, applyDeductions, recordFailedAttempt, lockRemaining,
   unlock, relock, isUnlocked, hasCracked, takeIntruderPhoto, deletePhoto, emptyTrash, leftoverTraces,
   sendAlert, deleteEmail, emptyMailTrash, requestBulleReset, openBulleResetLink, changeBullePassword,
-  answerSecretQuestion, sendBankCode, verifyBankCode, deleteBankTexts, tryVault,
+  answerSecretQuestion, sendBankCode, verifyBankCode, deleteBankTexts, tryVault, takeProof,
   MAX_ATTEMPTS, LOCKOUT_MS,
 } from '../js/state.js';
 
@@ -191,4 +191,13 @@ test('her password manager resists whatever the player tries', () => {
     assert.equal(tryVault(state, guess), false);
   }
   assert.equal(state.vaultTries, 3);
+});
+
+test('a proof is only taken of an open account, once', () => {
+  const state = createState();
+  assert.equal(takeProof(state, 'mail'), false, 'not open');
+  unlock(state, 'mail');
+  assert.equal(takeProof(state, 'mail'), true);
+  assert.equal(takeProof(state, 'mail'), false, 'already taken');
+  assert.deepEqual([...state.proofs], ['mail']);
 });

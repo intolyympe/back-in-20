@@ -34,6 +34,7 @@ export function createState({ photos = [], emails = [] } = {}) {
     bank: { answered: false, code: null },
     texts: [],           // texts received during the round ({id, code, sentAt})
     vaultTries: 0,       // passphrases tried on her password manager
+    proofs: new Set(),   // accounts the player photographed for the report
   };
 }
 
@@ -198,6 +199,17 @@ export function deleteBankTexts(state) {
 export function tryVault(state) {
   state.vaultTries += 1;
   return false;
+}
+
+/**
+ * The player photographs an open account with their own phone: a proof for
+ * the report. Nothing lands on Camille's devices. Returns false if the
+ * account is not open, or already photographed.
+ */
+export function takeProof(state, accountId) {
+  if (!state.unlocked.has(accountId) || state.proofs.has(accountId)) return false;
+  state.proofs.add(accountId);
+  return true;
 }
 
 /** Moves an e-mail from the inbox to the mailbox's "Corbeille". */

@@ -3,6 +3,7 @@
 // missed. Clicking a domino shows her mistake and the fix.
 
 import { LESSONS } from './data/debrief.js';
+import { PROOFS } from './data/mission.js';
 import { hasCracked } from './state.js';
 import { el, button } from './dom.js';
 
@@ -34,6 +35,16 @@ export function renderDebrief(state, { traces, caught, rank }) {
   $('end-rank').replaceChildren(el('strong', '', rank.title), el('span', '', rank.line));
   $('end-summary').replaceChildren(...traceLines(traces, caught).map(line => el('p', '', line)));
 
+  // The report: one proof per account opened, photographed.
+  const opened = Object.keys(PROOFS).filter(id => hasCracked(state, id));
+  const proofs = opened.filter(id => state.proofs.has(id));
+  $('end-report-title').textContent = `Ton rapport : ${proofs.length} preuve${proofs.length > 1 ? 's' : ''} sur ${Object.keys(PROOFS).length}`;
+  $('end-report').replaceChildren(...(opened.length
+    ? opened.map(id => el('li', state.proofs.has(id) ? 'proof' : 'no-proof', state.proofs.has(id)
+      ? `Photo de ${PROOFS[id].label}.`
+      : `Pas de photo de ${PROOFS[id].label} : ça ne compte pas.`))
+    : [el('li', 'no-proof', 'Aucun compte ouvert : rien à rapporter.')]));
+
   // The chain the player actually went through, then Coffre if they tried it.
   const reached = LESSONS.filter(lesson => (lesson.device === 'vault'
     ? state.vaultTries > 0
@@ -48,6 +59,8 @@ export function renderDebrief(state, { traces, caught, rank }) {
       el('p', 'lesson-mistake', lesson.mistake),
       el('p', 'lesson-fix', lesson.fix),
     );
+    const thief = PROOFS[lesson.device]?.thief;
+    if (thief) detail.append(el('p', 'lesson-thief', `Un vrai voleur : ${thief}`));
   };
 
   const dominos = reached.map((lesson, i) => {

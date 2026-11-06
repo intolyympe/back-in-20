@@ -10,9 +10,10 @@ import {
 } from '../state.js';
 import { el, button, mss } from '../dom.js';
 import { icon } from '../icons.js';
+import { proofButton } from '../proof.js';
 
 const THOUGHTS = {
-  transfer: 'Surtout pas : je ne suis pas là pour voler.',
+  transfer: 'Surtout pas : je suis là pour prouver, pas pour voler.',
   security: 'Une question dont la réponse est sur Bulle, un SMS sur un téléphone ouvert… Rien ne tenait.',
   trace: 'Surtout pas : elle le verrait.',
 };
@@ -24,7 +25,7 @@ const randomCode = () => String(Math.floor(Math.random() * 1_000_000)).padStart(
  * @param {object} options.state       game state
  * @param {() => number} options.now   ms since the round started
  * @param {(type: string, data?: object) => void} options.onEvent
- *   'code-sent' {text}, 'unlock', 'account-viewed'
+ *   'code-sent' {text}, 'unlock', 'account-viewed', 'proof' {id}
  */
 export function createBank({ state, now, onEvent = () => {} }) {
   const root = el('div', 'bank');
@@ -171,7 +172,7 @@ export function createBank({ state, now, onEvent = () => {} }) {
       );
       list.append(row);
     }
-    return [tabs('accounts'), head, el('p', 'bank-section', 'Dernières opérations'), list];
+    return [tabs('accounts'), head, proofButton(state, 'bank', onEvent), el('p', 'bank-section', 'Dernières opérations'), list];
   }
 
   function transferView() {
