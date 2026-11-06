@@ -331,3 +331,60 @@
 .screen-button.secondary {
   background: rgb(255 255 255 / 0.14);
 }
+
+/* ---- The mission letter (start screen) ---- */
+
+.mission {
+  max-width: 760px;
+  padding: 22px 30px;
+  border-radius: 6px;
+  background: #fbf8ef;
+  color: #2a2a2a;
+  text-align: left;
+  font-size: 19px;
+  line-height: 1.5;
+  box-shadow: 0 10px 30px rgb(0 0 0 / 0.4);
+  transform: rotate(-0.6deg);
+}
+
+.mission p {
+  margin: 0 0 8px;
+}
+
+.mission .mission-from {
+  color: #8a1f12;
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.mission-title {
+  margin: 2px 0 12px;
+  font-family: var(--font-hand);
+  font-size: 38px;
+  font-weight: 400;
+}
+
+/* ---- The report (debrief) ---- */
+
+.report {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  font-size: 17px;
+  line-height: 1.45;
+}
+
+.report .proof {
+  color: #a9cdf5;
+}
+
+.report .no-proof {
+  color: #999;
+}
+
+.lesson-thief {
+  margin-top: 8px !important;
+  color: #ffd38a;
+}
