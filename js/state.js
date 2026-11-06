@@ -34,7 +34,8 @@ export function createState({ photos = [], emails = [] } = {}) {
     bank: { answered: false, code: null },
     texts: [],           // texts received during the round ({id, code, sentAt})
     vaultTries: 0,       // passphrases tried on her password manager
-    proofs: new Set(),   // accounts the player photographed for the report
+    proofs: new Set(),   // what the photos prove: accounts open, her flaws
+    shots: [],           // every photo taken ({kind, id}), useless ones too
   };
 }
 
@@ -202,14 +203,17 @@ export function tryVault(state) {
 }
 
 /**
- * The player photographs an open account with their own phone: a proof for
- * the report. Nothing lands on Camille's devices. Returns false if the
- * account is not open, or already photographed.
+ * The tester takes a photo with their own phone (nothing lands on Camille's
+ * devices). `kind` and `id` say what it shows (see js/data/photos.js).
+ * Returns 'new' for a new proof, 'again' for one already in the report, or
+ * 'useless'.
  */
-export function takeProof(state, accountId) {
-  if (!state.unlocked.has(accountId) || state.proofs.has(accountId)) return false;
-  state.proofs.add(accountId);
-  return true;
+export function recordPhoto(state, kind, id) {
+  state.shots.push({ kind, id });
+  if (kind === 'useless') return 'useless';
+  if (state.proofs.has(id)) return 'again';
+  state.proofs.add(id);
+  return 'new';
 }
 
 /** Moves an e-mail from the inbox to the mailbox's "Corbeille". */

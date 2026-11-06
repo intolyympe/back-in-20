@@ -4,7 +4,7 @@ import {
   createState, addClue, markDone, applyDeductions, recordFailedAttempt, lockRemaining,
   unlock, relock, isUnlocked, hasCracked, takeIntruderPhoto, deletePhoto, emptyTrash, leftoverTraces,
   sendAlert, deleteEmail, emptyMailTrash, requestBulleReset, openBulleResetLink, changeBullePassword,
-  answerSecretQuestion, sendBankCode, verifyBankCode, deleteBankTexts, tryVault, takeProof,
+  answerSecretQuestion, sendBankCode, verifyBankCode, deleteBankTexts, tryVault, recordPhoto,
   MAX_ATTEMPTS, LOCKOUT_MS,
 } from '../js/state.js';
 
@@ -193,11 +193,12 @@ test('her password manager resists whatever the player tries', () => {
   assert.equal(state.vaultTries, 3);
 });
 
-test('a proof is only taken of an open account, once', () => {
+test('photos: a proof counts once, useless ones are kept for the report', () => {
   const state = createState();
-  assert.equal(takeProof(state, 'mail'), false, 'not open');
-  unlock(state, 'mail');
-  assert.equal(takeProof(state, 'mail'), true);
-  assert.equal(takeProof(state, 'mail'), false, 'already taken');
-  assert.deepEqual([...state.proofs], ['mail']);
+  assert.equal(recordPhoto(state, 'access', 'mail'), 'new');
+  assert.equal(recordPhoto(state, 'access', 'mail'), 'again');
+  assert.equal(recordPhoto(state, 'flaw', 'plain-codes'), 'new');
+  assert.equal(recordPhoto(state, 'useless', 'plant'), 'useless');
+  assert.deepEqual([...state.proofs], ['mail', 'plain-codes']);
+  assert.equal(state.shots.length, 4);
 });
