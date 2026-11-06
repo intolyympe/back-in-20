@@ -11,7 +11,6 @@ import { createVault } from './vault.js';
 import { recordFailedAttempt, lockRemaining, unlock, relock, isUnlocked } from '../state.js';
 import { el, button, hhmm, mss } from '../dom.js';
 import { icon } from '../icons.js';
-import { proofButton } from '../proof.js';
 import { notable } from '../notable.js';
 
 const DATE_FORMAT = new Intl.DateTimeFormat('fr-FR', { weekday: 'long', day: 'numeric', month: 'long' });
@@ -39,7 +38,7 @@ const loose = text => text.toLowerCase().replace(/[^a-z0-9]/g, '');
  * @param {() => number} options.now   ms since the round started
  * @param {(ms: number) => Date} options.storyTime  story clock at that time
  * @param {(type: string, data?: object) => void} options.onEvent
- *   'unlock', 'lock', 'note-viewed' {note}, 'proof' {id}
+ *   'unlock', 'lock', 'note-viewed' {note}
  * @param {(type: string, data?: object) => void} options.onMailEvent
  *   events of the Mail window (see mailbox.js)
  * @param {(type: string, data?: object) => void} options.onBulleEvent
@@ -218,7 +217,6 @@ export function createPcView({
     });
     taskbar.append(
       el('span', 'pc-taskbar-user', 'Camille'),
-      proofButton(state, 'pc', onEvent),
       el('span', 'pc-taskbar-time', hhmm(storyTime(now()))),
       lock,
     );

@@ -9,7 +9,6 @@ import {
 } from '../state.js';
 import { el, button, hhmm, mss } from '../dom.js';
 import { icon } from '../icons.js';
-import { proofButton } from '../proof.js';
 import { notable } from '../notable.js';
 
 const INTRUDER_SRC = 'assets/photos/intruder.svg';
@@ -28,7 +27,7 @@ const THOUGHTS = {
  * @param {'phone'|'pc'} options.variant  where it is shown
  * @param {(type: string, data?: object) => void} options.onEvent
  *   'unlock', 'lockout', 'email-viewed' {email}, 'email-deleted' {email},
- *   'trash-emptied', 'proof' {id}, and the event of an e-mail's button ('reset-link')
+ *   'trash-emptied', and the event of an e-mail's button ('reset-link')
  */
 export function createMailbox({ state, now, storyTime, variant, onEvent = () => {} }) {
   const root = el('div', `mailbox mailbox--${variant}`);
@@ -129,8 +128,6 @@ export function createMailbox({ state, now, storyTime, variant, onEvent = () => 
       button('mail-trash-link', `Corbeille (${state.mailTrash.length})`, () => go('trash')),
     );
     const list = el('div', 'mail-list');
-    const proof = el('div', 'mail-proof');
-    proof.append(proofButton(state, 'mail', onEvent));
     for (const email of state.inbox) {
       list.append(emailRow(email, () => {
         go('email', { open: email });
@@ -138,7 +135,7 @@ export function createMailbox({ state, now, storyTime, variant, onEvent = () => 
       }));
     }
     if (!state.inbox.length) list.append(el('p', 'mail-empty', 'Aucun e-mail.'));
-    return [bar, proof, list];
+    return [bar, list];
   }
 
   function emailView() {

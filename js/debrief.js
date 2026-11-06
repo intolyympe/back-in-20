@@ -4,6 +4,7 @@
 
 import { LESSONS } from './data/debrief.js';
 import { PROOFS } from './data/mission.js';
+import { FLAWS, classify } from './data/photos.js';
 import { hasCracked } from './state.js';
 import { el, button } from './dom.js';
 
@@ -24,6 +25,21 @@ export function traceLines(traces, caught) {
   return lines;
 }
 
+/** "3 photos inutiles (la plante ×2, la tasse)…", or nothing. */
+export function uselessSummary(shots) {
+  const counts = new Map();
+  for (const shot of shots) {
+    if (shot.kind !== 'useless') continue;
+    const { text } = classify(shot.id);
+    counts.set(text, (counts.get(text) ?? 0) + 1);
+  }
+  const total = [...counts.values()].reduce((sum, n) => sum + n, 0);
+  if (!total) return '';
+  const detail = [...counts].map(([text, n]) => (n > 1 ? `${text} ×${n}` : text)).join(', ');
+  const verdict = total >= 3 ? ' La direction s’interroge.' : '';
+  return `${total} photo${total > 1 ? 's' : ''} inutile${total > 1 ? 's' : ''} (${detail}).${verdict}`;
+}
+
 /**
  * Fills the end screen.
  * @param {object} state
@@ -35,15 +51,22 @@ export function renderDebrief(state, { traces, caught, rank }) {
   $('end-rank').replaceChildren(el('strong', '', rank.title), el('span', '', rank.line));
   $('end-summary').replaceChildren(...traceLines(traces, caught).map(line => el('p', '', line)));
 
-  // The report: one proof per account opened, photographed.
+  // The report: accesses proven, flaws documented, and the useless photos.
   const opened = Object.keys(PROOFS).filter(id => hasCracked(state, id));
-  const proofs = opened.filter(id => state.proofs.has(id));
-  $('end-report-title').textContent = `Ton rapport : ${proofs.length} preuve${proofs.length > 1 ? 's' : ''} sur ${Object.keys(PROOFS).length}`;
-  $('end-report').replaceChildren(...(opened.length
-    ? opened.map(id => el('li', state.proofs.has(id) ? 'proof' : 'no-proof', state.proofs.has(id)
-      ? `Photo de ${PROOFS[id].label}.`
-      : `Pas de photo de ${PROOFS[id].label} : ça ne compte pas.`))
-    : [el('li', 'no-proof', 'Aucun compte ouvert : rien à rapporter.')]));
+  const proven = opened.filter(id => state.proofs.has(id));
+  const flaws = FLAWS.filter(flaw => state.proofs.has(flaw.id));
+  $('end-report-title').textContent =
+    `Ton rapport : ${proven.length} accès sur ${opened.length || Object.keys(PROOFS).length}, ${flaws.length} faille${flaws.length > 1 ? 's' : ''} sur ${FLAWS.length}`;
+  const lines = [
+    ...opened.map(id => (state.proofs.has(id)
+      ? el('li', 'proof', `Accès prouvé : ${PROOFS[id].label}.`)
+      : el('li', 'no-proof', `Pas de photo de ${PROOFS[id].label} : ça ne compte pas.`))),
+    ...flaws.map(flaw => el('li', 'flaw', `Faille : ${flaw.text}`)),
+  ];
+  const useless = uselessSummary(state.shots);
+  if (useless) lines.push(el('li', 'useless', useless));
+  if (!lines.length) lines.push(el('li', 'no-proof', 'Aucune photo : rien à rapporter.'));
+  $('end-report').replaceChildren(...lines);
 
   // The chain the player actually went through, then Coffre if they tried it.
   const reached = LESSONS.filter(lesson => (lesson.device === 'vault'

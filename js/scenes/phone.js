@@ -18,7 +18,6 @@ import {
 } from '../state.js';
 import { el, button, hhmm, mss } from '../dom.js';
 import { icon } from '../icons.js';
-import { proofButton } from '../proof.js';
 import { notable } from '../notable.js';
 
 const DATE_FORMAT = new Intl.DateTimeFormat('fr-FR', { weekday: 'long', day: 'numeric', month: 'long' });
@@ -102,7 +101,7 @@ const GRID = [
  * @param {(ms: number) => Date} options.storyTime  story clock at that time
  * @param {(type: string, data?: object) => void} options.onEvent
  *   'unlock', 'lockout', 'photo-viewed' {photo}, 'thread-viewed' {thread},
- *   'note-viewed' {note}, 'photo-deleted', 'trash-emptied', 'texts-deleted', 'proof' {id}
+ *   'note-viewed' {note}, 'photo-deleted', 'trash-emptied', 'texts-deleted'
  * @param {(type: string, data?: object) => void} options.onMailEvent
  *   events of the Mail app (see mailbox.js)
  * @param {(type: string, data?: object) => void} options.onBulleEvent
@@ -206,7 +205,7 @@ export function createPhoneView({
   }
 
   function homeScreen() {
-    const parts = [statusBar(), proofButton(state, 'phone', onEvent)];
+    const parts = [statusBar()];
     // The bank's text, while it is on the phone.
     if (state.texts.length) {
       const text = el('div', 'phone-notification');

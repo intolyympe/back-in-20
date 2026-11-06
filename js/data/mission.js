@@ -1,7 +1,8 @@
 // Who the player is: a penetration tester, secretly hired by Camille's
 // company to show how dangerous an unattended desk is. The loot is proofs:
-// one photo per account opened, taken with the tester's own phone. The
-// debrief is their report, and says what a real thief would have done.
+// photos of the accounts opened and of her security mistakes, taken with the
+// tester's own phone (js/data/photos.js). The debrief is their report, and
+// says what a real thief would have done.
 
 export const MISSION = {
   from: 'Direction de la sécurité',
@@ -9,7 +10,7 @@ export const MISSION = {
   lines: [
     'Tu es engagé en secret, avec l’accord de la direction : montre-nous à quel point un poste laissé sans surveillance est dangereux.',
     'Camille vient de quitter son bureau. Elle revient dans 20 minutes.',
-    'Pour chaque compte que tu ouvres, rapporte une preuve : photographie l’écran avec ton propre téléphone.',
+    'Rapporte des preuves : photographie (touche P) chaque compte que tu ouvres et chaque faille que tu trouves, avec ton propre téléphone.',
     'Ne te fais pas prendre, et remets tout comme tu l’as trouvé.',
   ],
 };

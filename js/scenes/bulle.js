@@ -9,7 +9,6 @@ import {
 } from '../state.js';
 import { el, button, mss } from '../dom.js';
 import { icon } from '../icons.js';
-import { proofButton } from '../proof.js';
 import { notable } from '../notable.js';
 
 const MIN_LENGTH = 8;
@@ -27,7 +26,7 @@ const THOUGHTS = {
  * @param {() => number} options.now   ms since the round started
  * @param {'phone'|'pc'} options.variant  where it is shown
  * @param {(type: string, data?: object) => void} options.onEvent
- *   'reset-sent', 'unlock', 'post-viewed' {post}, 'chat-viewed' {chat}, 'proof' {id}
+ *   'reset-sent', 'unlock', 'post-viewed' {post}, 'chat-viewed' {chat}
  */
 export function createBulle({ state, now, variant, onEvent = () => {} }) {
   const root = el('div', `bulle bulle--${variant}`);
@@ -167,7 +166,7 @@ export function createBulle({ state, now, variant, onEvent = () => {} }) {
       el('span', '', BULLE.bio),
       el('span', 'bulle-private', `Compte privé · ${BULLE.followers} abonnés`),
     );
-    head.append(el('span', 'bulle-avatar', BULLE.name[0]), text, proofButton(state, 'bulle', onEvent));
+    head.append(el('span', 'bulle-avatar', BULLE.name[0]), text);
     return head;
   }
 

@@ -10,3 +10,12 @@ test('the debrief has one lesson per chapter, then the boss', () => {
     if (lesson.device !== 'vault') assert.ok(lesson.missed, `${lesson.device} tells where the key was`);
   }
 });
+
+test('the report jokes about useless photos', async () => {
+  const { uselessSummary } = await import('../js/debrief.js');
+  assert.equal(uselessSummary([{ kind: 'access', id: 'mail' }]), '');
+  assert.equal(
+    uselessSummary([{ kind: 'useless', id: 'plant' }, { kind: 'useless', id: 'plant' }, { kind: 'useless', id: 'mug' }]),
+    '3 photos inutiles (la plante ×2, la tasse). La direction s’interroge.',
+  );
+});

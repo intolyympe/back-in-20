@@ -126,15 +126,14 @@ button {
   height: 62%;
 }
 
-/* The tester's "photograph the screen" button: the game's, not Camille's,
-   so it looks the same in every account (and beats each app's own button
-   reset, hence `.stage`). */
+/* The tester's "Photographier" button, under whatever is in front of the
+   player. The game's, not Camille's (hence `.stage`, to beat any app's own
+   button reset). */
 .stage .proof-button {
   display: inline-flex;
   align-items: center;
   gap: 6px;
-  align-self: center;
-  margin: 6px auto;
+  margin-left: 18px;
   padding: 4px 14px 4px 10px;
   border: 0;
   border-radius: 999px;
@@ -167,20 +166,6 @@ button {
   color: inherit;
   cursor: default;
   box-shadow: none;
-}
-
-.pc-taskbar .proof-button,
-.bulle-head .proof-button {
-  margin: 0 0 0 auto;
-}
-
-.pc-taskbar .proof-button + .pc-taskbar-time {
-  margin-left: 0;
-}
-
-.mail-proof {
-  display: flex;
-  justify-content: center;
 }
 
 /* The tester's phone flash. */

@@ -384,6 +384,16 @@
   color: #999;
 }
 
+.report .flaw {
+  color: #ffd38a;
+}
+
+.report .useless {
+  margin-top: 6px;
+  color: #bbb;
+  font-style: italic;
+}
+
 .lesson-thief {
   margin-top: 8px !important;
   color: #ffd38a;

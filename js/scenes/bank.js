@@ -10,7 +10,6 @@ import {
 } from '../state.js';
 import { el, button, mss } from '../dom.js';
 import { icon } from '../icons.js';
-import { proofButton } from '../proof.js';
 import { notable } from '../notable.js';
 
 const THOUGHTS = {
@@ -26,7 +25,7 @@ const randomCode = () => String(Math.floor(Math.random() * 1_000_000)).padStart(
  * @param {object} options.state       game state
  * @param {() => number} options.now   ms since the round started
  * @param {(type: string, data?: object) => void} options.onEvent
- *   'code-sent' {text}, 'unlock', 'account-viewed', 'proof' {id}
+ *   'code-sent' {text}, 'unlock', 'account-viewed'
  */
 export function createBank({ state, now, onEvent = () => {} }) {
   const root = el('div', 'bank');
@@ -174,7 +173,7 @@ export function createBank({ state, now, onEvent = () => {} }) {
       if (op.clue) notable(row, BANK.clue);
       list.append(row);
     }
-    return [tabs('accounts'), head, proofButton(state, 'bank', onEvent), el('p', 'bank-section', 'Dernières opérations'), list];
+    return [tabs('accounts'), head, el('p', 'bank-section', 'Dernières opérations'), list];
   }
 
   function transferView() {

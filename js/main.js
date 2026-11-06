@@ -1,5 +1,5 @@
 import {
-  createState, addClue, markDone, applyDeductions, leftoverTraces, openBulleResetLink, takeProof,
+  createState, addClue, markDone, applyDeductions, leftoverTraces, openBulleResetLink, recordPhoto,
   ROUND_MINUTES,
 } from './state.js';
 import { createTimer, formatClock } from './timer.js';
@@ -18,7 +18,9 @@ import { renderDebrief } from './debrief.js';
 import { rankFor } from './rank.js';
 import { ding } from './sound.js';
 import { createDefence } from './scenes/defend.js';
-import { PROOFS, MISSION } from './data/mission.js';
+import { MISSION } from './data/mission.js';
+import { classify } from './data/photos.js';
+import { icon } from './icons.js';
 
 const STAGE_W = 1600;
 const STAGE_H = 900;
@@ -71,13 +73,32 @@ function showChapterBanner(number, title) {
   bannerTimeout = setTimeout(() => { banner.hidden = true; }, 4000);
 }
 
-/** The tester photographs an open account: a proof for the report. */
-function proof(accountId) {
-  if (!takeProof(state, accountId)) return;
+/**
+ * The tester photographs what is in front of them, with their own phone. The
+ * view says what it shows (`data-subject`, the innermost one wins): an access
+ * or a flaw goes in the notebook and the report; anything else is a useless
+ * photo, which the report counts too.
+ */
+function photograph() {
+  if (!playing || !overlay.isOpen()) return;
+  const subjects = $('overlay-content').querySelectorAll('[data-subject]');
+  const shot = classify(subjects[subjects.length - 1]?.dataset.subject ?? 'nothing');
   $('overlay').classList.remove('flash');
   void $('overlay').offsetWidth; // restart the flash
   $('overlay').classList.add('flash');
-  note([{ id: `proof-${accountId}`, text: `Preuve : ${PROOFS[accountId].label}.`, proof: true }]);
+  const result = recordPhoto(state, shot.kind, shot.id);
+  if (result === 'useless') {
+    const times = state.shots.filter(s => s.id === shot.id).length;
+    // « de un téléphone » → « d’un téléphone »
+    const of = /^[aeiouéèêh]/i.test(shot.text) ? `d’${shot.text}` : `de ${shot.text}`;
+    showToast(times > 1 ? `Encore ${shot.text} ? La direction va se poser des questions.` : `Photo ${of}. Inutile pour le rapport.`);
+  } else if (result === 'again') {
+    showToast('Déjà dans ton rapport.');
+  } else {
+    const text = shot.kind === 'access' ? `Preuve : accès à ${shot.text}.` : `Faille : ${shot.text}`;
+    note([{ id: `proof-${shot.id}`, text, proof: true }]);
+    showToast(shot.kind === 'access' ? 'Accès prouvé : ajouté à ton rapport.' : 'Faille photographiée : ajoutée à ton rapport.');
+  }
 }
 
 // What the phone tells the notebook.
@@ -89,7 +110,6 @@ const PHONE_NOTES = {
 };
 
 function onPhoneEvent(type, data) {
-  if (type === 'proof') return proof(data.id);
   if (type === 'unlock') {
     note([PHONE_NOTES.unlocked]);
     showChapterBanner(1, 'Le téléphone · terminé');
@@ -125,7 +145,6 @@ const PC_NOTES = {
 };
 
 function onPcEvent(type, data) {
-  if (type === 'proof') return proof(data.id);
   const desk = document.querySelector('.desk');
   if (type === 'unlock') {
     desk.classList.add('pc-open');
@@ -157,7 +176,6 @@ function checkAlertsErased() {
 }
 
 function onMailEvent(type, data) {
-  if (type === 'proof') return proof(data.id);
   if (type === 'unlock') {
     const first = !state.clues.some(clue => clue.id === MAIL_NOTES.unlocked.id);
     note([MAIL_NOTES.unlocked]);
@@ -179,7 +197,6 @@ const BANK_NOTES = {
 };
 
 function onBankEvent(type, data) {
-  if (type === 'proof') return proof(data.id);
   if (type === 'code-sent') {
     note([BANK_NOTES.codeSent, BANK_NOTES.eraseText]);
     if (markDone(state, BANK_NOTES.eraseText.id, false)) notebook.render(state.clues);
@@ -218,7 +235,6 @@ function alertToErase() {
 }
 
 function onBulleEvent(type, data) {
-  if (type === 'proof') return proof(data.id);
   if (type === 'reset-sent') {
     note([BULLE_NOTES.resetSent]);
     alertToErase();
@@ -335,6 +351,9 @@ document.addEventListener('keyup', event => {
 
 document.addEventListener('keydown', event => {
   if (event.key === 'Escape') overlay.close();
+  // P takes a photo, unless the player is typing.
+  const typing = event.target.closest?.('input, textarea, [contenteditable]');
+  if ((event.key === 'p' || event.key === 'P') && !typing) photograph();
 });
 
 fitStage();
@@ -342,6 +361,8 @@ window.addEventListener('resize', fitStage);
 clock.textContent = formatClock(roundMs);
 
 setupDesk(stage, inspect);
+$('photo-button').prepend(icon('camera'));
+$('photo-button').addEventListener('click', photograph);
 $('start-button').addEventListener('click', startGame);
 // The mission letter on the start screen.
 $('mission').append(
