@@ -221,15 +221,11 @@
 
 /* Frosted dock at the bottom, like on real phones. */
 .app-dock {
-  margin: auto 0 14px;
-  padding: 10px 12px 8px;
+  margin: auto 0 12px;
+  padding: 10px 12px 6px;
   border-radius: 26px;
   background: rgb(255 255 255 / 0.2);
   backdrop-filter: blur(10px);
-}
-
-.app-dock .app-name {
-  display: none;
 }
 
 .app {
