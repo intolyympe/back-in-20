@@ -53,6 +53,7 @@ export function moreAppScreens({ go, header, think, thoughtLine, onEvent }) {
 
   function note() {
     const page = el('div', 'phone-note');
+    page.dataset.subject = `phone-note-${openNote.id}`;
     page.append(el('h3', '', openNote.title), el('p', 'phone-note-date', openNote.date));
     openNote.lines.forEach((line, i) => {
       const p = el('p', '', line);

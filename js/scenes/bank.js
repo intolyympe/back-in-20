@@ -189,6 +189,7 @@ export function createBank({ state, now, onEvent = () => {} }) {
 
   function securityView() {
     const list = el('div', 'bank-settings');
+    list.dataset.subject = 'bank-security';
     for (const [name, value] of [
       ['Question secrète', 'Ville de naissance'],
       ['Validation des connexions', 'Par SMS'],
@@ -218,8 +219,7 @@ export function createBank({ state, now, onEvent = () => {} }) {
       views = OUTSIDE[view]();
     }
     root.dataset.view = view;
-    root.dataset.subject = !isUnlocked(state, 'bank') ? 'bank-locked'
-      : view === 'security' ? 'bank-security' : 'bank';
+    root.dataset.subject = isUnlocked(state, 'bank') ? 'bank' : 'bank-locked';
     root.replaceChildren(...views, el('p', 'bank-thought', ''));
     root.querySelector('input:not(:disabled), button:not(:disabled)')?.focus();
   }

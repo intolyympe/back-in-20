@@ -145,6 +145,7 @@ export function createMailbox({ state, now, storyTime, variant, onEvent = () => 
     bar.append(button('mail-back', '‹ Boîte de réception', () => go('inbox')));
 
     const page = el('article', 'mail-page');
+    page.dataset.subject = `mail-${email.id}`;
     page.append(el('h3', 'mail-subject', subject), el('p', 'mail-from', `${from} · ${time}`));
     body.forEach((line, i) => {
       const p = el('p', '', line);

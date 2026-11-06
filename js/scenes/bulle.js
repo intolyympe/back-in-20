@@ -205,13 +205,18 @@ export function createBulle({ state, now, variant, onEvent = () => {} }) {
     );
     return [
       button('bulle-back', '‹ Publications', () => go('profile')),
-      open.clue ? notable(postCard(open), open.clue) : postCard(open),
+      (() => {
+        const card = postCard(open);
+        card.dataset.subject = `bulle-${open.id}`;
+        return open.clue ? notable(card, open.clue) : card;
+      })(),
       actions,
     ];
   }
 
   function chatView() {
     const bubbles = el('div', 'bulle-bubbles');
+    bubbles.dataset.subject = 'bulle-chat';
     for (const m of BULLE.chat.messages) {
       const bubble = el('p', m.me ? 'bulle-bubble me' : 'bulle-bubble', m.text);
       bubbles.append(m.clue ? notable(bubble, m.clue) : bubble);
@@ -227,6 +232,7 @@ export function createBulle({ state, now, variant, onEvent = () => {} }) {
 
   function settingsView() {
     const list = el('div', 'bulle-settings');
+    list.dataset.subject = 'bulle-settings';
     const rows = [
       ['Adresse e-mail', 'c••••••@•••••', THOUGHTS.trace],
       ['Double authentification', 'Désactivée', THOUGHTS.twoFactor],
@@ -257,10 +263,9 @@ export function createBulle({ state, now, variant, onEvent = () => {} }) {
       views = SIGNED_OUT[view]();
     }
     root.dataset.view = view;
-    // What a photo would show: her account open (a post, the 2FA setting…).
-    root.dataset.subject = !isUnlocked(state, 'bulle') ? 'bulle-locked'
-      : view === 'settings' ? 'bulle-settings'
-        : view === 'post' ? `bulle-${open.id}` : 'bulle';
+    // What a photo shows: her account open; a post, the chat or the
+    // settings say more (see js/data/photos.js).
+    root.dataset.subject = isUnlocked(state, 'bulle') ? 'bulle' : 'bulle-locked';
     root.replaceChildren(...views, el('p', 'bulle-thought', ''));
     root.querySelector('input:not(:disabled), button:not(:disabled)')?.focus();
   }

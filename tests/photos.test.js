@@ -1,6 +1,6 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
-import { classify, FLAWS } from '../js/data/photos.js';
+import { classify, classifyAll, FLAWS } from '../js/data/photos.js';
 
 test('an open account is an access, a mistake is a flaw, the rest is useless', () => {
   assert.deepEqual(classify('mail'), { kind: 'access', id: 'mail', text: 'sa boîte mail' });
@@ -17,4 +17,22 @@ test('an open account is an access, a mistake is a flaw, the rest is useless', (
 test('every flaw has its own id', () => {
   const ids = FLAWS.map(f => f.id);
   assert.equal(new Set(ids).size, ids.length);
+});
+
+test('one photo can prove the access and a flaw at once', () => {
+  const { proofs, useless } = classifyAll(['phone', 'phone-photo-rex-arrival']);
+  assert.deepEqual(proofs.map(p => p.id), ['phone', 'dog-year']);
+  assert.equal(useless, null);
+});
+
+test('an open account with nothing special on it is still an access', () => {
+  assert.deepEqual(classifyAll(['phone', 'phone-photo-moka']).proofs.map(p => p.id), ['phone']);
+  assert.deepEqual(classifyAll(['bulle', 'bulle-chat']).proofs.map(p => p.id), ['bulle', 'public-answer']);
+});
+
+test('nothing to prove: the innermost thing shown is the useless photo', () => {
+  const { proofs, useless } = classifyAll(['phone-locked']);
+  assert.deepEqual(proofs, []);
+  assert.equal(useless.text, 'un téléphone verrouillé');
+  assert.equal(classifyAll(['plant']).useless.text, 'la plante');
 });

@@ -277,6 +277,7 @@ export function createPhoneView({
   function threadScreen() {
     const thread = openThread;
     const bubbles = el('div', 'bubbles');
+    bubbles.dataset.subject = `phone-thread-${thread.id}`;
     for (const m of thread.messages) {
       if (m.day) bubbles.append(el('p', 'bubble-day', m.day));
       else if (m.scam) bubbles.append(button('bubble link', m.text, think(THOUGHTS.scam)));
@@ -400,6 +401,7 @@ export function createPhoneView({
   function photoScreen() {
     const photo = openPhoto;
     const frame = el('div', 'photo-full');
+    frame.dataset.subject = `phone-photo-${photo.intruder ? 'intruder' : photo.id}`;
     const img = el('img');
     img.src = photoSrc(photo);
     img.alt = '';
