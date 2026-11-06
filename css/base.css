@@ -113,3 +113,75 @@ button {
   width: 100%;
   height: 100%;
 }
+
+/* The tester's "photograph the screen" button: the game's, not Camille's,
+   so it looks the same in every account (and beats each app's own button
+   reset, hence `.stage`). */
+.stage .proof-button {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  align-self: center;
+  margin: 6px auto;
+  padding: 4px 14px 4px 10px;
+  border: 0;
+  border-radius: 999px;
+  background: #fff59a;
+  color: #2b2b2b;
+  font-family: var(--font-hand);
+  font-size: 19px;
+  line-height: 1.2;
+  text-shadow: none;
+  cursor: pointer;
+  box-shadow: 0 2px 6px rgb(0 0 0 / 0.3);
+}
+
+.stage .proof-button .icon {
+  width: 18px;
+  height: 18px;
+}
+
+.stage .proof-button .icon svg {
+  width: 100%;
+  height: 100%;
+}
+
+.stage .proof-button:hover {
+  filter: brightness(1.05);
+}
+
+.stage .proof-button.taken {
+  background: rgb(255 255 255 / 0.25);
+  color: inherit;
+  cursor: default;
+  box-shadow: none;
+}
+
+.pc-taskbar .proof-button,
+.bulle-head .proof-button {
+  margin: 0 0 0 auto;
+}
+
+.pc-taskbar .proof-button + .pc-taskbar-time {
+  margin-left: 0;
+}
+
+.mail-proof {
+  display: flex;
+  justify-content: center;
+}
+
+/* The tester's phone flash. */
+.overlay.flash::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: #fff;
+  pointer-events: none;
+  animation: proof-flash 500ms ease-out forwards;
+}
+
+@keyframes proof-flash {
+  from { opacity: 0.85; }
+  to { opacity: 0; }
+}
