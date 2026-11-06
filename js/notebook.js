@@ -15,6 +15,7 @@ export function createNotebook(listEl, emptyEl) {
           item.classList.add('new');
           if (clue.deduction) item.classList.add('deduction');
           if (clue.task) item.classList.add('task');
+          if (clue.proof) item.classList.add('proof');
           item.addEventListener('animationend', () => item.classList.remove('new'), { once: true });
           items.set(clue.id, item);
           listEl.append(item);

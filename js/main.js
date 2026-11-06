@@ -1,5 +1,5 @@
 import {
-  createState, addClue, markDone, applyDeductions, leftoverTraces, openBulleResetLink,
+  createState, addClue, markDone, applyDeductions, leftoverTraces, openBulleResetLink, takeProof,
   ROUND_MINUTES,
 } from './state.js';
 import { createTimer, formatClock } from './timer.js';
@@ -17,6 +17,7 @@ import { renderDebrief } from './debrief.js';
 import { rankFor } from './rank.js';
 import { ding } from './sound.js';
 import { createDefence } from './scenes/defend.js';
+import { PROOFS, MISSION } from './data/mission.js';
 
 const STAGE_W = 1600;
 const STAGE_H = 900;
@@ -69,6 +70,15 @@ function showChapterBanner(number, title) {
   bannerTimeout = setTimeout(() => { banner.hidden = true; }, 4000);
 }
 
+/** The tester photographs an open account: a proof for the report. */
+function proof(accountId) {
+  if (!takeProof(state, accountId)) return;
+  $('overlay').classList.remove('flash');
+  void $('overlay').offsetWidth; // restart the flash
+  $('overlay').classList.add('flash');
+  note([{ id: `proof-${accountId}`, text: `Preuve : ${PROOFS[accountId].label}.`, proof: true }]);
+}
+
 // What the phone tells the notebook.
 const PHONE_NOTES = {
   unlocked: { id: 'phone-unlocked', text: 'Téléphone déverrouillé avec 1411.' },
@@ -78,6 +88,7 @@ const PHONE_NOTES = {
 };
 
 function onPhoneEvent(type, data) {
+  if (type === 'proof') return proof(data.id);
   if (type === 'unlock') {
     note([PHONE_NOTES.unlocked]);
     showChapterBanner(1, 'Le téléphone · terminé');
@@ -119,6 +130,7 @@ const PC_NOTES = {
 };
 
 function onPcEvent(type, data) {
+  if (type === 'proof') return proof(data.id);
   const desk = document.querySelector('.desk');
   if (type === 'unlock') {
     desk.classList.add('pc-open');
@@ -152,6 +164,7 @@ function checkAlertsErased() {
 }
 
 function onMailEvent(type, data) {
+  if (type === 'proof') return proof(data.id);
   if (type === 'unlock') {
     const first = !state.clues.some(clue => clue.id === MAIL_NOTES.unlocked.id);
     note([MAIL_NOTES.unlocked]);
@@ -174,7 +187,8 @@ const BANK_NOTES = {
   eraseText: { id: 'erase-bank-text', task: true, text: 'Effacer le SMS de Nébula dans Messages.' },
 };
 
-function onBankEvent(type) {
+function onBankEvent(type, data) {
+  if (type === 'proof') return proof(data.id);
   if (type === 'code-sent') {
     note([BANK_NOTES.codeSent, BANK_NOTES.eraseText]);
     if (markDone(state, BANK_NOTES.eraseText.id, false)) notebook.render(state.clues);
@@ -215,6 +229,7 @@ function alertToErase() {
 }
 
 function onBulleEvent(type, data) {
+  if (type === 'proof') return proof(data.id);
   if (type === 'reset-sent') {
     note([BULLE_NOTES.resetSent]);
     alertToErase();
@@ -339,6 +354,13 @@ clock.textContent = formatClock(roundMs);
 
 setupDesk(stage, inspect);
 $('start-button').addEventListener('click', startGame);
+// The mission letter on the start screen.
+$('mission').append(
+  Object.assign(document.createElement('p'), { className: 'mission-from', textContent: MISSION.from }),
+  Object.assign(document.createElement('h2'), { className: 'mission-title', textContent: MISSION.title }),
+  ...MISSION.lines.map(line => Object.assign(document.createElement('p'), { textContent: line })),
+);
+
 $('restart-button').addEventListener('click', () => location.reload());
 $('defend-button').addEventListener('click', () => {
   $('end-screen').hidden = true;

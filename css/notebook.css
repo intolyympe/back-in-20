@@ -57,3 +57,9 @@
   text-decoration: line-through;
   text-decoration-thickness: 2px;
 }
+
+/* A proof for the report: the tester's own colour. */
+.notebook-list li.proof {
+  color: #1f5fa8;
+  font-weight: 700;
+}
