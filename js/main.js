@@ -19,7 +19,7 @@ import { rankFor } from './rank.js';
 import { ding } from './sound.js';
 import { createDefence } from './scenes/defend.js';
 import { MISSION } from './data/mission.js';
-import { classify } from './data/photos.js';
+import { classifyAll } from './data/photos.js';
 import { STEPS, READY_TEXT, nextStep, TUTORIAL_OBJECT } from './tutorial.js';
 import { icon } from './icons.js';
 
@@ -123,33 +123,55 @@ function showChapterBanner(number, title) {
   bannerTimeout = setTimeout(() => { banner.hidden = true; }, 4000);
 }
 
+/** What a photo of the view in front of the player would show, outer to inner. */
+function currentShot() {
+  const subjects = [...$('overlay-content').querySelectorAll('[data-subject]')].map(e => e.dataset.subject);
+  return classifyAll(subjects.length ? subjects : ['nothing']);
+}
+
 /**
- * The tester photographs what is in front of them, with their own phone. The
- * view says what it shows (`data-subject`, the innermost one wins): an access
- * or a flaw goes in the notebook and the report; anything else is a useless
- * photo, which the report counts too.
+ * The tester photographs what is in front of them, with their own phone. A
+ * photo can prove several things at once (her phone open, and Rex's photo on
+ * it): each new access or flaw goes in the notebook and the report. A photo
+ * that proves nothing is a useless one, which the report counts too.
  */
 function photograph() {
   if (!playing || !overlay.isOpen()) return;
-  const subjects = $('overlay-content').querySelectorAll('[data-subject]');
-  const shot = classify(subjects[subjects.length - 1]?.dataset.subject ?? 'nothing');
+  const { proofs, useless } = currentShot();
   $('overlay').classList.remove('flash');
   void $('overlay').offsetWidth; // restart the flash
   $('overlay').classList.add('flash');
-  const result = recordPhoto(state, shot.kind, shot.id);
   tutorialEvent('photo');
-  if (result === 'useless') {
-    const times = state.shots.filter(s => s.id === shot.id).length;
+
+  if (useless) {
+    recordPhoto(state, 'useless', useless.id);
+    const times = state.shots.filter(s => s.id === useless.id).length;
     // « de un téléphone » → « d’un téléphone »
-    const of = /^[aeiouéèêh]/i.test(shot.text) ? `d’${shot.text}` : `de ${shot.text}`;
-    showToast(times > 1 ? `Encore ${shot.text} ? La direction va se poser des questions.` : `Photo ${of}. Inutile pour le rapport.`);
-  } else if (result === 'again') {
-    showToast('Déjà dans ton rapport.');
+    const of = /^[aeiouéèêh]/i.test(useless.text) ? `d’${useless.text}` : `de ${useless.text}`;
+    showToast(times > 1 ? `Encore ${useless.text} ? La direction va se poser des questions.` : `Photo ${of}. Inutile pour le rapport.`);
   } else {
-    const text = shot.kind === 'access' ? `Preuve : accès à ${shot.text}.` : `Faille : ${shot.text}`;
-    note([{ id: `proof-${shot.id}`, text, proof: true }]);
-    showToast(shot.kind === 'access' ? 'Accès prouvé : ajouté à ton rapport.' : 'Faille photographiée : ajoutée à ton rapport.');
+    const fresh = proofs.filter(shot => recordPhoto(state, shot.kind, shot.id) === 'new');
+    if (!fresh.length) {
+      showToast('Déjà photographié : rien de plus pour ton rapport.');
+    } else {
+      note(fresh.map(shot => ({
+        id: `proof-${shot.id}`,
+        text: shot.kind === 'access' ? `Preuve : accès à ${shot.text}.` : `Faille : ${shot.text}`,
+        proof: true,
+      })));
+      showToast(fresh.length > 1 ? `${fresh.length} preuves ajoutées à ton rapport.`
+        : fresh[0].kind === 'access' ? 'Accès prouvé : ajouté à ton rapport.' : 'Faille photographiée : ajoutée à ton rapport.');
+    }
   }
+  updatePhotoButton();
+}
+
+/** "Déjà photographié" when everything this view proves is in the report. */
+function updatePhotoButton() {
+  const { proofs } = currentShot();
+  const done = proofs.length > 0 && proofs.every(shot => state.proofs.has(shot.id));
+  $('photo-button').classList.toggle('taken', done);
+  $('photo-label').textContent = done ? 'Déjà photographié' : 'Photographier';
 }
 
 // What the phone tells the notebook.
@@ -432,6 +454,10 @@ clock.textContent = formatClock(roundMs);
 setupDesk(stage, inspect);
 $('photo-button').prepend(icon('camera'));
 $('photo-button').addEventListener('click', photograph);
+// The view changes (another app, another photo…): the button follows.
+new MutationObserver(updatePhotoButton).observe($('overlay-content'), {
+  childList: true, subtree: true, attributes: true, attributeFilter: ['data-subject'],
+});
 $('start-button').addEventListener('click', startGame);
 $('tutorial-skip').addEventListener('click', () => endTutorial({ skipped: true }));
 // The mission letter on the start screen.
