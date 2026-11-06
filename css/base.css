@@ -114,6 +114,18 @@ button {
   height: 100%;
 }
 
+/* App tiles: the icon fills most of the tile, so it reads at a glance. */
+.app-icon .icon {
+  width: 100%;
+  height: 100%;
+}
+
+.app-icon .icon svg,
+.pc-icon-glyph svg {
+  width: 62%;
+  height: 62%;
+}
+
 /* The tester's "photograph the screen" button: the game's, not Camille's,
    so it looks the same in every account (and beats each app's own button
    reset, hence `.stage`). */
