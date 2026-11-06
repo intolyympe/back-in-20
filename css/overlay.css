@@ -43,3 +43,55 @@
 @keyframes pick-up {
   from { transform: translateY(80px) scale(0.85); opacity: 0; }
 }
+
+/* Details the player can note (js/notable.js). */
+.notable {
+  cursor: pointer;
+  border-radius: 4px;
+  outline: 2px dashed transparent;
+  outline-offset: 3px;
+  transition: outline-color 120ms, background-color 120ms;
+}
+
+.notable:hover,
+.notable:focus-visible {
+  outline-color: #d98c1f;
+  background-color: rgb(255 214 90 / 0.32);
+}
+
+/* Once noted, a quiet pencil underline stays. */
+.notable.noted {
+  outline-color: transparent;
+  box-shadow: inset 0 -3px 0 rgb(31 95 168 / 0.45);
+}
+
+.notable.noted:hover {
+  outline-color: rgb(31 95 168 / 0.6);
+  background-color: transparent;
+}
+
+.note-tip {
+  position: absolute;
+  z-index: 6;
+  padding: 2px 12px 4px;
+  border-radius: 999px;
+  background: #1f1d1a;
+  color: #fff59a;
+  font-family: var(--font-hand);
+  font-size: 22px;
+  line-height: 1.1;
+  pointer-events: none;
+  transform: translate(-50%, calc(-100% - 8px));
+  white-space: nowrap;
+}
+
+.note-tip[hidden] {
+  display: none;
+}
+
+/* The empty middle of the phone's lock screen: the wallpaper, to note. */
+.lock-wallpaper {
+  flex: 1;
+  width: 70%;
+  margin: 10px 0;
+}

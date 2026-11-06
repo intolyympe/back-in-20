@@ -11,7 +11,7 @@ import { createVault } from './vault.js';
 import { recordFailedAttempt, lockRemaining, unlock, relock, isUnlocked } from '../state.js';
 import { el, button, hhmm, mss } from '../dom.js';
 import { icon } from '../icons.js';
-import { proofButton } from '../proof.js';
+import { notable } from '../notable.js';
 
 const DATE_FORMAT = new Intl.DateTimeFormat('fr-FR', { weekday: 'long', day: 'numeric', month: 'long' });
 
@@ -38,7 +38,7 @@ const loose = text => text.toLowerCase().replace(/[^a-z0-9]/g, '');
  * @param {() => number} options.now   ms since the round started
  * @param {(ms: number) => Date} options.storyTime  story clock at that time
  * @param {(type: string, data?: object) => void} options.onEvent
- *   'unlock', 'lock', 'note-viewed' {note}, 'proof' {id}
+ *   'unlock', 'lock', 'note-viewed' {note}
  * @param {(type: string, data?: object) => void} options.onMailEvent
  *   events of the Mail window (see mailbox.js)
  * @param {(type: string, data?: object) => void} options.onBulleEvent
@@ -157,9 +157,14 @@ export function createPcView({
     }
     const page = el('article', 'pc-note-page');
     page.append(el('h3', '', openNote.title), el('p', 'pc-note-date', openNote.date));
-    for (const line of openNote.lines) page.append(el('p', '', line));
+    openNote.lines.forEach((line, i) => {
+      const p = el('p', '', line);
+      page.append(i === openNote.clueLine ? notable(p, openNote.clue) : p);
+    });
     body.append(list, page);
-    return windowFrame('Notes', body);
+    const win = windowFrame('Notes', body);
+    win.dataset.subject = `pc-note-${openNote.id}`;
+    return win;
   }
 
   function mailWindow() {
@@ -212,7 +217,6 @@ export function createPcView({
     });
     taskbar.append(
       el('span', 'pc-taskbar-user', 'Camille'),
-      proofButton(state, 'pc', onEvent),
       el('span', 'pc-taskbar-time', hhmm(storyTime(now()))),
       lock,
     );
@@ -226,6 +230,8 @@ export function createPcView({
   function render() {
     const open = isUnlocked(state, 'pc');
     screen.className = `pc-screen ${open ? 'pc-desktop' : 'pc-login'}`;
+    // What a photo would show: her desktop, or the lock screen (with the hint).
+    screen.dataset.subject = open ? 'pc' : (showHint ? 'pc-hint' : 'pc-locked');
     screen.replaceChildren(...(open ? desktopScreen() : loginScreen()));
     // Keep the keyboard working: a field to type in first (the login, or the
     // Mail window's), else the open window's first control, else the first.

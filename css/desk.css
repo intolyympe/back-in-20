@@ -380,7 +380,7 @@
   position: absolute;
   z-index: 7; /* above an object seen up close */
   right: 24px;
-  bottom: 28px;
+  bottom: 96px; /* above the bar under a held object (Espace, Photographier) */
   margin: 0;
   padding: 12px 20px;
   white-space: nowrap;

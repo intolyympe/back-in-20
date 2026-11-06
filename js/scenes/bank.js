@@ -10,7 +10,7 @@ import {
 } from '../state.js';
 import { el, button, mss } from '../dom.js';
 import { icon } from '../icons.js';
-import { proofButton } from '../proof.js';
+import { notable } from '../notable.js';
 
 const THOUGHTS = {
   transfer: 'Surtout pas : je suis là pour prouver, pas pour voler.',
@@ -25,7 +25,7 @@ const randomCode = () => String(Math.floor(Math.random() * 1_000_000)).padStart(
  * @param {object} options.state       game state
  * @param {() => number} options.now   ms since the round started
  * @param {(type: string, data?: object) => void} options.onEvent
- *   'code-sent' {text}, 'unlock', 'account-viewed', 'proof' {id}
+ *   'code-sent' {text}, 'unlock', 'account-viewed'
  */
 export function createBank({ state, now, onEvent = () => {} }) {
   const root = el('div', 'bank');
@@ -170,9 +170,10 @@ export function createBank({ state, now, onEvent = () => {} }) {
         el('span', 'bank-op-label', op.label),
         el('span', `bank-op-amount ${op.amount.startsWith('+') ? 'in' : ''}`, op.amount),
       );
+      if (op.clue) notable(row, BANK.clue);
       list.append(row);
     }
-    return [tabs('accounts'), head, proofButton(state, 'bank', onEvent), el('p', 'bank-section', 'Dernières opérations'), list];
+    return [tabs('accounts'), head, el('p', 'bank-section', 'Dernières opérations'), list];
   }
 
   function transferView() {
@@ -188,6 +189,7 @@ export function createBank({ state, now, onEvent = () => {} }) {
 
   function securityView() {
     const list = el('div', 'bank-settings');
+    list.dataset.subject = 'bank-security';
     for (const [name, value] of [
       ['Question secrète', 'Ville de naissance'],
       ['Validation des connexions', 'Par SMS'],
@@ -217,6 +219,7 @@ export function createBank({ state, now, onEvent = () => {} }) {
       views = OUTSIDE[view]();
     }
     root.dataset.view = view;
+    root.dataset.subject = isUnlocked(state, 'bank') ? 'bank' : 'bank-locked';
     root.replaceChildren(...views, el('p', 'bank-thought', ''));
     root.querySelector('input:not(:disabled), button:not(:disabled)')?.focus();
   }

@@ -29,6 +29,7 @@ const THOUGHTS = {
  */
 export function createVault({ state, variant, onEvent = () => {} }) {
   const root = el('div', `vault vault--${variant}`);
+  root.dataset.subject = 'vault';
   let message = '';
   let thought = '';
 

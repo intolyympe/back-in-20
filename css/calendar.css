@@ -58,6 +58,7 @@
   inset: 0;
   background: linear-gradient(to top right,
     transparent calc(50% - 1px), rgb(70 70 70 / 0.35) 50%, transparent calc(50% + 1px));
+  pointer-events: none; /* the event under the cross can still be noted */
 }
 
 /* Hand-drawn red ring around the day that matters. */

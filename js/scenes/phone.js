@@ -18,7 +18,7 @@ import {
 } from '../state.js';
 import { el, button, hhmm, mss } from '../dom.js';
 import { icon } from '../icons.js';
-import { proofButton } from '../proof.js';
+import { notable } from '../notable.js';
 
 const DATE_FORMAT = new Intl.DateTimeFormat('fr-FR', { weekday: 'long', day: 'numeric', month: 'long' });
 const PHOTO_DATE = new Intl.DateTimeFormat('fr-FR', { day: 'numeric', month: 'long', year: 'numeric' });
@@ -101,7 +101,7 @@ const GRID = [
  * @param {(ms: number) => Date} options.storyTime  story clock at that time
  * @param {(type: string, data?: object) => void} options.onEvent
  *   'unlock', 'lockout', 'photo-viewed' {photo}, 'thread-viewed' {thread},
- *   'note-viewed' {note}, 'photo-deleted', 'trash-emptied', 'texts-deleted', 'proof' {id}
+ *   'note-viewed' {note}, 'photo-deleted', 'trash-emptied', 'texts-deleted'
  * @param {(type: string, data?: object) => void} options.onMailEvent
  *   events of the Mail app (see mailbox.js)
  * @param {(type: string, data?: object) => void} options.onBulleEvent
@@ -170,6 +170,8 @@ export function createPhoneView({
     const parts = [el('div', 'lock-time', hhmm(time)), el('div', 'lock-date', DATE_FORMAT.format(time))];
     // The notification goes once the intruder photo is erased.
     if (leftoverTraces(state).intruderPhotos) parts.push(alertNotification());
+    // The wallpaper itself: the empty middle of the screen can be noted.
+    parts.push(notable(el('div', 'lock-wallpaper'), PHONE.wallpaperClue));
 
     const bottom = el('div', 'lock-bottom');
     const wait = lockRemaining(state, 'phone', now());
@@ -203,7 +205,7 @@ export function createPhoneView({
   }
 
   function homeScreen() {
-    const parts = [statusBar(), proofButton(state, 'phone', onEvent)];
+    const parts = [statusBar()];
     // The bank's text, while it is on the phone.
     if (state.texts.length) {
       const text = el('div', 'phone-notification');
@@ -275,10 +277,14 @@ export function createPhoneView({
   function threadScreen() {
     const thread = openThread;
     const bubbles = el('div', 'bubbles');
+    bubbles.dataset.subject = `phone-thread-${thread.id}`;
     for (const m of thread.messages) {
       if (m.day) bubbles.append(el('p', 'bubble-day', m.day));
       else if (m.scam) bubbles.append(button('bubble link', m.text, think(THOUGHTS.scam)));
-      else bubbles.append(el('p', m.me ? 'bubble me' : 'bubble', m.text));
+      else {
+        const bubble = el('p', m.me ? 'bubble me' : 'bubble', m.text);
+        bubbles.append(m.clue ? notable(bubble, m.clue) : bubble);
+      }
     }
     const reply = button('reply-field', 'Message', think(THOUGHTS.reply));
     return [header(thread.name, 'messages'), bubbles, notNowLine(), reply];
@@ -395,11 +401,13 @@ export function createPhoneView({
   function photoScreen() {
     const photo = openPhoto;
     const frame = el('div', 'photo-full');
+    frame.dataset.subject = `phone-photo-${photo.intruder ? 'intruder' : photo.id}`;
     const img = el('img');
     img.src = photoSrc(photo);
     img.alt = '';
     frame.append(img);
     if (photo.intruder) frame.append(el('span', 'photo-stamp', `Tentative d’accès · ${hhmm(storyTime(photo.takenAt))}`));
+    if (photo.clue) notable(frame, photo.clue);
 
     const info = el('div', 'photo-info');
     info.append(
@@ -464,6 +472,8 @@ export function createPhoneView({
 
   function render() {
     screen.className = `handset-screen screen-${view}`;
+    // What a photo of the phone would show: locked, or her phone open.
+    screen.dataset.subject = view === 'lock' || view === 'pin' ? 'phone-locked' : 'phone';
     screen.replaceChildren(...SCREENS[view]());
     // A conversation opens on its latest messages.
     const bubbles = screen.querySelector('.bubbles');

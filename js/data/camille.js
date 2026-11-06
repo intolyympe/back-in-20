@@ -40,20 +40,20 @@ export const CALENDAR = {
   // Month (1-12) -> what is written on its page. `doodle` is drawn instead of
   // words; `circled` gets a red ring.
   events: {
-    3: [{ day: 21, text: 'Anniv Léa' }],
+    3: [{ day: 21, text: 'Anniv Léa', clue: { id: 'lea-birthday', text: 'Calendrier : « Anniv Léa » le 21 mars.' } }],
     6: [{ day: 12, text: 'Contrôle technique' }, { day: 26, text: 'Loyer' }],
     7: [
-      { day: 3, text: 'Véto Rex (vaccin)' },
+      { day: 3, text: 'Véto Rex (vaccin)', clue: { id: 'vet-rex', text: 'Calendrier, 3 juillet : « Véto Rex ». Rex… un animal ?' } },
       { day: 7, text: 'Réunion budget' },
       { day: 16, text: 'Dentiste 9h' },
-      { day: 18, text: 'Mariage Julie', circled: true },
+      { day: 18, text: 'Mariage Julie', circled: true, clue: { id: 'julie-wedding', text: 'Calendrier : mariage de Julie le 18 juillet, entouré.' } },
       { day: 24, text: 'Resto Léa 20h' },
       { day: 26, text: 'Loyer' },
       { day: 31, text: 'Départ vacances !' },
     ],
     8: [{ day: 1, text: 'Bretagne' }, { day: 15, text: 'Retour' }, { day: 26, text: 'Loyer' }],
     9: [{ day: 7, text: 'Formation Excel' }, { day: 26, text: 'Loyer' }],
-    11: [{ day: 14, doodle: 'cake' }],
+    11: [{ day: 14, doodle: 'cake', clue: { id: 'cake-1411', text: 'Calendrier, 14 novembre : un gâteau dessiné. Pas de nom.' } }],
     12: [{ day: 24, text: 'Noël chez maman' }],
   },
 };
@@ -65,15 +65,21 @@ export const MEETING_NOTES = {
     { text: '– Relancer Hugo pour les factures' },
     { text: '– Slides à envoyer avant vendredi !', highlight: true },
     { text: '– Formation cybersécu obligatoire :' },
-    { text: '   « ne JAMAIS réutiliser ses mdp »' },
+    { text: '   « ne JAMAIS réutiliser ses mdp »', clue: { id: 'reuses-passwords', text: 'Notes : « ne JAMAIS réutiliser ses mdp »… (oups ?)' } },
     { text: '                       (oups…)' },
-    { text: '   mdp PC : 8 car., 1 MAJ, 1 chiffre, 1 !?#', highlight: true },
+    {
+      text: '   mdp PC : 8 car., 1 MAJ, 1 chiffre, 1 !?#',
+      highlight: true,
+      clue: { id: 'pc-policy', text: 'Notes : mdp du PC = 8 caractères, 1 majuscule, 1 chiffre, 1 caractère spécial.' },
+    },
   ],
 };
 
 // Last year's card: Camille kept it in her drawer.
 export const BIRTHDAY_CARD = {
   front: 'Joyeux anniversaire !',
+  // The card and the postmark both give it.
+  clue: { id: 'birthday-card', text: 'Carte de Léa à « Ma Cam » : joyeux 29 ans. Cachet : « 1? NOV. 2025 ».' },
   postmark: { day: '1?', month: 'NOV.', year: '2025' }, // the day is smudged
   message: [
     'Ma Cam, joyeux 29 ans !',
@@ -85,8 +91,9 @@ export const BIRTHDAY_CARD = {
   ],
 };
 
-// Camille's phone. The gallery is newest first; a photo or a conversation
-// with a `clue` adds it to the notebook when the player opens it.
+// Camille's phone. The gallery is newest first. A `clue` (on a photo, a
+// message, a note line) is written in the notebook when the player clicks
+// that detail.
 //
 // The phone is there to get lost in: most of what it holds leads nowhere,
 // and some of it looks like a lead on purpose (Moka is Léa's cat, not
@@ -94,6 +101,7 @@ export const BIRTHDAY_CARD = {
 // it is a minute of the round.
 export const PHONE = {
   pin: '1411',
+  wallpaperClue: { id: 'dog-wallpaper', text: 'Fond d’écran du téléphone : un chiot noir.' },
   photos: [
     { id: 'coffee', src: 'assets/photos/coffee.jpg', date: [2026, 7, 6], caption: 'Pause café avec Léa ☕' },
     { id: 'rex-walk', src: 'assets/photos/rex-walk.jpg', date: [2026, 6, 27], caption: 'Balade du soir avec Rex 🌙' },
@@ -144,7 +152,8 @@ export const PHONE = {
       title: 'Vélo',
       date: '14/04/2026',
       lines: ['Cadenas : 2103 (l’anniv de Léa, facile à retenir)', 'Révision avant l’été'],
-      // Her habit: dates of people she loves as codes.
+      // Her habit: dates of people she loves as codes. `clueLine`: the line to note.
+      clueLine: 0,
       clue: { id: 'bike-lock', text: 'Note du téléphone : cadenas du vélo = 2103, l’anniversaire de Léa.' },
     },
     {
@@ -186,7 +195,9 @@ export const PHONE = {
         { text: 'Et tu ramènes enfin les photos de Norvège 😍' },
         { text: 'Promis 🙈', me: true },
         { day: 'Aujourd’hui' },
-        { text: 'Tu pourrais reprendre Moka samedi ? Je pars chez mes parents 🙏' },
+        {
+          text: 'Tu pourrais reprendre Moka samedi ? Je pars chez mes parents 🙏',
+            },
         { text: 'Bien sûr ! Rex va être ravi 🙄', me: true },
         { text: 'Ils s’adorent, arrête 😂' },
       ],
@@ -234,11 +245,13 @@ export const PHONE = {
       messages: [
         { text: 'Tu passes dimanche avec Rex ?' },
         { text: 'Oui ! Vers midi', me: true },
-        { text: 'Déjà 7 ans que tu as ce chien, le temps passe vite…' },
+        {
+          text: 'Déjà 7 ans que tu as ce chien, le temps passe vite…',
+          clue: { id: 'rex-7-years', text: 'SMS de sa mère : « Tu passes dimanche avec Rex ? […] Déjà 7 ans que tu as ce chien ».' },
+        },
         { text: 'Ne m’en parle pas 😭', me: true },
         { text: 'Et mets de la crème, ils annoncent 33° 🙃' },
       ],
-      clue: { id: 'rex-7-years', text: 'SMS de sa mère : « Tu passes dimanche avec Rex ? […] Déjà 7 ans que tu as ce chien ».' },
     },
     {
       id: 'papa',
@@ -261,7 +274,7 @@ export const PHONE = {
 export const PC = {
   password: 'Rex2019!',
   hint: 'mon bébé ❤',
-  // Notes app, newest first. Opening a note with a `clue` writes it down.
+  // Notes app, newest first. `clueLine` is the line that gives the `clue`.
   notes: [
     {
       id: 'courses',
@@ -286,6 +299,7 @@ export const PC = {
       title: 'Codes 🤫',
       date: '12/05/2026',
       lines: ['Digicode immeuble : 4580B', 'Wifi maison : au dos de la box', 'Mail perso : même mdp que le PC (flemme…)', 'Banque : NE PAS NOTER ICI !!'],
+      clueLine: 2,
       clue: { id: 'mail-same-as-pc', text: 'Note « Codes » sur le PC : « Mail perso : même mdp que le PC ».' },
     },
   ],
@@ -297,8 +311,8 @@ export const PC = {
 // Nébula, Compagnie des Îles).
 export const MAIL = {
   password: PC.password,
-  // Inbox, newest first. `scam` is a link not to click, `clue` is written
-  // in the notebook when the e-mail is opened.
+  // Inbox, newest first. `scam` is a link not to click; `clueLine` is the
+  // line of the e-mail that gives the `clue`.
   emails: [
     {
       id: 'it-reminder',
@@ -325,6 +339,7 @@ export const MAIL = {
         'Cet e-mail a été envoyé à l’adresse liée à votre compte Bulle @cam.et.rex.',
         'Mot de passe oublié ? Recevez un lien de réinitialisation à cette adresse.',
       ],
+      clueLine: 2,
       clue: {
         id: 'bulle-account',
         text: 'Mail de Bulle : son compte @cam.et.rex est lié à cette boîte (« mot de passe oublié » → lien envoyé ici).',
@@ -457,9 +472,12 @@ export const BULLE = {
       { text: 'Alors, t’as pu payer le ferry ?' },
       { text: 'Oui ! J’avais encore oublié mon code Nébula 🙈', me: true },
       { text: 'Encore ?? 😂' },
-      { text: 'Heureusement il y a la question secrète : la ville où je suis née. Trop facile', me: true },
+      {
+        text: 'Heureusement il y a la question secrète : la ville où je suis née. Trop facile',
+        me: true,
+        clue: { id: 'bank-question', text: 'Bulle, à Léa : code de banque oublié → « la question secrète : la ville où je suis née ».' },
+      },
     ],
-    clue: { id: 'bank-question', text: 'Bulle, à Léa : code de banque oublié → « la question secrète : la ville où je suis née ».' },
   },
 };
 
@@ -480,9 +498,10 @@ export const BANK = {
     { date: '02/07', label: 'Compagnie des Îles · ferry', amount: '−64,00 €' },
     { date: '01/07', label: 'Salaire', amount: '+2 140,00 €' },
     { date: '26/06', label: 'Loyer', amount: '−720,00 €' },
-    { date: '15/06', label: 'Clé de sécurité USB', amount: '−29,00 €' },
-    { date: '15/06', label: 'Coffre · abonnement annuel', amount: '−24,00 €' },
+    { date: '15/06', label: 'Clé de sécurité USB', amount: '−29,00 €', clue: true },
+    { date: '15/06', label: 'Coffre · abonnement annuel', amount: '−24,00 €', clue: true },
   ],
+  // Noted from either of the two rows marked `clue`.
   clue: {
     id: 'security-key',
     text: 'Banque, 15/06 : « Clé de sécurité USB » et « Coffre · abonnement ». Son coffre à mots de passe a une clé physique.',

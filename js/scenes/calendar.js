@@ -4,11 +4,7 @@
 import { CALENDAR } from '../data/camille.js';
 import { monthGrid, WEEKDAYS, MONTHS } from '../calendar-grid.js';
 import { el } from '../dom.js';
-
-// Pages that teach something when the player turns to them (month -> clue).
-export const CALENDAR_CLUES = {
-  11: { id: 'cake-1411', text: 'Calendrier, 14 novembre : un gâteau dessiné. Pas de nom.' },
-};
+import { notable } from '../notable.js';
 
 /** Is this day already gone in the story? (crossed out on the calendar) */
 function isPast(month, day) {
@@ -43,8 +39,10 @@ function buildCalendar(variant, month) {
       if (event) {
         cell.classList.add('has-event');
         if (event.circled) cell.classList.add('circled');
-        if (event.doodle) cell.append(el('span', `cal-doodle ${event.doodle}`));
-        else cell.append(el('span', 'cal-event', event.text));
+        const mark = event.doodle ? el('span', `cal-doodle ${event.doodle}`) : el('span', 'cal-event', event.text);
+        // Taken off the wall, a written day can be noted.
+        if (variant === 'large' && event.clue) notable(mark, event.clue);
+        cell.append(mark);
       }
     }
     grid.append(cell);
@@ -60,9 +58,9 @@ export function fillDeskCalendar(button) {
 
 /**
  * The calendar taken off the wall, big enough to read. Its pages turn with
- * the buttons or the arrow keys; onPage(month) is called for every page shown.
+ * the buttons or the arrow keys. What a photo shows is the page's month.
  */
-export function createCalendarView({ onPage = () => {} } = {}) {
+export function createCalendarView() {
   let month = CALENDAR.month;
 
   const sheet = el('div', 'cal-sheet');
@@ -70,16 +68,22 @@ export function createCalendarView({ onPage = () => {} } = {}) {
   const prev = el('button', 'cal-turn prev');
   const next = el('button', 'cal-turn next');
 
+  // The sheet keeps the keyboard focus when the page under it is redrawn, so
+  // the arrow keys keep turning pages after a detail was noted.
+  sheet.tabIndex = -1;
+
   const show = target => {
     month = Math.min(12, Math.max(1, target));
+    const hadFocus = page.contains(document.activeElement);
     page.replaceChildren(buildCalendar('large', month));
+    if (hadFocus) sheet.focus();
     prev.disabled = month === 1;
     next.disabled = month === 12;
     prev.textContent = month > 1 ? `‹ ${MONTHS[month - 2]}` : '';
     next.textContent = month < 12 ? `${MONTHS[month]} ›` : '';
     prev.setAttribute('aria-label', 'Mois précédent');
     next.setAttribute('aria-label', 'Mois suivant');
-    onPage(month);
+    sheet.dataset.subject = `calendar-${month}`;
   };
 
   prev.addEventListener('click', () => show(month - 1));

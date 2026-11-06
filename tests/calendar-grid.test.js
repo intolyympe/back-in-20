@@ -1,9 +1,8 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { monthGrid } from '../js/calendar-grid.js';
-import { CALENDAR, STORY_START, DEDUCTIONS, PHONE } from '../js/data/camille.js';
-import { DESK_OBJECTS } from '../js/scenes/desk.js';
-import { CALENDAR_CLUES } from '../js/scenes/calendar.js';
+import { CALENDAR, STORY_START, DEDUCTIONS } from '../js/data/camille.js';
+import { ALL_CLUES } from '../js/clues.js';
 
 test('November 2026 starts on a Sunday and has 30 days', () => {
   const weeks = monthGrid(2026, 11);
@@ -39,12 +38,7 @@ test('every calendar event falls on a real day of its month', () => {
 });
 
 test('every deduction can be reached from clues the game hands out', () => {
-  const handedOut = new Set([
-    ...Object.values(DESK_OBJECTS).flatMap(object => (object.clues ?? []).map(clue => clue.id)),
-    ...Object.values(CALENDAR_CLUES).map(clue => clue.id),
-    ...[...PHONE.photos, ...PHONE.threads].filter(item => item.clue).map(item => item.clue.id),
-    'dog-wallpaper',
-  ]);
+  const handedOut = new Set(ALL_CLUES.map(clue => clue.id));
   for (const deduction of DEDUCTIONS) {
     for (const id of deduction.from) assert.ok(handedOut.has(id), `${deduction.id} needs ${id}`);
   }

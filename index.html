@@ -80,16 +80,24 @@
 
       <div class="overlay" id="overlay" role="dialog" aria-modal="true" aria-label="Vue rapprochée" tabindex="-1" hidden>
         <div class="overlay-content" id="overlay-content"></div>
-        <p class="overlay-hint"><kbd>Espace</kbd> <span class="overlay-hint-action">pour reposer</span></p>
+        <p class="overlay-hint">
+          <kbd>Espace</kbd> <span class="overlay-hint-action">pour reposer</span>
+          <button type="button" class="proof-button" id="photo-button" title="Une preuve pour ton rapport, avec ton propre téléphone"><span id="photo-label">Photographier</span> <kbd>P</kbd></button>
+        </p>
       </div>
     </section>
 
     <aside class="notebook" aria-labelledby="notebook-title">
       <h2 class="notebook-title" id="notebook-title">Carnet</h2>
-      <p class="notebook-empty" id="notebook-empty">Rien pour l’instant. Fouille le bureau.</p>
+      <p class="notebook-empty" id="notebook-empty">Rien pour l’instant. Fouille le bureau, et clique sur un détail pour le noter.</p>
       <ol class="notebook-list" id="notebook-list"></ol>
     </aside>
 
+    <div class="tutorial" id="tutorial" role="status" hidden>
+      <p class="tutorial-step" id="tutorial-step"></p>
+      <p class="tutorial-text" id="tutorial-text"></p>
+      <button type="button" class="tutorial-skip" id="tutorial-skip" hidden>Passer le tutoriel</button>
+    </div>
     <div class="chapter-banner" id="chapter-banner" role="status" hidden>
       <span class="chapter-number"></span>
       <span class="chapter-title"></span>

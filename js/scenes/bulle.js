@@ -9,7 +9,7 @@ import {
 } from '../state.js';
 import { el, button, mss } from '../dom.js';
 import { icon } from '../icons.js';
-import { proofButton } from '../proof.js';
+import { notable } from '../notable.js';
 
 const MIN_LENGTH = 8;
 
@@ -26,7 +26,7 @@ const THOUGHTS = {
  * @param {() => number} options.now   ms since the round started
  * @param {'phone'|'pc'} options.variant  where it is shown
  * @param {(type: string, data?: object) => void} options.onEvent
- *   'reset-sent', 'unlock', 'post-viewed' {post}, 'chat-viewed' {chat}, 'proof' {id}
+ *   'reset-sent', 'unlock', 'post-viewed' {post}, 'chat-viewed' {chat}
  */
 export function createBulle({ state, now, variant, onEvent = () => {} }) {
   const root = el('div', `bulle bulle--${variant}`);
@@ -166,7 +166,7 @@ export function createBulle({ state, now, variant, onEvent = () => {} }) {
       el('span', '', BULLE.bio),
       el('span', 'bulle-private', `Compte privé · ${BULLE.followers} abonnés`),
     );
-    head.append(el('span', 'bulle-avatar', BULLE.name[0]), text, proofButton(state, 'bulle', onEvent));
+    head.append(el('span', 'bulle-avatar', BULLE.name[0]), text);
     return head;
   }
 
@@ -205,14 +205,22 @@ export function createBulle({ state, now, variant, onEvent = () => {} }) {
     );
     return [
       button('bulle-back', '‹ Publications', () => go('profile')),
-      postCard(open),
+      (() => {
+        const card = postCard(open);
+        card.dataset.subject = `bulle-${open.id}`;
+        return open.clue ? notable(card, open.clue) : card;
+      })(),
       actions,
     ];
   }
 
   function chatView() {
     const bubbles = el('div', 'bulle-bubbles');
-    for (const m of BULLE.chat.messages) bubbles.append(el('p', m.me ? 'bulle-bubble me' : 'bulle-bubble', m.text));
+    bubbles.dataset.subject = 'bulle-chat';
+    for (const m of BULLE.chat.messages) {
+      const bubble = el('p', m.me ? 'bulle-bubble me' : 'bulle-bubble', m.text);
+      bubbles.append(m.clue ? notable(bubble, m.clue) : bubble);
+    }
     return [
       profileHead(),
       tabs('chat'),
@@ -224,6 +232,7 @@ export function createBulle({ state, now, variant, onEvent = () => {} }) {
 
   function settingsView() {
     const list = el('div', 'bulle-settings');
+    list.dataset.subject = 'bulle-settings';
     const rows = [
       ['Adresse e-mail', 'c••••••@•••••', THOUGHTS.trace],
       ['Double authentification', 'Désactivée', THOUGHTS.twoFactor],
@@ -254,6 +263,9 @@ export function createBulle({ state, now, variant, onEvent = () => {} }) {
       views = SIGNED_OUT[view]();
     }
     root.dataset.view = view;
+    // What a photo shows: her account open; a post, the chat or the
+    // settings say more (see js/data/photos.js).
+    root.dataset.subject = isUnlocked(state, 'bulle') ? 'bulle' : 'bulle-locked';
     root.replaceChildren(...views, el('p', 'bulle-thought', ''));
     root.querySelector('input:not(:disabled), button:not(:disabled)')?.focus();
   }
