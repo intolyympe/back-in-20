@@ -2,9 +2,8 @@ import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { readFileSync, readdirSync } from 'node:fs';
 import { join } from 'node:path';
-import { PHONE, PC, MAIL, BULLE, BANK, DEDUCTIONS } from '../js/data/camille.js';
-import { CALENDAR_CLUES } from '../js/scenes/calendar.js';
-import { DESK_OBJECTS } from '../js/scenes/desk.js';
+import { DEDUCTIONS } from '../js/data/camille.js';
+import { ALL_CLUES } from '../js/clues.js';
 
 // No emoji in the game's own interface (icons are drawn in js/icons.js) nor
 // in the player's notebook. Camille and her friends do use emoji in what
@@ -31,14 +30,6 @@ test('no emoji in the interface', () => {
 });
 
 test('no emoji in the notebook: the player writes plainly', () => {
-  const clues = [
-    ...Object.values(DESK_OBJECTS).flatMap(object => object.clues ?? []),
-    ...Object.values(CALENDAR_CLUES),
-    ...[...PHONE.photos, ...PHONE.threads, ...PHONE.notes, ...PC.notes, ...MAIL.emails, ...BULLE.posts]
-      .map(item => item.clue),
-    BULLE.chat.clue,
-    BANK.clue,
-    ...DEDUCTIONS,
-  ].filter(Boolean);
+  const clues = [...ALL_CLUES, ...DEDUCTIONS];
   for (const clue of clues) assert.doesNotMatch(clue.text, EMOJI, clue.id);
 });
