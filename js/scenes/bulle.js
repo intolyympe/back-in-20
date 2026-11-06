@@ -10,6 +10,7 @@ import {
 import { el, button, mss } from '../dom.js';
 import { icon } from '../icons.js';
 import { proofButton } from '../proof.js';
+import { notable } from '../notable.js';
 
 const MIN_LENGTH = 8;
 
@@ -205,14 +206,17 @@ export function createBulle({ state, now, variant, onEvent = () => {} }) {
     );
     return [
       button('bulle-back', '‹ Publications', () => go('profile')),
-      postCard(open),
+      open.clue ? notable(postCard(open), open.clue) : postCard(open),
       actions,
     ];
   }
 
   function chatView() {
     const bubbles = el('div', 'bulle-bubbles');
-    for (const m of BULLE.chat.messages) bubbles.append(el('p', m.me ? 'bulle-bubble me' : 'bulle-bubble', m.text));
+    for (const m of BULLE.chat.messages) {
+      const bubble = el('p', m.me ? 'bulle-bubble me' : 'bulle-bubble', m.text);
+      bubbles.append(m.clue ? notable(bubble, m.clue) : bubble);
+    }
     return [
       profileHead(),
       tabs('chat'),
@@ -254,6 +258,10 @@ export function createBulle({ state, now, variant, onEvent = () => {} }) {
       views = SIGNED_OUT[view]();
     }
     root.dataset.view = view;
+    // What a photo would show: her account open (a post, the 2FA setting…).
+    root.dataset.subject = !isUnlocked(state, 'bulle') ? 'bulle-locked'
+      : view === 'settings' ? 'bulle-settings'
+        : view === 'post' ? `bulle-${open.id}` : 'bulle';
     root.replaceChildren(...views, el('p', 'bulle-thought', ''));
     root.querySelector('input:not(:disabled), button:not(:disabled)')?.focus();
   }

@@ -5,6 +5,7 @@
 import { PHONE, CALENDAR } from '../data/camille.js';
 import { el, button } from '../dom.js';
 import { icon } from '../icons.js';
+import { notable } from '../notable.js';
 
 export const MORE_APPS = [
   { id: 'maps', name: 'Plans', icon: 'maps', color: '#3f8f6b' },
@@ -53,7 +54,10 @@ export function moreAppScreens({ go, header, think, thoughtLine, onEvent }) {
   function note() {
     const page = el('div', 'phone-note');
     page.append(el('h3', '', openNote.title), el('p', 'phone-note-date', openNote.date));
-    for (const line of openNote.lines) page.append(el('p', '', line));
+    openNote.lines.forEach((line, i) => {
+      const p = el('p', '', line);
+      page.append(i === openNote.clueLine ? notable(p, openNote.clue) : p);
+    });
     return [header('Notes', 'notes'), page, thoughtLine(), button('reply-field', 'Modifier la note…', think(THOUGHTS.trace))];
   }
 

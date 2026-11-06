@@ -9,10 +9,11 @@ import { createCloseUp, withThought } from './closeup.js';
 import { setupDesk, verbFor } from './scenes/desk.js';
 import { createPhoneView } from './scenes/phone.js';
 import { createPcView } from './scenes/pc.js';
-import { createCalendarView, CALENDAR_CLUES } from './scenes/calendar.js';
+import { createCalendarView } from './scenes/calendar.js';
+import { notable } from './notable.js';
 import { createNotepadView } from './scenes/notepad.js';
 import { createDrawerView } from './scenes/drawer.js';
-import { STORY_START, DEDUCTIONS, PHONE, PC, MAIL, BANK } from './data/camille.js';
+import { STORY_START, DEDUCTIONS, PHONE, PC, MAIL } from './data/camille.js';
 import { renderDebrief } from './debrief.js';
 import { rankFor } from './rank.js';
 import { ding } from './sound.js';
@@ -97,12 +98,6 @@ function onPhoneEvent(type, data) {
     // A second lockout: both tasks are back if they were done.
     const reopened = [PHONE_NOTES.erasePhoto.id, PHONE_NOTES.eraseAlert.id].map(id => markDone(state, id, false));
     if (reopened.some(Boolean)) notebook.render(state.clues);
-  } else if (type === 'photo-viewed' && data.photo.clue) {
-    note([data.photo.clue]);
-  } else if (type === 'thread-viewed' && data.thread.clue) {
-    note([data.thread.clue]);
-  } else if (type === 'note-viewed' && data.note.clue) {
-    note([data.note.clue]);
   } else if (type === 'texts-deleted' && markDone(state, BANK_NOTES.eraseText.id)) {
     notebook.render(state.clues);
     showToast('SMS de la banque effacé.');
@@ -145,8 +140,6 @@ function onPcEvent(type, data) {
       notebook.render(state.clues);
       showToast('PC reverrouillé.');
     }
-  } else if (type === 'note-viewed' && data.note.clue) {
-    note([data.note.clue]);
   }
 }
 
@@ -172,8 +165,6 @@ function onMailEvent(type, data) {
   } else if (type === 'lockout') {
     note([MAIL_NOTES.caught, PHONE_NOTES.eraseAlert]);
     if (markDone(state, PHONE_NOTES.eraseAlert.id, false)) notebook.render(state.clues);
-  } else if (type === 'email-viewed' && data.email.clue) {
-    note([data.email.clue]);
   } else if (type === 'trash-emptied') {
     checkAlertsErased();
   } else if (type === 'reset-link') {
@@ -196,8 +187,6 @@ function onBankEvent(type, data) {
     note([BANK_NOTES.opened]);
     alertToErase();
     showChapterBanner(5, 'La banque · terminé');
-  } else if (type === 'account-viewed') {
-    note([BANK.clue]);
   }
 }
 
@@ -237,10 +226,6 @@ function onBulleEvent(type, data) {
     note([BULLE_NOTES.taken]);
     alertToErase();
     showChapterBanner(4, 'Le réseau social · terminé');
-  } else if (type === 'post-viewed' && data.post.clue) {
-    note([data.post.clue]);
-  } else if (type === 'chat-viewed' && data.chat.clue) {
-    note([data.chat.clue]);
   }
 }
 
@@ -249,9 +234,7 @@ const VIEWS = {
     state, now: elapsed, storyTime, onEvent: onPhoneEvent, onMailEvent, onBulleEvent, onBankEvent, onVaultEvent,
   }),
   pc: () => createPcView({ state, now: elapsed, storyTime, onEvent: onPcEvent, onMailEvent, onBulleEvent, onVaultEvent }),
-  calendar: () => createCalendarView({
-    onPage: month => { if (CALENDAR_CLUES[month]) note([CALENDAR_CLUES[month]]); },
-  }),
+  calendar: createCalendarView,
   notepad: createNotepadView,
   drawer: createDrawerView,
 };
@@ -264,10 +247,16 @@ function inspect(id, object, button) {
     button.dataset.verb = verbFor(object, on);
   } else {
     const view = object.opens ? VIEWS[object.opens]() : createCloseUp(button);
+    // A close-up can hide a detail to note (the post-it's words…).
+    if (!object.opens && object.detail) notable(view.firstElementChild, object.detail);
+    // What a photo would show, unless the view says more precisely.
+    view.dataset.subject ??= id;
     overlay.open(withThought(view, object.text), button, { pickUp: object.pickUp });
   }
-  note(object.clues ?? []);
 }
+
+// The player clicked a detail: it goes in the notebook.
+document.addEventListener('note-clue', event => note([event.detail.clue]));
 
 // The last minute: a "ding", she is on her way back. Everything must be put
 // back and the player must leave her desk before the clock runs out.

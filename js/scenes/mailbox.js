@@ -10,6 +10,7 @@ import {
 import { el, button, hhmm, mss } from '../dom.js';
 import { icon } from '../icons.js';
 import { proofButton } from '../proof.js';
+import { notable } from '../notable.js';
 
 const INTRUDER_SRC = 'assets/photos/intruder.svg';
 
@@ -148,7 +149,10 @@ export function createMailbox({ state, now, storyTime, variant, onEvent = () => 
 
     const page = el('article', 'mail-page');
     page.append(el('h3', 'mail-subject', subject), el('p', 'mail-from', `${from} · ${time}`));
-    for (const line of body) page.append(el('p', '', line));
+    body.forEach((line, i) => {
+      const p = el('p', '', line);
+      page.append(i === email.clueLine ? notable(p, email.clue) : p);
+    });
     if (email.alert === 'phone') {
       const img = el('img', 'mail-photo');
       img.src = INTRUDER_SRC;
@@ -204,6 +208,7 @@ export function createMailbox({ state, now, storyTime, variant, onEvent = () => 
   function render() {
     const signedIn = isUnlocked(state, 'mail');
     root.classList.toggle('signed-in', signedIn);
+    root.dataset.subject = signedIn ? 'mail' : 'mail-locked';
     root.replaceChildren(...(signedIn ? VIEWS[view]() : loginView()), el('p', 'mail-thought', thought));
     root.querySelector('input:not(:disabled), button:not(:disabled)')?.focus();
   }

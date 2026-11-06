@@ -3,9 +3,11 @@
 
 import { BIRTHDAY_CARD } from '../data/camille.js';
 import { el } from '../dom.js';
+import { notable } from '../notable.js';
 
 export function createDrawerView() {
   const drawer = el('div', 'drawer-open');
+  drawer.dataset.subject = 'drawer';
 
   // A charging cable, paper clips and rubber bands lying around.
   drawer.insertAdjacentHTML('beforeend', `
@@ -27,7 +29,7 @@ export function createDrawerView() {
     el('span', 'postmark-month', postmark.month),
     el('span', 'postmark-year', postmark.year),
   );
-  envelope.append(el('div', 'bday-address'), stamp, mark);
+  envelope.append(el('div', 'bday-address'), stamp, notable(mark, BIRTHDAY_CARD.clue));
   drawer.append(envelope);
 
   const card = el('div', 'bday-card');
@@ -35,7 +37,7 @@ export function createDrawerView() {
   front.append(el('span', 'bday-title', BIRTHDAY_CARD.front));
   const inside = el('div', 'bday-inside');
   for (const line of BIRTHDAY_CARD.message) inside.append(el('p', '', line));
-  card.append(front, inside);
+  card.append(front, notable(inside, BIRTHDAY_CARD.clue));
   drawer.append(card);
   return drawer;
 }
